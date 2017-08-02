@@ -1,6 +1,5 @@
 package b7.tools.tracking;
 
-import b7.tools.tracking.*;
 import org.junit.*;
 
 import static org.junit.Assert.*;
