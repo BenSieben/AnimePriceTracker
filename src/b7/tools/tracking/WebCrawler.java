@@ -60,6 +60,7 @@ public class WebCrawler {
                 stringBuilder.append(currentLine);
                 stringBuilder.append("\n");
             }
+            br.close();
         }
         catch(MalformedURLException ex) {
             System.err.println("Malformed URL " + initialURL + " could not be instantiated");
