@@ -21,11 +21,10 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
     // Certain qualifiers used to help us search through pages for relevant information to extract
     public final static String PRODUCT_CLASS = "home-featured-products";
-    public final static String PRODUCT_NAME_ATTR = "data-alpha";
-    public final static String PRODUCT_PRICE_ATTR = "data-price";
     public final static String PRODUCT_INFO_ID = "product-info";
     public final static String PRODUCT_TITLE_CLASS = "prod-title";
     public final static String PRODUCT_PRICE_CLASS = "prod-price";
+    public final static String PAGINATION_ID = "pagination";
 
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
@@ -91,32 +90,27 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             // Use Jsoup to start parsing the HTML code of the base page
             Document document = Jsoup.parse(stringBuilder.toString());
 
-            // TODO parse the listings on the current page
-            /*
-            <ul id="product-loop">
-                <li class="product col-xs-12 col-sm-6 col-md-3 col-lg-3 home-featured-products  first" data-alpha="11 Eyes Complete Collection" data-price="3499">
-                    <div containing more details like link to full page for listed item, etc.>
-                </li>
-            </ul>
-             */
             // Find elements which have matching product class, so that we can extract information from each one
             Elements productElements = document.getElementsByClass(PRODUCT_CLASS);
             for(Element product : productElements) {
-                System.out.println(product.attr(PRODUCT_NAME_ATTR));
-                System.out.println(product.attr(PRODUCT_PRICE_ATTR));
+                // Get the product info inside each product element
                 Element productInfo = product.getElementById(PRODUCT_INFO_ID);
                 System.out.println(productInfo);
+
+                // Extract the URL to the product page
                 Elements productLinks = productInfo.getElementsByTag("a");
                 String productLink = STORE_URL + productLinks.first().attr("href");
                 System.out.println(productLink);
+
                 // Extract title (and convert any HTML entities like &amp; back to regular characters)
                 Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
                 String productTitle = productTitleElement.getElementsByTag("p").first().html();
                 productTitle = Jsoup.parse(productTitle).text();
                 System.out.println(productTitle);
+
                 // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
                 Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
-                if(productPriceElements.first().html().equals(productPriceElements.last().html())) {  // Only single format
+                if(productPriceElements.size() == 1) {  // Only single format
                     System.out.println("Single format detected");
                     String singlePriceElement = productPriceElements.first().html();
                     singlePriceElement = Jsoup.parse(singlePriceElement).text();
@@ -133,27 +127,12 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println();
             }
 
-            // TODO parse the location of the next page
-            /*<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pagination-container">
-                 <hr>
-                 <div id="pagination" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                     <ul class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                         <li class="current-page" style="text-decoration: underline; font-weight: bold;"><a title="">1</a></li>
-                         <li><a href="/collections/shows?page=2" title="">2</a></li>
-                         <li><a href="/collections/shows?page=3" title="">3</a></li>
-                         <li>…</li>
-                         <li><a href="/collections/shows?page=34" title="">34</a></li>
-                         <li><a href="/collections/shows?page=2" title="">&gt;</a></li>
-                         <li> </li>
-                     </ul>
-                 </div>
-                 <div id="count-top">
-                     <span class="count">Items 1-16 of 534</span>
-                 </div>
-             </div>
-             */
+            Element paginationElement = document.getElementById(PAGINATION_ID);
+            System.out.println(paginationElement);
+            Elements paginationLinks = paginationElement.select("ul > li > a");
+            String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
+            System.out.println(nextPageLink);
 
-            //System.out.println(document);
         }
         catch(FileNotFoundException ex) {
             System.err.println("[ERROR] Could not find file " + BASE_PAGE_NAME + ", make sure it has been created!");
