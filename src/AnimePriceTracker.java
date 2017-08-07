@@ -1,12 +1,4 @@
-import b7.tools.tracking.*;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Date;
+import b7.tools.tracking.sentaifilmworks.SentaiFilmworksCrawler;
 
 /**
  * Class with main method to run the program to get price information
@@ -16,7 +8,8 @@ public class AnimePriceTracker {
 
     public static void main(String[] args) {
         //parseBaseSentaiFilmworksPage();
-        visitAllSentaiFilmworksPages();
+        //visitAllSentaiFilmworksPages();
+        parseSampleSentaiFilmworksProductPages();
     }
 
     /**
@@ -34,5 +27,27 @@ public class AnimePriceTracker {
     private static void visitAllSentaiFilmworksPages() {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
         sentaiFilmworksCrawler.visitAllPages();
+    }
+
+    /**
+     * Sets up code to call methods to save and parse some sample product pages
+     */
+    private static void parseSampleSentaiFilmworksProductPages() {
+        SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
+
+        // Pick some sample product pages
+        String productURL1 = "https://shop.sentaifilmworks.com/products/young-black-jack-complete-collection";
+        String productURL2 = "https://shop.sentaifilmworks.com/products/yumeria-complete-collection";
+        String productURL3 = "https://shop.sentaifilmworks.com/products/yuyushiki-complete-collection";
+
+        // Save those product pages (do not re-get them if they already exist)
+        sentaiFilmworksCrawler.saveProductPage(productURL1, false);
+        sentaiFilmworksCrawler.saveProductPage(productURL2, false);
+        sentaiFilmworksCrawler.saveProductPage(productURL3, false);
+
+        // Parse those product pages
+        sentaiFilmworksCrawler.parseProductPage(productURL1);
+        sentaiFilmworksCrawler.parseProductPage(productURL2);
+        sentaiFilmworksCrawler.parseProductPage(productURL3);
     }
 }

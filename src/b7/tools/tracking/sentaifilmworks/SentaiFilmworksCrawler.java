@@ -1,5 +1,6 @@
-package b7.tools.tracking;
+package b7.tools.tracking.sentaifilmworks;
 
+import b7.tools.tracking.WebCrawler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,9 +30,12 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
-
     // Where we will save the test base page
     public final static String BASE_PAGE_NAME = BASE_PAGE_PATH + "sentaifilmworks.html";
+
+    // Path we will save test product pages at
+    public final static String SAMPLE_PRODUCT_PAGES_PATH = "savedata/sampleproductpages/";
+
 
     /**
      * Creates a new SentaiFilmworksCrawler
@@ -73,12 +77,50 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     }
 
     /**
+     * Saves the HTML code of the given productURL to a local file
+     * @param productURL URL of product page to save locally
+     * @param getDataAgain true to retrieve product information again if already detected,
+     *                     false to not retrieve new product page contents if page is already detected
+     */
+    public void saveProductPage(String productURL, boolean getDataAgain) {
+        // First determine name of product (to use in filename)
+        String productName = productURL.substring(productURL.lastIndexOf('/') + 1);
+        if(productName.contains("?")) {
+            productName = productName.substring(0, productName.indexOf('?'));
+        }
+
+        // If user does not want to re-obtain data in case of base page already existing, then
+        //   check for existing base page file and return if it exists
+        if(!getDataAgain) {
+            File file = new File(SAMPLE_PRODUCT_PAGES_PATH + productName + ".html");
+            if(file.exists()) {
+                return;
+            }
+        }
+
+        String fullPageHTML = WebCrawler.readUrlContents(productURL);
+        BufferedWriter bufferedWriter;
+        try {
+            File file = new File(SAMPLE_PRODUCT_PAGES_PATH);
+            if(!file.exists()) {
+                file.mkdirs();
+            }
+            bufferedWriter = new BufferedWriter(new FileWriter(SAMPLE_PRODUCT_PAGES_PATH + productName + ".html"));
+            bufferedWriter.write(fullPageHTML);
+            bufferedWriter.close();  // Close here instead of "finally" block, as it might throw IOException
+        }
+        catch(IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * Attempts to parse the base page (created with saveBasePage() method)
      */
     public void parseBasePage() {
+        StringBuilder stringBuilder = new StringBuilder();
         try {
             // Read in the file
-            StringBuilder stringBuilder = new StringBuilder();
             BufferedReader bufferedReader = new BufferedReader(new FileReader(BASE_PAGE_NAME));
             String currentLine = bufferedReader.readLine();
             while(currentLine != null) {
@@ -87,56 +129,6 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 currentLine = bufferedReader.readLine();
             }
             bufferedReader.close();
-
-            // Use Jsoup to start parsing the HTML code of the base page
-            Document document = Jsoup.parse(stringBuilder.toString());
-
-            // Find elements which have matching product class, so that we can extract information from each one
-            Elements productElements = document.getElementsByClass(PRODUCT_CLASS);
-            for(Element product : productElements) {
-                // Get the product info inside each product element
-                Element productInfo = product.getElementById(PRODUCT_INFO_ID);
-                System.out.println(productInfo);
-
-                // Extract the URL to the product page
-                Elements productLinks = productInfo.getElementsByTag("a");
-                String productLink = STORE_URL + productLinks.first().attr("href");
-                System.out.println(productLink);
-
-                // Extract title (and convert any HTML entities like &amp; back to regular characters)
-                Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
-                String productTitle = productTitleElement.getElementsByTag("p").first().html();
-                productTitle = Jsoup.parse(productTitle).text();
-                System.out.println(productTitle);
-
-                // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
-                Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
-                if(productPriceElements.size() == 1) {  // Only single format
-                    System.out.println("Single format detected");
-                    String singlePriceElement = productPriceElements.first().html();
-                    singlePriceElement = Jsoup.parse(singlePriceElement).text();
-                    System.out.println(singlePriceElement);
-                }
-                else {  // Has multiple formats (i.e., DVD and Blu-Ray)
-                    System.out.println("Multi format detected");
-                    for(Element priceElement : productPriceElements) {
-                        String productPrice = priceElement.getElementsByTag("p").first().html();
-                        productPrice = Jsoup.parse(productPrice).text();
-                        System.out.println(productPrice);
-                    }
-                }
-                System.out.println();
-            }
-
-            // Get link to next page
-            Element paginationElement = document.getElementById(PAGINATION_ID);
-            System.out.println(paginationElement);
-            Elements paginationLinks = paginationElement.select("ul > li > a");
-            String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
-            String nextPageLinkContents = paginationLinks.last().html();
-            System.out.println(nextPageLinkContents);
-            System.out.println(nextPageLink);
-
         }
         catch(FileNotFoundException ex) {
             System.err.println("[ERROR] Could not find file " + BASE_PAGE_NAME + ", make sure it has been created!");
@@ -146,6 +138,95 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             System.err.println("[ERROR] Could not close reader going through " + BASE_PAGE_NAME);
             ex.printStackTrace();
         }
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(stringBuilder.toString());
+
+        // Find elements which have matching product class, so that we can extract information from each one
+        Elements productElements = document.getElementsByClass(PRODUCT_CLASS);
+        for(Element product : productElements) {
+            // Get the product info inside each product element
+            Element productInfo = product.getElementById(PRODUCT_INFO_ID);
+            System.out.println(productInfo);
+
+            // Extract the URL to the product page
+            Elements productLinks = productInfo.getElementsByTag("a");
+            String productLink = STORE_URL + productLinks.first().attr("href");
+            System.out.println(productLink);
+
+            // Extract title (and convert any HTML entities like &amp; back to regular characters)
+            Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
+            String productTitle = productTitleElement.getElementsByTag("p").first().html();
+            productTitle = Jsoup.parse(productTitle).text();
+            System.out.println(productTitle);
+
+            // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
+            Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
+            if(productPriceElements.size() == 1) {  // Only single format
+                System.out.println("Single format detected");
+                String singlePriceElement = productPriceElements.first().html();
+                singlePriceElement = Jsoup.parse(singlePriceElement).text();
+                System.out.println(singlePriceElement);
+            }
+            else {  // Has multiple formats (i.e., DVD and Blu-Ray)
+                System.out.println("Multi format detected");
+                for(Element priceElement : productPriceElements) {
+                    String productPrice = priceElement.getElementsByTag("p").first().html();
+                    productPrice = Jsoup.parse(productPrice).text();
+                    System.out.println(productPrice);
+                }
+            }
+            System.out.println();
+        }
+
+        // Get link to next page
+        Element paginationElement = document.getElementById(PAGINATION_ID);
+        System.out.println(paginationElement);
+        Elements paginationLinks = paginationElement.select("ul > li > a");
+        String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
+        String nextPageLinkContents = paginationLinks.last().html();
+        System.out.println(nextPageLinkContents);
+        System.out.println(nextPageLink);
+    }
+
+    /**
+     * Attempts to parse a saved product page that had initially been retrieved from the productURL
+     * @param productURL the URL of the product to parse
+     */
+    public void parseProductPage(String productURL) {
+        // First determine name of product (to use in filename)
+        String productName = productURL.substring(productURL.lastIndexOf('/') + 1);
+        if(productName.contains("?")) {
+            productName = productName.substring(0, productName.indexOf('?'));
+        }
+        String productFilename = SAMPLE_PRODUCT_PAGES_PATH + productName + ".html";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            // Read in the file
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(productFilename));
+            String currentLine = bufferedReader.readLine();
+            while(currentLine != null) {
+                stringBuilder.append(currentLine);
+                stringBuilder.append("\n");
+                currentLine = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+        }
+        catch(FileNotFoundException ex) {
+            System.err.println("[ERROR] Could not find file " + productFilename + ", make sure it has been created!");
+            ex.printStackTrace();
+        }
+        catch(IOException ex) {
+            System.err.println("[ERROR] Could not close reader going through " + productFilename);
+            ex.printStackTrace();
+        }
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(stringBuilder.toString());
+
+        // TODO search document for relevant product information
+        System.out.println(document);
     }
 
     /**
