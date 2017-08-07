@@ -127,6 +127,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println();
             }
 
+            // Get link to next page
             Element paginationElement = document.getElementById(PAGINATION_ID);
             System.out.println(paginationElement);
             Elements paginationLinks = paginationElement.select("ul > li > a");
