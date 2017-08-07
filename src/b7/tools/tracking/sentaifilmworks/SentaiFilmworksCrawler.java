@@ -28,6 +28,9 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     public final static String PAGINATION_ID = "pagination";
     public final static String NEXT_PAGE_HTML = "&gt;";
 
+    // Certain qualifiers used to help us  search through product pages for relevant information
+    public final static String PRODUCT_DESCRIPTION_ID = "product-description";
+
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
     // Where we will save the test base page
@@ -225,8 +228,16 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
 
-        // TODO search document for relevant product information
-        System.out.println(document);
+        // Get the product description portion of the document
+        Element productDescriptionElement = document.getElementById(PRODUCT_DESCRIPTION_ID);
+        System.out.println(productDescriptionElement);
+
+        // Get the title of the product
+        String productTitle = productDescriptionElement.select("h2").html();
+        System.err.println(productTitle);
+
+        // TODO determine if this is single-format or multi-format product
+
     }
 
     /**
