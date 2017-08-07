@@ -15,7 +15,8 @@ import java.util.Date;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        parseBaseSentaiFilmworksPage();
+        //parseBaseSentaiFilmworksPage();
+        visitAllSentaiFilmworksPages();
     }
 
     /**
@@ -25,5 +26,13 @@ public class AnimePriceTracker {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
         sentaiFilmworksCrawler.saveBasePage(false);
         sentaiFilmworksCrawler.parseBasePage();
+    }
+
+    /**
+     * Sets up code to call methods to traverse all pages for Sentai Filmworks store
+     */
+    private static void visitAllSentaiFilmworksPages() {
+        SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
+        sentaiFilmworksCrawler.visitAllPages();
     }
 }
