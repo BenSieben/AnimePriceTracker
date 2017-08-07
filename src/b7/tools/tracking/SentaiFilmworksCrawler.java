@@ -25,7 +25,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     public final static String PRODUCT_PRICE_ATTR = "data-price";
     public final static String PRODUCT_INFO_ID = "product-info";
     public final static String PRODUCT_TITLE_CLASS = "prod-title";
-    public final static String PRODUCT_PRICE_CLASS = "prod-class";
+    public final static String PRODUCT_PRICE_CLASS = "prod-price";
 
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
@@ -109,11 +109,27 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 Elements productLinks = productInfo.getElementsByTag("a");
                 String productLink = STORE_URL + productLinks.first().attr("href");
                 System.out.println(productLink);
-                Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
                 // Extract title (and convert any HTML entities like &amp; back to regular characters)
+                Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
                 String productTitle = productTitleElement.getElementsByTag("p").first().html();
                 productTitle = Jsoup.parse(productTitle).text();
                 System.out.println(productTitle);
+                // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
+                Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
+                if(productPriceElements.first().html().equals(productPriceElements.last().html())) {  // Only single format
+                    System.out.println("Single format detected");
+                    String singlePriceElement = productPriceElements.first().html();
+                    singlePriceElement = Jsoup.parse(singlePriceElement).text();
+                    System.out.println(singlePriceElement);
+                }
+                else {  // Has multiple formats (i.e., DVD and Blu-Ray)
+                    System.out.println("Multi format detected");
+                    for(Element priceElement : productPriceElements) {
+                        String productPrice = priceElement.getElementsByTag("p").first().html();
+                        productPrice = Jsoup.parse(productPrice).text();
+                        System.out.println(productPrice);
+                    }
+                }
                 System.out.println();
             }
 
