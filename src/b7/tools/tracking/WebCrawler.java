@@ -45,10 +45,19 @@ public class WebCrawler {
      * @return string of HTML code at the initial URL
      */
     public String getInitialURLContents() {
+        return readUrlContents(initialURL);
+    }
+
+    /**
+     * Reads the given URL and returns the HTML on that page
+     * @param URL the URL to read the contents of
+     * @return the contents of the URL
+     */
+    public static String readUrlContents(String URL) {
         // Use a StringBuilder to efficiently append all the page contents that gets returned at the end of the method
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            URL url = new URL(initialURL);
+            URL url = new URL(URL);
             URLConnection urlConnection = url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String currentLine;
@@ -63,11 +72,11 @@ public class WebCrawler {
             br.close();
         }
         catch(MalformedURLException ex) {
-            System.err.println("Malformed URL " + initialURL + " could not be instantiated");
+            System.err.println("Malformed URL " + URL + " could not be instantiated");
             ex.printStackTrace();
         }
         catch(IOException ex) {
-            System.err.println("Could not open a connection to " + initialURL);
+            System.err.println("Could not open a connection to " + URL);
             ex.printStackTrace();
         }
         return stringBuilder.toString();
