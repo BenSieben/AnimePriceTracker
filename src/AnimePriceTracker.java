@@ -1,4 +1,4 @@
-import b7.tools.tracking.sentaifilmworks.SentaiFilmworksCrawler;
+import b7.tools.tracking.SentaiFilmworksCrawler;
 
 /**
  * Class with main method to run the program to get price information

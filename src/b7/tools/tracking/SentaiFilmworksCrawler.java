@@ -1,4 +1,4 @@
-package b7.tools.tracking.sentaifilmworks;
+package b7.tools.tracking;
 
 import b7.tools.tracking.WebCrawler;
 import org.jsoup.Jsoup;
@@ -296,7 +296,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         Elements formatSelectors = productDescriptionElement.getElementsByClass(PRODUCT_FORMAT_SELECTOR_CLASS);
 
         if(formatSelectors.size() == 0) {  // Only 1 format available
-            productLinks.put("N/A", productURL);
+            productLinks.put(SINGLE_FORMAT_PRODUCT, productURL);
             return productLinks;
         }
 
