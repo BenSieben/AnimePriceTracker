@@ -59,7 +59,7 @@ public class PriceDateInfo {
             startDate = newDate;
         }
         else {
-            throw new IllegalArgumentException("Cannot set startDate for PriceData as null or invalid format!");
+            throw new IllegalArgumentException("Cannot set startDate for PriceDate as null or invalid format!");
         }
     }
 
@@ -74,7 +74,7 @@ public class PriceDateInfo {
             price = newPrice;
         }
         else{
-            price = 0;
+            throw new IllegalArgumentException("Cannot set price for PriceDate as less than 0!");
         }
     }
 
