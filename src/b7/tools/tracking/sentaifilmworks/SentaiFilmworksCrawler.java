@@ -7,6 +7,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -43,6 +47,9 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
     // Path we will save test product pages at
     public final static String SAMPLE_PRODUCT_PAGES_PATH = "savedata/sampleproductpages/";
+
+    // What descriptor for format we will give to products with just one format (i.e., we do not know if Blu-Ray or DVD)
+    public final static String SINGLE_FORMAT_PRODUCT = "N/A";
 
 
     /**
@@ -158,8 +165,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             //System.out.println(productInfo);
 
             // Extract the URL to the product page
-            Elements productLinks = productInfo.getElementsByTag("a");
-            String productLink = STORE_URL + productLinks.first().attr("href");
+            Elements productLinkElements = productInfo.getElementsByTag("a");
+            String productLink = STORE_URL + productLinkElements.first().attr("href");
             System.out.println(productLink);
 
             // Extract title (and convert any HTML entities like &amp; back to regular characters)
@@ -171,7 +178,6 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
             Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
             if(productPriceElements.size() == 1) {  // Only single format
-                System.out.println("Single format detected");
                 String singlePriceElement = productPriceElements.first().html();
                 singlePriceElement = Jsoup.parse(singlePriceElement).text();
                 double singlePrice = Double.parseDouble(
@@ -179,14 +185,15 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println("Price ($): " + singlePrice);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
-                System.out.println("Multi format detected");
+                Map<String, String> productLinks = getProductLinks(productLink);
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
                     productPrice = Jsoup.parse(productPrice).text();
                     String[] splitProductPrice = productPrice.split(": \\$ ");
                     String formatType = splitProductPrice[0];
                     double formatPrice = Double.parseDouble(splitProductPrice[1]);
-                    System.out.println("Format: " + formatType + ", Price ($): " + formatPrice);
+                    System.out.println("Format: " + formatType +
+                            ", Price ($): " + formatPrice + ", Link: " + productLinks.get(formatType));
                 }
             }
             System.out.println();
@@ -194,12 +201,9 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
         // Get link to next page
         Element paginationElement = document.getElementById(PAGINATION_ID);
-        //System.out.println(paginationElement);
         Elements paginationLinks = paginationElement.select("ul > li > a");
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
-        //String nextPageLinkContents = paginationLinks.last().html();
-        //System.out.println(nextPageLinkContents);
-        System.out.println(nextPageLink);
+        System.out.println("Next page: " + nextPageLink);
     }
 
     /**
@@ -272,6 +276,41 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             }
         }
         System.out.println();
+    }
+
+    /**
+     * Gets links for products
+     * @param productURL URL that leads to product page (without any GET query)
+     * @return Map of all the different possible product variant URLs, mapped to by product format
+     */
+    private Map<String, String> getProductLinks(String productURL) {
+        String productHTML = WebCrawler.readUrlContents(productURL);
+        Map<String, String> productLinks = new HashMap<>();
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(productHTML);
+
+        // Get the product description portion of the document
+        Element productDescriptionElement = document.getElementById(PRODUCT_DESCRIPTION_ID);
+
+        Elements formatSelectors = productDescriptionElement.getElementsByClass(PRODUCT_FORMAT_SELECTOR_CLASS);
+
+        if(formatSelectors.size() == 0) {  // Only 1 format available
+            productLinks.put("N/A", productURL);
+            return productLinks;
+        }
+
+        // Multiple formats available, so parse the select element options to get the URLs to the different formats
+        Element formatSelectorsSelectTag = formatSelectors.first().getElementsByTag("select").last();
+        Elements formatOptions = formatSelectorsSelectTag.getElementsByTag("option");
+        for(Element formatOption : formatOptions) {
+            String variationID = formatOption.attr("value");
+            String variationURL = productURL + PRODUCT_VARIATION_QUERY + variationID;
+            String formatType = formatOption.html();
+            formatType = formatType.substring(0, formatType.lastIndexOf(" - "));
+            productLinks.put(formatType, variationURL);
+        }
+        return productLinks;
     }
 
     /**
