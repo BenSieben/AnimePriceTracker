@@ -7,9 +7,9 @@ import b7.tools.tracking.sentaifilmworks.SentaiFilmworksCrawler;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        //parseBaseSentaiFilmworksPage();
+        parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
-        parseSampleSentaiFilmworksProductPages();
+        //parseSampleSentaiFilmworksProductPages();
     }
 
     /**

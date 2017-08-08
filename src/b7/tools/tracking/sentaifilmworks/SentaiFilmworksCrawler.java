@@ -30,6 +30,11 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
     // Certain qualifiers used to help us  search through product pages for relevant information
     public final static String PRODUCT_DESCRIPTION_ID = "product-description";
+    public final static String PRODUCT_FORMAT_SELECTOR_CLASS = "x-second";
+    public final static String PRODUCT_PRICE_ID = "product-price";
+    public final static String PRODUCT_CURRENT_PRICE_CLASS = "product-price";
+    public final static String PRODUCT_MSRP_CLASS = "was";
+    public final static String PRODUCT_VARIATION_QUERY = "?variant=";
 
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
@@ -230,14 +235,61 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
         // Get the product description portion of the document
         Element productDescriptionElement = document.getElementById(PRODUCT_DESCRIPTION_ID);
-        System.out.println(productDescriptionElement);
 
         // Get the title of the product
         String productTitle = productDescriptionElement.select("h2").html();
-        System.err.println(productTitle);
+        System.out.println(productTitle);
 
-        // TODO determine if this is single-format or multi-format product
+        Elements formatSelectors = productDescriptionElement.getElementsByClass(PRODUCT_FORMAT_SELECTOR_CLASS);
+        if(formatSelectors.size() == 0) {  // Only 1 format available
+            System.out.println("Single format detected");
+            Element priceInformationElement = productDescriptionElement.getElementById(PRODUCT_PRICE_ID);
+            System.out.println(priceInformationElement);
+            String currentPrice = priceInformationElement.getElementsByClass(PRODUCT_CURRENT_PRICE_CLASS).first().html();
+            System.out.println(currentPrice);
+            String Msrp = priceInformationElement.getElementsByClass(PRODUCT_MSRP_CLASS).first().html();
+            System.out.println(Msrp);
+        }
+        else {  // Multiple formats (Blu-Ray and DVD) available
+            // TODO handle multi format scenario
+            System.out.println("Multi format detected");
+            Element formatSelectorsSelectTag = formatSelectors.first().getElementsByTag("select").last();
+            Elements formatOptions = formatSelectorsSelectTag.getElementsByTag("option");
+            for(Element formatOption : formatOptions) {
+                System.out.println(formatOption);
+                String variationID = formatOption.attr("value");
+                System.out.println(variationID);
+                String variationURL = productURL + PRODUCT_VARIATION_QUERY + variationID;
+                System.out.println(variationURL);
+                String formatType = formatOption.html();
+                formatType = formatType.substring(0, formatType.lastIndexOf(" - "));
+                System.out.println(formatType + " format pricing:");
+                printPriceOfProductVariant(variationURL);
+            }
+        }
+        System.out.println();
+    }
 
+    /**
+     * Prints price (current and MSRP) of product at the given URL
+     * @param variantURL the product page to pull price information from
+     */
+    private void printPriceOfProductVariant(String variantURL) {
+        String productHTML = WebCrawler.readUrlContents(variantURL);
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(productHTML);
+
+        // Get the product description portion of the document
+        Element productDescriptionElement = document.getElementById(PRODUCT_DESCRIPTION_ID);
+
+        // Get price information
+        Element priceInformationElement = productDescriptionElement.getElementById(PRODUCT_PRICE_ID);
+        System.out.println(priceInformationElement);
+        String currentPrice = priceInformationElement.getElementsByClass(PRODUCT_CURRENT_PRICE_CLASS).first().html();
+        System.out.println(currentPrice);
+        String Msrp = priceInformationElement.getElementsByClass(PRODUCT_MSRP_CLASS).first().html();
+        System.out.println(Msrp);
     }
 
     /**
