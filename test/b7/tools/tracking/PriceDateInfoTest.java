@@ -41,12 +41,13 @@ public class PriceDateInfoTest {
     @Test
     public void testSetStartDateBadInput() {
         PriceDateInfo priceDateInfo = new PriceDateInfo();
+        String priceDateInfoStartDate = priceDateInfo.getStartDate();
         try {
             priceDateInfo.setStartDate("12.2.17");
             fail("Bad date did throw exception");
         }
         catch(Exception ex) {
-            assertTrue(true);
+            assertEquals(priceDateInfoStartDate, priceDateInfo.getStartDate());
         }
     }
 
@@ -57,6 +58,39 @@ public class PriceDateInfoTest {
             String newDate = "2017-08-07";
             priceDateInfo.setStartDate(newDate);
             assertEquals(newDate, priceDateInfo.getStartDate());
+        }
+        catch(Exception ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testSetPriceBadInput() {
+        double priceToSet = -10.33;
+        PriceDateInfo priceDateInfo = new PriceDateInfo();
+        double previousPrice = priceDateInfo.getPrice();
+
+        try {
+            priceDateInfo.setPrice(priceToSet);
+            fail();
+        }
+        catch(Exception ex) {
+            assertTrue(Math.abs(previousPrice - priceDateInfo.getPrice()) < 0.00001);
+        }
+    }
+
+    @Test
+    public void testSetPriceGoodInput() {
+        double priceToSet = 14.99;
+        double initialPrice = 6.99;
+        PriceDateInfo priceDateInfo = new PriceDateInfo(initialPrice);
+
+        try {
+            priceDateInfo.setPrice(priceToSet);
+            boolean priceIsStillInitialPrice = initialPrice == priceDateInfo.getPrice();
+            boolean priceIsPriceToSet = priceToSet == priceDateInfo.getPrice();
+            assertFalse(priceIsStillInitialPrice);
+            assertTrue(priceIsPriceToSet);
         }
         catch(Exception ex) {
             fail();
