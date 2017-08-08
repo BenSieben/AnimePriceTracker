@@ -155,7 +155,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         for(Element product : productElements) {
             // Get the product info inside each product element
             Element productInfo = product.getElementById(PRODUCT_INFO_ID);
-            System.out.println(productInfo);
+            //System.out.println(productInfo);
 
             // Extract the URL to the product page
             Elements productLinks = productInfo.getElementsByTag("a");
@@ -174,14 +174,19 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println("Single format detected");
                 String singlePriceElement = productPriceElements.first().html();
                 singlePriceElement = Jsoup.parse(singlePriceElement).text();
-                System.out.println(singlePriceElement);
+                double singlePrice = Double.parseDouble(
+                        singlePriceElement.substring(singlePriceElement.indexOf("$") + 1));
+                System.out.println("Price ($): " + singlePrice);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
                 System.out.println("Multi format detected");
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
                     productPrice = Jsoup.parse(productPrice).text();
-                    System.out.println(productPrice);
+                    String[] splitProductPrice = productPrice.split(": \\$ ");
+                    String formatType = splitProductPrice[0];
+                    double formatPrice = Double.parseDouble(splitProductPrice[1]);
+                    System.out.println("Format: " + formatType + ", Price ($): " + formatPrice);
                 }
             }
             System.out.println();
@@ -189,11 +194,11 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
         // Get link to next page
         Element paginationElement = document.getElementById(PAGINATION_ID);
-        System.out.println(paginationElement);
+        //System.out.println(paginationElement);
         Elements paginationLinks = paginationElement.select("ul > li > a");
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
-        String nextPageLinkContents = paginationLinks.last().html();
-        System.out.println(nextPageLinkContents);
+        //String nextPageLinkContents = paginationLinks.last().html();
+        //System.out.println(nextPageLinkContents);
         System.out.println(nextPageLink);
     }
 
@@ -251,7 +256,6 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             System.out.println(Msrp);
         }
         else {  // Multiple formats (Blu-Ray and DVD) available
-            // TODO handle multi format scenario
             System.out.println("Multi format detected");
             Element formatSelectorsSelectTag = formatSelectors.first().getElementsByTag("select").last();
             Elements formatOptions = formatSelectorsSelectTag.getElementsByTag("option");
