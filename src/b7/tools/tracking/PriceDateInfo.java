@@ -52,14 +52,27 @@ public class PriceDateInfo {
     }
 
     public void setStartDate(String newDate) {
-        // Make sure the startDate is valid
+        // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
         boolean matches = Pattern.matches(pattern, newDate);
         if(newDate != null && matches) {
             startDate = newDate;
         }
         else {
-            throw new IllegalArgumentException("Cannot set startDate for PriceDate as null or invalid format!");
+            throw new IllegalArgumentException("Cannot set startDate for PriceDateInfo as null or invalid format!");
+        }
+    }
+
+    public void setEndDate(String newDate) {
+        // Make sure the newDate is valid
+        String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
+        boolean matches = Pattern.matches(pattern, newDate);
+        if(newDate != null && matches && newDate.compareTo(startDate) >= 0) {
+            endDate = newDate;
+        }
+        else {
+            throw new IllegalArgumentException("Cannot set endDate for PriceDateInfo as null, " +
+                    "an invalid format, or before the startDate!");
         }
     }
 
@@ -74,7 +87,7 @@ public class PriceDateInfo {
             price = newPrice;
         }
         else{
-            throw new IllegalArgumentException("Cannot set price for PriceDate as less than 0!");
+            throw new IllegalArgumentException("Cannot set price for PriceDateInfo as less than 0!");
         }
     }
 

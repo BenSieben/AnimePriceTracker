@@ -65,6 +65,34 @@ public class PriceDateInfoTest {
     }
 
     @Test
+    public void testSetEndDateBadInput() {
+        String startDate = "2017-08-08";
+        String newEndDate = "2017-08-07";
+        PriceDateInfo priceDateInfo = new PriceDateInfo(startDate, 0);
+        try {
+            priceDateInfo.setEndDate(newEndDate);
+            fail();
+        }
+        catch(Exception ex) {
+            assertEquals(startDate, priceDateInfo.getEndDate());
+        }
+    }
+
+    @Test
+    public void testSetEndDateGoodInput() {
+        String startDate = "2017-08-08";
+        String newEndDate = "2017-08-09";
+        PriceDateInfo priceDateInfo = new PriceDateInfo(startDate, 0);
+        try {
+            priceDateInfo.setEndDate(newEndDate);
+            assertEquals(newEndDate, priceDateInfo.getEndDate());
+        }
+        catch(Exception ex) {
+            fail();
+        }
+    }
+
+    @Test
     public void testSetPriceBadInput() {
         double priceToSet = -10.33;
         PriceDateInfo priceDateInfo = new PriceDateInfo();
