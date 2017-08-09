@@ -114,11 +114,12 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
     }
 
     /**
-     * Returns the next day, when given a YYYY-MM-DD String to get the next day of
-     * @param date the date to determine the next day for
-     * @return formatted date after the given day, or null if given day is in invalid format
+     * Returns the day that comes at an offset to the given date
+     * @param date the date to determine the offset day for
+     * @param offset the offset (in days) to find the date for (like -4 for 4 days ago, 2 for 2 days ahead, etc.)
+     * @return formatted date that comes at the offset to the given date
      */
-    public static String getNextDateString(String date) {
+    public static String getDateOffset(String date, int offset) {
         // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
         boolean matches = Pattern.matches(pattern, date);
@@ -138,7 +139,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         GregorianCalendar gregorianCalendar = new GregorianCalendar(dateYear, dateMonth - 1, dateDay);
         long dateInMillis = gregorianCalendar.getTimeInMillis();
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
-        long nextDateInMillis = dateInMillis + MILLISECONDS_IN_A_DAY;
+        long nextDateInMillis = dateInMillis + (MILLISECONDS_IN_A_DAY * offset);
 
         // Use getDateString to find String of next date
         return getDateString(nextDateInMillis);
