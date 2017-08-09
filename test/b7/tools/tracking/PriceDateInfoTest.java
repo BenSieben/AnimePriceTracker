@@ -2,6 +2,10 @@ package b7.tools.tracking;
 
 import org.junit.*;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import static org.junit.Assert.*;
 
 /**
@@ -123,5 +127,40 @@ public class PriceDateInfoTest {
         catch(Exception ex) {
             fail();
         }
+    }
+
+    @Test
+    public void testGetNextDateString1() {
+        String currentDate = "2017-02-28";
+        String expectedNextDate = "2017-03-01";
+        String nextDate = PriceDateInfo.getNextDateString(currentDate);
+        assertEquals(expectedNextDate, nextDate);
+    }
+
+    @Test
+    public void testGetNextDateString2() {
+        long currentTimeInMillis = System.currentTimeMillis();
+        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
+        long nextDayTimeInMillis = currentTimeInMillis + MILLISECONDS_IN_A_DAY;
+        String currentDate = PriceDateInfo.getDateString(currentTimeInMillis);
+        String nextDate = PriceDateInfo.getDateString(nextDayTimeInMillis);
+        String nextDayFromGetNextDateString = PriceDateInfo.getNextDateString(currentDate);
+        assertEquals(nextDate, nextDayFromGetNextDateString);
+    }
+
+    @Test
+    public void testGetNextDateString3() {
+        String currentDate = "2017-12-31";
+        String expectedNextDate = "2018-01-01";
+        String nextDate = PriceDateInfo.getNextDateString(currentDate);
+        assertEquals(expectedNextDate, nextDate);
+    }
+
+    @Test
+    public void testGetNextDateString4() {
+        String currentDate = "2017-01-05";
+        String expectedNextDate = "2017-01-06";
+        String nextDate = PriceDateInfo.getNextDateString(currentDate);
+        assertEquals(expectedNextDate, nextDate);
     }
 }

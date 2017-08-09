@@ -1,7 +1,9 @@
 package b7.tools.tracking;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
 /**
@@ -104,12 +106,42 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
     }
 
     /**
-     * Returns the current startDate String in the format used by this program in general
-     * (YYYY-MM-DD)
-     * @return String representation of current startDate
+     * Returns the current date in the format used by this program in general (YYYY-MM-DD)
+     * @return String representation of current date in the format YYYY-MM-DD
      */
     public static String getCurrentDateString() {
         return getDateString(System.currentTimeMillis());
+    }
+
+    /**
+     * Returns the next day, when given a YYYY-MM-DD String to get the next day of
+     * @param date the date to determine the next day for
+     * @return formatted date after the given day, or null if given day is in invalid format
+     */
+    public static String getNextDateString(String date) {
+        // Make sure the newDate is valid
+        String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
+        boolean matches = Pattern.matches(pattern, date);
+        if(date == null || !matches) {
+            return null;
+        }
+
+        // Split the given day to extract year / month / day as integers
+        String[] splitDay = date.split("-");
+        int dateYear = Integer.parseInt(splitDay[0]);
+        int dateMonth = Integer.parseInt(splitDay[1]);
+        int dateDay = Integer.parseInt(splitDay[2]);
+
+        // Use the GregorianCalendar class to help us find the next date by converting back to milliseconds
+        //   passed Month is dateMonth - 1 because here, constructor takes month and assumes it is zero-based
+        //   (i.e., January is 0, not 1 and December is 11, not 12)
+        GregorianCalendar gregorianCalendar = new GregorianCalendar(dateYear, dateMonth - 1, dateDay);
+        long dateInMillis = gregorianCalendar.getTimeInMillis();
+        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
+        long nextDateInMillis = dateInMillis + MILLISECONDS_IN_A_DAY;
+
+        // Use getDateString to find String of next date
+        return getDateString(nextDateInMillis);
     }
 
     /**
