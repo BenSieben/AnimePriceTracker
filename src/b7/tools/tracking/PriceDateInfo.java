@@ -174,6 +174,13 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         }
 
         // Compare price
-        return (int) (this.price - other.price);
+        double priceDifference = this.price - other.price;
+        if(priceDifference < 0) {
+            return -1;
+        }
+        else if(priceDifference > 0) {
+            return 1;
+        }
+        return 0;
     }
 }
