@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * Simple class to represent a startDate and price combination
  * for Items to use to help create a price history
  */
-public class PriceDateInfo {
+public class PriceDateInfo implements Comparable<PriceDateInfo> {
 
     private String startDate;  // When this price started
     private String endDate;  // When this price ended
@@ -110,5 +110,38 @@ public class PriceDateInfo {
      */
     public static String getCurrentDateString() {
         return getDateString(System.currentTimeMillis());
+    }
+
+    /**
+     * Compares this PriceDateInfo to another PriceDateInfo
+     * @param other the other PriceDateInfo to compare to
+     * @return negative if this PriceDateInfo is less than other (or other is null), positive if this PriceDateInfo is greater
+     * than other, and zero if both PriceDateInfo have the same properties
+     * Comparing is done (in order of significance): start date (ascending), end date (ascending), price (ascending)
+     */
+    @Override
+    public int compareTo(PriceDateInfo other) {
+        if(other == null) {
+            return -1;
+        }
+
+        // Compare start date
+        if(this.startDate.compareTo(other.startDate) < 0) {
+            return -1;
+        }
+        else if(this.startDate.compareTo(other.startDate) > 0) {
+            return 1;
+        }
+
+        // Compare end date
+        if(this.endDate.compareTo(other.endDate) < 0) {
+            return -1;
+        }
+        else if(this.endDate.compareTo(other.endDate) > 0) {
+            return 1;
+        }
+
+        // Compare price
+        return (int) (this.price - other.price);
     }
 }
