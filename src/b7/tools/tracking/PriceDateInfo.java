@@ -157,7 +157,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      */
     @Override
     public String toString() {
-        return ("Start date: " + startDate + "; end date: " + endDate + "; price: " + price);
+        return (startDate + " through " + endDate + " at price " + price);
     }
 
     /**
