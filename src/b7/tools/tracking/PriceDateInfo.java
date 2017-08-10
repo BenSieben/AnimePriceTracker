@@ -152,6 +152,15 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
     }
 
     /**
+     * Returns a basic String representation of the start date, end date, and price of the PriceDateInfo
+     * @return a basic String representation of the start date, end date, and price of the PriceDateInfo
+     */
+    @Override
+    public String toString() {
+        return ("Start date: " + startDate + "; end date: " + endDate + "; price: " + price);
+    }
+
+    /**
      * Compares this PriceDateInfo to another PriceDateInfo
      * @param other the other PriceDateInfo to compare to
      * @return negative if this PriceDateInfo is less than other (or other is null), positive if this PriceDateInfo is greater
