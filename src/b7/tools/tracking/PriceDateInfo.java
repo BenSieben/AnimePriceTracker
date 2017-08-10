@@ -41,6 +41,12 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         setPrice(price);
     }
 
+    public PriceDateInfo(String startDate, String endDate, double price) {
+        setStartDate(startDate);
+        setEndDate(endDate);
+        setPrice(price);
+    }
+
     public String getStartDate() {
         return startDate;
     }
