@@ -22,7 +22,7 @@ public class Product {
     public static final String INVALID_URL = "INVALID_URL";
 
     /**
-     * Constructs a new Product
+     * Constructs a new Product with empty price history
      * @param productName the name of the product
      * @param productURL the URL of the product page
      */
@@ -30,6 +30,19 @@ public class Product {
         setProductName(productName);
         setProductURL(productURL);
         priceHistory = new ArrayList<PriceDateInfo>();
+    }
+
+    /**
+     * Constructs a new Product with given price history
+     * @param productName the name of the product
+     * @param productURL the URL of the product page
+     * @param priceHistory the price history of the product
+     */
+    public Product(String productName, String productURL, List<PriceDateInfo> priceHistory) {
+        setProductName(productName);
+        setProductURL(productURL);
+        this.priceHistory = priceHistory;
+        sortPriceHistory();
     }
 
     /**
