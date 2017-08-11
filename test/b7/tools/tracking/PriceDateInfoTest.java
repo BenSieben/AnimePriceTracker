@@ -178,4 +178,12 @@ public class PriceDateInfoTest {
         assertFalse(priceDateInfo1.equals(priceDateInfo3));
         assertFalse(priceDateInfo2.equals(new Object()));
     }
+
+    @Test
+    public void testGetFormattedPrice() {
+        PriceDateInfo priceDateInfo = new PriceDateInfo("2017-08-01", "2017-08-03", 23);
+
+        assertEquals("23.00", priceDateInfo.getFormattedPrice(null));
+        assertEquals("$ 23.00", priceDateInfo.getFormattedPrice("$"));
+    }
 }
