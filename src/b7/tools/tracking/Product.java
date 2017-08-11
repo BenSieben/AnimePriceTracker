@@ -1,5 +1,8 @@
 package b7.tools.tracking;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +15,11 @@ public class Product {
 
     private String productName;  // Name of the product
     private String productURL;  // URL that accesses the page where you can buy the product
-    List<PriceDateInfo> priceHistory;  // List of all PriceDateInfo objects that compose price history for the product
+    private List<PriceDateInfo> priceHistory;  // List of all PriceDateInfo objects that compose price history for the product
+
+    // Constants to indicate when bad names / URLs have been assigned to the Product
+    public static final String INVALID_NAME = "INVALID_NAME";
+    public static final String INVALID_URL = "INVALID_URL";
 
     /**
      * Constructs a new Product
@@ -20,8 +27,8 @@ public class Product {
      * @param productURL the URL of the product page
      */
     public Product(String productName, String productURL) {
-        this.productName = productName;
-        this.productURL = productURL;
+        setProductName(productName);
+        setProductURL(productURL);
         priceHistory = new ArrayList<PriceDateInfo>();
     }
 
@@ -167,11 +174,43 @@ public class Product {
     }
 
     /**
+     * Sets the product name for this Product to a new name
+     * @param newProductName the new name to give to the Product
+     * @pre newProductName is a valid String that has at least 1 character (otherwise product name becomes INVALID_NAME)
+     */
+    public void setProductName(String newProductName) {
+        if(newProductName != null && newProductName.length() > 0) {
+            this.productName = newProductName;
+        }
+        else {
+            this.productName = INVALID_NAME;
+        }
+    }
+
+    /**
      * Returns the product URL
      * @return the product URL
      */
     public String getProductURL() {
         return productURL;
+    }
+
+    /**
+     * Sets the product URL for this Product to a new name
+     * @param newProductURL the new URL to give to the Product
+     * @pre newProductURL is a valid URL (otherwise product URL becomes INVALID_URL)
+     */
+    public void setProductURL(String newProductURL) {
+        if(newProductURL != null && newProductURL.length() > 0) {
+            // Try to make URL with the given URL (if we get exception, we know the URL is bad)
+            try {
+                URL url = new URL(newProductURL);
+                this.productURL = newProductURL;
+            }
+            catch(MalformedURLException ex) {
+                this.productURL = INVALID_URL;
+            }
+        }
     }
 
     /**
