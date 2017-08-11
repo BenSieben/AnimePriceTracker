@@ -1,6 +1,8 @@
 package b7.tools.tracking;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -26,7 +28,7 @@ public class CrawlData {
     private String title;
 
     // Structure to hold all the product information, with product title leading to Product details
-    private TreeMap<String, Product> productTreeMap;
+    private Map<String, Product> productMap;
 
     /**
      * Creates a new CrawlData
@@ -34,7 +36,7 @@ public class CrawlData {
      */
     public CrawlData(String title) {
         setTitle(title);
-        productTreeMap = new TreeMap<String, Product>(CASE_INSENSITIVE_COMPARATOR);
+        productMap = new TreeMap<String, Product>(CASE_INSENSITIVE_COMPARATOR);
     }
 
     /**
@@ -57,5 +59,24 @@ public class CrawlData {
         else {
             this.title = newTitle;
         }
+    }
+
+    /**
+     * Returns a copy of the data in the product map for this CrawlData
+     * @return a copy of the data in the product map for this CrawlData
+     */
+    public Map<String, Product> getProductMap() {
+        Map<String, Product> productMapClone = new TreeMap<String, Product>(CASE_INSENSITIVE_COMPARATOR);
+
+        Set<String> productMapKeys = productMap.keySet();
+        for(String key : productMapKeys) {
+            Product currentProduct = productMap.get(key);
+            productMapClone.put(key,
+                    new Product(currentProduct.getProductName(),
+                            currentProduct.getProductURL(),
+                            currentProduct.getPriceHistory()));
+        }
+
+        return productMapClone;
     }
 }
