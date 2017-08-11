@@ -1,6 +1,7 @@
 package b7.tools.tracking;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,13 @@ public class Product {
         this.productName = productName;
         this.productURL = productURL;
         priceHistory = new ArrayList<PriceDateInfo>();
+    }
+
+    /**
+     * Runs a sort on the current priceHistory
+     */
+    public void sortPriceHistory() {
+        Collections.sort(priceHistory);
     }
 
     /**
@@ -148,6 +156,26 @@ public class Product {
             return p1.getStartDate();
         }
         return p2.getStartDate();
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public String getProductURL() {
+        return productURL;
+    }
+
+    public List<PriceDateInfo> getPriceHistory() {
+        return priceHistory;
+    }
+
+    @Override
+    public String toString() {
+        String result = productName;
+        result += " (" + productURL + ")";
+        result += " --- product history: " + priceHistory.toString();
+        return result;
     }
 
 }
