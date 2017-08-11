@@ -166,8 +166,19 @@ public class Product {
         return productURL;
     }
 
+    /**
+     * Returns a clone of the current priceHistory list
+     * @return a clone of the current priceHistory list
+     */
     public List<PriceDateInfo> getPriceHistory() {
-        return priceHistory;
+        // Create a clone of the priceHistory so it cannot be modified outside this class
+        List<PriceDateInfo> priceHistoryClone = new ArrayList<PriceDateInfo>(priceHistory.size());
+        for (int i = 0; i < priceHistory.size(); i++) {
+            PriceDateInfo pdi = priceHistory.get(i);
+            priceHistoryClone.add(new PriceDateInfo(pdi.getStartDate(), pdi.getEndDate(), pdi.getPrice()));
+        }
+
+        return priceHistoryClone;
     }
 
     @Override
