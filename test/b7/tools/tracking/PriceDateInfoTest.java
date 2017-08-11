@@ -167,4 +167,15 @@ public class PriceDateInfoTest {
         String offsetDate = PriceDateInfo.getDateOffset(currentDate, -5);
         assertEquals(expectedOffsetDate, offsetDate);
     }
+
+    @Test
+    public void testEquals() {
+        PriceDateInfo priceDateInfo1 = new PriceDateInfo("2017-08-08", "2017-08-10", 19.99);
+        PriceDateInfo priceDateInfo2 = new PriceDateInfo("2017-08-08", "2017-08-10", 19.99);
+        PriceDateInfo priceDateInfo3 = new PriceDateInfo("2017-08-08", "2017-08-10", 30.00);
+
+        assertTrue(priceDateInfo1.equals(priceDateInfo2));
+        assertFalse(priceDateInfo1.equals(priceDateInfo3));
+        assertFalse(priceDateInfo2.equals(new Object()));
+    }
 }
