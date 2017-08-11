@@ -158,10 +158,18 @@ public class Product {
         return p2.getStartDate();
     }
 
+    /**
+     * Returns the product name
+     * @return the product name
+     */
     public String getProductName() {
         return productName;
     }
 
+    /**
+     * Returns the product URL
+     * @return the product URL
+     */
     public String getProductURL() {
         return productURL;
     }
