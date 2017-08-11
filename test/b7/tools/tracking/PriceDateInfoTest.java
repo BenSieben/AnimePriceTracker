@@ -182,8 +182,11 @@ public class PriceDateInfoTest {
     @Test
     public void testGetFormattedPrice() {
         PriceDateInfo priceDateInfo = new PriceDateInfo("2017-08-01", "2017-08-03", 23);
-
         assertEquals("23.00", priceDateInfo.getFormattedPrice(null));
         assertEquals("$ 23.00", priceDateInfo.getFormattedPrice("$"));
+
+        priceDateInfo = new PriceDateInfo("2017-01-01", "2017-01-01", 19.9);
+        assertEquals("19.90", priceDateInfo.getFormattedPrice(null));
+        assertEquals("£ 19.90", priceDateInfo.getFormattedPrice("£"));
     }
 }
