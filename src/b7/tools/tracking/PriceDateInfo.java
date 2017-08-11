@@ -58,6 +58,21 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         return price;
     }
 
+    /**
+     * Returns a formatted version of the price to always include two decimal places and (optional) currency in front
+     * of the value
+     * @param currency currency sign (optional - set to null / empty string if not desired)
+     * @return
+     */
+    public String getFormattedPrice(String currency) {
+        if(currency == null || currency.length() == 0) {
+            return String.format("%.2f", price);
+        }
+        else {
+            return String.format("%s %.2f", currency, price);
+        }
+    }
+
     public void setStartDate(String newDate) {
         // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
