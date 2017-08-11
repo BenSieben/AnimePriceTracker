@@ -160,6 +160,19 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
     }
 
     /**
+     * Returns true if this PriceDateInfo is equivalent to the other object (false otherwise)
+     * @param o Object to test against (should be a PriceDateInfo object)
+     * @return true if both objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof PriceDateInfo) {
+            return this.compareTo((PriceDateInfo)o) == 0;
+        }
+        return false;
+    }
+
+    /**
      * Compares this PriceDateInfo to another PriceDateInfo
      * @param other the other PriceDateInfo to compare to
      * @return negative if this PriceDateInfo is less than other (or other is null), positive if this PriceDateInfo is greater
