@@ -153,9 +153,9 @@ public class Product {
     // Helper method to quickly get the higher end date between two PriceDateInfo objects
     private String getMaxEndDate(PriceDateInfo p1, PriceDateInfo p2) {
         if(p1.getEndDate().compareTo(p2.getEndDate()) >= 0) {
-            return p1.getStartDate();
+            return p1.getEndDate();
         }
-        return p2.getStartDate();
+        return p2.getEndDate();
     }
 
     /**
