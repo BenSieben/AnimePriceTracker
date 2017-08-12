@@ -1,9 +1,6 @@
 package b7.tools.tracking;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Represents the collection of crawl data
@@ -78,5 +75,32 @@ public class CrawlData {
         }
 
         return productMapClone;
+    }
+
+    /**
+     * Adds a Product to the CrawlData (or will update an existing Product with the same name)
+     * @param product the Product to add to the data
+     */
+    public void addProduct(Product product) {
+        if(product == null) {
+            return;
+        }
+
+        Product existingProduct = productMap.get(product.getProductName());
+        if(existingProduct == null) {  // Brand new product, so we can quickly add
+            productMap.put(product.getProductName(), product);
+        }
+        else {  // Product with same name already exists
+            // Specifically, overwrite existing URL with incoming one and merge the product history
+            //   of the existing product with the product to be added, then put the final result
+            //   back into the product map
+            existingProduct.setProductURL(product.getProductURL());
+            product.sortPriceHistory();
+            List<PriceDateInfo> newProductPriceHistory = product.getPriceHistory();
+            for(PriceDateInfo priceDateInfo : newProductPriceHistory) {
+                existingProduct.addNewPriceDateInfo(priceDateInfo);
+            }
+            productMap.put(product.getProductName(), existingProduct);
+        }
     }
 }
