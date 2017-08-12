@@ -51,12 +51,33 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     // What descriptor for format we will give to products with just one format (i.e., we do not know if Blu-Ray or DVD)
     public final static String SINGLE_FORMAT_PRODUCT = "N/A";
 
+    public final static String CRAWL_DATA_TITLE = "Sentai Filmworks Crawl Data";
+    private CrawlData crawlData;  // The current CrawlData (which we can update with this crawler)
+
 
     /**
-     * Creates a new SentaiFilmworksCrawler
+     * Creates a new SentaiFilmworksCrawler with empty crawl data
      */
     public SentaiFilmworksCrawler() {
         super(INITIAL_URL);
+        crawlData = new CrawlData(CRAWL_DATA_TITLE);
+    }
+
+    /**
+     * Creates a new SentaiFilmworksCrawler with the given initial crawl data
+     * @param initialCrawlData the initial CrawlData to use
+     */
+    public SentaiFilmworksCrawler(CrawlData initialCrawlData) {
+        super(INITIAL_URL);
+        crawlData = initialCrawlData;
+    }
+
+    /**
+     * Returns a copy of the Crawl Data
+     * @return a copy of the Crawl data
+     */
+    public CrawlData getCrawlData() {
+        return new CrawlData(crawlData.getTitle(), crawlData.getProductMap());
     }
 
     /**
