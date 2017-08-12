@@ -37,6 +37,16 @@ public class CrawlData {
     }
 
     /**
+     * Creates a new CrawlData with an initial product map to use
+     * @param title the title of the CrawlData
+     * @param initialProductMap a product map to start the Crawl Data with
+     */
+    public CrawlData(String title, Map<String, Product> initialProductMap) {
+        setTitle(title);
+        productMap = initialProductMap;
+    }
+
+    /**
      * Returns the title of the CrawlDate
      * @return the title of the CrawlData
      */
