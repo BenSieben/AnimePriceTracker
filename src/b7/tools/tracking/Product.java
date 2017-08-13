@@ -2,7 +2,6 @@ package b7.tools.tracking;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +19,13 @@ public class Product {
     // Constants to indicate when bad names / URLs have been assigned to the Product
     public static final String INVALID_NAME = "INVALID_NAME";
     public static final String INVALID_URL = "INVALID_URL";
+
+    /**
+     * Constructs a product with name INVALID_NAME, url INVALID_URL, and empty price history
+     */
+    public Product() {
+        this(INVALID_NAME, INVALID_URL);
+    }
 
     /**
      * Constructs a new Product with empty price history
@@ -112,7 +118,7 @@ public class Product {
                 }
                 else {  // p1 is cheaper or more expensive than p2 (we do same thing in both situations)
                     // set p2's start date to a day after p1's end date to resolve duplicate entries on same date(s)
-                    p2.setStartDate(PriceDateInfo.getDateOffset(p1.getEndDate(), 1));
+                    p2.setStartDate(PriceDateInfo.findDateOffset(p1.getEndDate(), 1));
                     mergedPriceDateList.add(p1);
                     mergedPriceDateList.add(p2);
                 }
@@ -124,8 +130,8 @@ public class Product {
             // First compare the price (if  price is same, we can just "merge" the two PriceDateInfo)
             double priceComparison = p1.getPrice() - p2.getPrice();
             if(Math.abs(priceComparison) <= 0.00000000001) {  // p1 is essentially same cost as p2
-                String mergeStartDate = getMinStartDate(p1, p2);
-                String mergeEndDate = getMaxEndDate(p1, p2);
+                String mergeStartDate = findMinStartDate(p1, p2);
+                String mergeEndDate = findMaxEndDate(p1, p2);
                 double mergePrice = p1.getPrice();
                 PriceDateInfo mergeInfo = new PriceDateInfo(mergeStartDate, mergeEndDate, mergePrice);
                 mergedPriceDateList.add(mergeInfo);
@@ -136,13 +142,13 @@ public class Product {
             int p1EndVSP2End = p1.getEndDate().compareTo(p2.getEndDate());
             if(p1EndVSP2End < 0) {  // p1 ends before p2 ends
                 // move p1's end date to just before p2's start date to fix any date gap
-                p1.setEndDate(PriceDateInfo.getDateOffset(p2.getStartDate(), -1));
+                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
             }
             else if(p1EndVSP2End == 0) {  // p1 ends same day as p2 ends
                 // move p1's end date to just before p2's start date to fix duplicate date data
-                p1.setEndDate(PriceDateInfo.getDateOffset(p2.getStartDate(), -1));
+                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
             }
@@ -150,8 +156,8 @@ public class Product {
                 // if p1 ends after p2 ends, then we make three PriceDateInfo objects
                 //   to fit p2 in the middle of p1 but preserve p1's part that comes after p2
                 String originalP1EndDate = p1.getEndDate();
-                p1.setEndDate(PriceDateInfo.getDateOffset(p2.getStartDate(), -1));
-                PriceDateInfo p3 = new PriceDateInfo(PriceDateInfo.getDateOffset(p2.getEndDate(), 1),
+                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
+                PriceDateInfo p3 = new PriceDateInfo(PriceDateInfo.findDateOffset(p2.getEndDate(), 1),
                         originalP1EndDate, p1.getPrice());
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
@@ -163,7 +169,7 @@ public class Product {
     }
 
     // Helper method to quickly get the lower start date between two PriceDateInfo objects
-    private String getMinStartDate(PriceDateInfo p1, PriceDateInfo p2) {
+    private String findMinStartDate(PriceDateInfo p1, PriceDateInfo p2) {
         if(p1.getStartDate().compareTo(p2.getStartDate()) <= 0) {
             return p1.getStartDate();
         }
@@ -171,7 +177,7 @@ public class Product {
     }
 
     // Helper method to quickly get the higher end date between two PriceDateInfo objects
-    private String getMaxEndDate(PriceDateInfo p1, PriceDateInfo p2) {
+    private String findMaxEndDate(PriceDateInfo p1, PriceDateInfo p2) {
         if(p1.getEndDate().compareTo(p2.getEndDate()) >= 0) {
             return p1.getEndDate();
         }
@@ -239,6 +245,15 @@ public class Product {
         }
 
         return priceHistoryClone;
+        //return priceHistory;
+    }
+
+    /**
+     * Sets the price history to the given argument
+     * @param priceHistory the priceHistory to use for this Product
+     */
+    public void setPriceHistory(List<PriceDateInfo> priceHistory) {
+        this.priceHistory = priceHistory;
     }
 
     @Override
