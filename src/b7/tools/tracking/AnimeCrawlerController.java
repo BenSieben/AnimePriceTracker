@@ -26,6 +26,9 @@ public class AnimeCrawlerController {
      */
     public AnimeCrawlerController(String sentaiFilmworksDataFilename) {
         sentaiFilmworksCrawler = loadSentaiFilmworksCrawler(sentaiFilmworksDataFilename);
+        if(sentaiFilmworksCrawler == null) {
+            sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
+        }
     }
 
     /**

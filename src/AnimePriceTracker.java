@@ -11,8 +11,9 @@ public class AnimePriceTracker {
         //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController();
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         animeCrawlerController.visitAllSentaiFilmworksPages();
+        animeCrawlerController.saveSentaiFilmworksCrawler(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
     }
 
     /**
