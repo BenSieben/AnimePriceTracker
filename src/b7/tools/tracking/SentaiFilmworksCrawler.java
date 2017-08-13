@@ -431,12 +431,24 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
-            //System.out.println("Found next page: " + nextPageLink);
+            // Utilize waiting mechanism (loading all pages very fast results in java.io.IOException eventually,
+            //   where HTTP response code is 430 because we are loading too many pages too fast) so that
+            //   we do not run into errors when trying to collect all the product data from Sentai Filmworks
+            try {
+                long millisecondsToSleep = 1000;
+                System.out.println("Waiting " + (millisecondsToSleep / 1000.0) +
+                        " seconds before going to next page, " + nextPageLink + " to avoid HTTP response 430" +
+                        " which blocks accessing the website temporarily");
+                Thread.sleep(millisecondsToSleep);  // wait for 30 seconds
+            }
+            catch(InterruptedException ex) {
+                // Triggers if thread gets interrupted by another  thread while sleeping
+                ex.printStackTrace();
+            }
             visitAllPages(nextPageLink, printProgress);
         }
         else {
-            // If last link does not point to next page, we must be on the last page now
-            //System.out.println("Last page met (last link in pagination is " + nextPageLinkContents + ")");
+            // If last link does not point to next page, we must be on the last page now so we are done
         }
     }
 
