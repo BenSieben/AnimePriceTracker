@@ -44,7 +44,7 @@ public class WebCrawler {
      * Returns string of initial URL contents (HTML code)
      * @return string of HTML code at the initial URL
      */
-    public String getInitialURLContents() {
+    public String readInitialURLContents() {
         return readUrlContents(initialURL);
     }
 

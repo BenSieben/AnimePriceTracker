@@ -18,7 +18,7 @@ public class WebCrawlerTest {
     public void testWebCrawler() {
         final String INITIAL_URL = "https://www.google.com";
         WebCrawler webCrawler = new WebCrawler(INITIAL_URL);
-        String initialPageContents = webCrawler.getInitialURLContents();
+        String initialPageContents = webCrawler.readInitialURLContents();
         assertTrue(initialPageContents.length() > 0);
     }
 }
