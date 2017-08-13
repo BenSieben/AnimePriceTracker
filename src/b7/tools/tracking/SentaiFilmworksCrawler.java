@@ -454,4 +454,15 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         crawlData.addProduct(productToAdd);
     }
 
+    /**
+     * Returns the contents of the crawl data as a String with "Sentai Filmworks Crawler" on a preceding line
+     * @return the contents of the crawl data as a String with "Sentai Filmworks Crawler" on a preceding line
+     */
+    @Override
+    public String toString() {
+        String result = "Sentai Filmworks Crawler\n";
+        result += crawlData.toString();
+        return result;
+    }
+
 }
