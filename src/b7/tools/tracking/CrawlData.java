@@ -28,6 +28,13 @@ public class CrawlData {
     private Map<String, Product> productMap;
 
     /**
+     * Constructs a Crawl Data with default title and empty product map
+     */
+    public CrawlData() {
+        this(DEFAULT_TITLE);
+    }
+
+    /**
      * Creates a new CrawlData
      * @param title the title of the CrawlData
      */
@@ -69,6 +76,14 @@ public class CrawlData {
     }
 
     /**
+     * Sets the product to be the given map
+     * @param productMap the map to use as the product map for this crawl data
+     */
+    public void setProductMap(Map<String, Product> productMap) {
+        this.productMap = productMap;
+    }
+
+    /**
      * Returns a copy of the data in the product map for this CrawlData
      * @return a copy of the data in the product map for this CrawlData
      */
@@ -82,9 +97,11 @@ public class CrawlData {
                     new Product(currentProduct.getProductName(),
                             currentProduct.getProductURL(),
                             currentProduct.getPriceHistory()));
+
         }
 
         return productMapClone;
+        //return productMap;
     }
 
     /**
