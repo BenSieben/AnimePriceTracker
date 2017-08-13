@@ -369,7 +369,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     }
 
     /**
-     * Visits the given pageURL and looks for link to next page to visit that link
+     * Visits the given pageURL and looks for link to next page to visit that link, updating the crawl
+     * data with Product information as data is analyzed
      * @param pageURL URL to visit
      */
     private void visitAllPages(String pageURL) {
@@ -383,52 +384,74 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         for(Element product : productElements) {
             // Get the product info inside each product element
             Element productInfo = product.getElementById(PRODUCT_INFO_ID);
-            //System.out.println(productInfo);
 
             // Extract the URL to the product page
-            Elements productLinks = productInfo.getElementsByTag("a");
-            String productLink = STORE_URL + productLinks.first().attr("href");
-            //System.out.println(productLink);
+            Elements productLinkElements = productInfo.getElementsByTag("a");
+            String productLink = STORE_URL + productLinkElements.first().attr("href");
 
             // Extract title (and convert any HTML entities like &amp; back to regular characters)
             Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
             String productTitle = productTitleElement.getElementsByTag("p").first().html();
             productTitle = Jsoup.parse(productTitle).text();
-            //System.out.println(productTitle);
 
             // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
             Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
             if(productPriceElements.size() == 1) {  // Only single format
-                //System.out.println("Single format detected");
                 String singlePriceElement = productPriceElements.first().html();
                 singlePriceElement = Jsoup.parse(singlePriceElement).text();
-                //System.out.println(singlePriceElement);
+                double singlePrice = Double.parseDouble(
+                        singlePriceElement.substring(singlePriceElement.indexOf("$") + 1));
+
+                // Now update the crawl data with the obtained information
+                updateCrawlData(productTitle, productLink, singlePrice);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
-                //System.out.println("Multi format detected");
+                Map<String, String> productLinks = findProductLinks(productLink);
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
                     productPrice = Jsoup.parse(productPrice).text();
-                    //System.out.println(productPrice);
+                    String[] splitProductPrice = productPrice.split(": \\$ ");
+                    String formatType = splitProductPrice[0];
+                    double formatPrice = Double.parseDouble(splitProductPrice[1]);
+
+                    // Name of multi-format product is "<regularName> (<format>)"
+                    String productFullName = productTitle + " (" + formatType + ")";
+
+                    // Now update the crawl data with the obtained information
+                    updateCrawlData(productFullName, productLinks.get(formatType), formatPrice);
                 }
             }
-            //System.out.println();
         }
 
         // Get link to next page (if it exists)
         Element paginationElement = document.getElementById(PAGINATION_ID);
-        //System.out.println(paginationElement);
         Elements paginationLinks = paginationElement.select("ul > li > a");
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
-            System.out.println("Found next page: " + nextPageLink);
+            //System.out.println("Found next page: " + nextPageLink);
             visitAllPages(nextPageLink);
         }
         else {
             // If last link does not point to next page, we must be on the last page now
-            System.out.println("Last page met (last link in pagination is " + nextPageLinkContents + ")");
+            //System.out.println("Last page met (last link in pagination is " + nextPageLinkContents + ")");
         }
+    }
+
+    /**
+     * Adds a new Product (or updates existing one with same name) in the crawl data
+     * @param productName the name of the product
+     * @param productURL the link to the product
+     * @param price the current price of the product
+     */
+    private void updateCrawlData(String productName, String productURL, double price) {
+        // Create a Product with a PriceDateInfo corresponding to info in given parameters
+        Product productToAdd = new Product(productName, productURL);
+        PriceDateInfo productPriceInfo = new PriceDateInfo(price);
+        productToAdd.addNewPriceDateInfo(productPriceInfo);
+
+        // Add the product to the crawl data
+        crawlData.addProduct(productToAdd);
     }
 
 }
