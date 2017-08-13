@@ -11,19 +11,19 @@ import static org.junit.Assert.*;
 public class PriceDateInfoTest {
 
     /**
-     * Test to make sure the getCurrentDateString()
+     * Test to make sure the findCurrentDateString()
      * method from the PriceDate functions correctly
      */
     @Test
     public void testGetCurrentDateString() {
-        String currentDate = PriceDateInfo.getCurrentDateString();
+        String currentDate = PriceDateInfo.findCurrentDateString();
         assertNotNull(currentDate);
     }
 
     @Test
     public void testGetDateString() {
         long millisecondsSince19700101 = 0;
-        String getDateStringResult = PriceDateInfo.getDateString(millisecondsSince19700101);
+        String getDateStringResult = PriceDateInfo.findDateString(millisecondsSince19700101);
         // Due to time zones, the result could be last day of 1969 or first dat of 1970
         String expectedResult1 = "1969-12-31";
         String expectedResult2 = "1970-01-01";
@@ -129,7 +129,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset1() {
         String currentDate = "2017-02-28";
         String expectedOffsetDate = "2017-03-01";
-        String offsetDate = PriceDateInfo.getDateOffset(currentDate, 1);
+        String offsetDate = PriceDateInfo.findDateOffset(currentDate, 1);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -138,9 +138,9 @@ public class PriceDateInfoTest {
         long currentTimeInMillis = System.currentTimeMillis();
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
         long nextDayTimeInMillis = currentTimeInMillis + MILLISECONDS_IN_A_DAY;
-        String currentDate = PriceDateInfo.getDateString(currentTimeInMillis);
-        String nextDate = PriceDateInfo.getDateString(nextDayTimeInMillis);
-        String nextDayFromGetDateOffset = PriceDateInfo.getDateOffset(currentDate, 1);
+        String currentDate = PriceDateInfo.findDateString(currentTimeInMillis);
+        String nextDate = PriceDateInfo.findDateString(nextDayTimeInMillis);
+        String nextDayFromGetDateOffset = PriceDateInfo.findDateOffset(currentDate, 1);
         assertEquals(nextDate, nextDayFromGetDateOffset);
     }
 
@@ -148,7 +148,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset3() {
         String currentDate = "2017-12-31";
         String expectedOffsetDate = "2017-12-25";
-        String offsetDate = PriceDateInfo.getDateOffset(currentDate, -6);
+        String offsetDate = PriceDateInfo.findDateOffset(currentDate, -6);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -156,7 +156,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset4() {
         String currentDate = "2017-01-05";
         String expectedOffsetDate = "2017-01-09";
-        String offsetDate = PriceDateInfo.getDateOffset(currentDate, 4);
+        String offsetDate = PriceDateInfo.findDateOffset(currentDate, 4);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -164,7 +164,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset5() {
         String currentDate = "2017-01-05";
         String expectedOffsetDate = "2016-12-31";
-        String offsetDate = PriceDateInfo.getDateOffset(currentDate, -5);
+        String offsetDate = PriceDateInfo.findDateOffset(currentDate, -5);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -182,11 +182,11 @@ public class PriceDateInfoTest {
     @Test
     public void testGetFormattedPrice() {
         PriceDateInfo priceDateInfo = new PriceDateInfo("2017-08-01", "2017-08-03", 23);
-        assertEquals("23.00", priceDateInfo.getFormattedPrice(null));
-        assertEquals("$ 23.00", priceDateInfo.getFormattedPrice("$"));
+        assertEquals("23.00", priceDateInfo.formattedPrice(null));
+        assertEquals("$ 23.00", priceDateInfo.formattedPrice("$"));
 
         priceDateInfo = new PriceDateInfo("2017-01-01", "2017-01-01", 19.9);
-        assertEquals("19.90", priceDateInfo.getFormattedPrice(null));
-        assertEquals("£ 19.90", priceDateInfo.getFormattedPrice("£"));
+        assertEquals("19.90", priceDateInfo.formattedPrice(null));
+        assertEquals("£ 19.90", priceDateInfo.formattedPrice("£"));
     }
 }

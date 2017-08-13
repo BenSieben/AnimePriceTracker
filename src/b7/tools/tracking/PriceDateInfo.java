@@ -19,7 +19,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * Constructs a new PriceDateInfo with today as the startDate and endDate and a price of 0
      */
     public PriceDateInfo() {
-        startDate = getCurrentDateString();
+        startDate = findCurrentDateString();
         endDate = startDate;
         setPrice(0.0);
     }
@@ -29,50 +29,46 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * @param price the price to set for the PriceDate
      */
     public PriceDateInfo(double price) {
-        startDate = getCurrentDateString();
+        startDate = findCurrentDateString();
         endDate = startDate;
         setPrice(price);
     }
 
+    /**
+     * Constructs a new PriceDateInfo with the start date / end date on the same day and the specified price
+     * @param startDate the day to use for the start date / end date of the info
+     * @param price the price to use for the info
+     */
     public PriceDateInfo(String startDate, double price) {
         setStartDate(startDate);
         endDate = startDate;
         setPrice(price);
     }
 
+    /**
+     * Constructs a new PriceDateInfo object
+     * @param startDate the start date of the info
+     * @param endDate the end date of the info
+     * @param price the price during this period of time
+     */
     public PriceDateInfo(String startDate, String endDate, double price) {
         setStartDate(startDate);
         setEndDate(endDate);
         setPrice(price);
     }
 
+    /**
+     * Returns the current start date of the price date info
+     * @return the current start date of the price date info
+     */
     public String getStartDate() {
         return startDate;
     }
 
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
     /**
-     * Returns a formatted version of the price to always include two decimal places and (optional) currency in front
-     * of the value
-     * @param currency currency sign (optional - set to null / empty string if not desired)
-     * @return
+     * Sets the start date of the price date info to the given newDate (assuming it is valid)
+     * @param newDate the new date to use as the start date
      */
-    public String getFormattedPrice(String currency) {
-        if(currency == null || currency.length() == 0) {
-            return String.format("%.2f", price);
-        }
-        else {
-            return String.format("%s %.2f", currency, price);
-        }
-    }
-
     public void setStartDate(String newDate) {
         // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
@@ -85,6 +81,18 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         }
     }
 
+    /**
+     * Returns the current end date of the price date info
+     * @return the current end date of the price date info
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * Sets the end date of the price date info to the given newDate (assuming it is valid)
+     * @param newDate the new date to use as the end date
+     */
     public void setEndDate(String newDate) {
         // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
@@ -96,6 +104,14 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
             throw new IllegalArgumentException("Cannot set endDate for PriceDateInfo as null, " +
                     "an invalid format, or before the startDate!");
         }
+    }
+
+    /**
+     * Returns the price of this price date info
+     * @return the price of this price date info
+     */
+    public double getPrice() {
+        return price;
     }
 
     /**
@@ -114,11 +130,26 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
     }
 
     /**
+     * Returns a formatted version of the price to always include two decimal places and (optional) currency in front
+     * of the value
+     * @param currency currency sign (optional - set to null / empty string if not desired)
+     * @return
+     */
+    public String formattedPrice(String currency) {
+        if(currency == null || currency.length() == 0) {
+            return String.format("%.2f", price);
+        }
+        else {
+            return String.format("%s %.2f", currency, price);
+        }
+    }
+
+    /**
      * Returns the given dateInMilliseconds in the proper format for the PriceDateInfo
      * @param dateInMilliseconds milliseconds since January 1, 1970, 00:00:00 GMT to get date for
      * @return String representation of date that matches given time
      */
-    public static String getDateString(long dateInMilliseconds) {
+    public static String findDateString(long dateInMilliseconds) {
         // Create date with given milliseconds and use a SimpleDateFormat to get desired format to use (YYYY-MM-DD)
         Date date = new Date(dateInMilliseconds);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -129,8 +160,8 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * Returns the current date in the format used by this program in general (YYYY-MM-DD)
      * @return String representation of current date in the format YYYY-MM-DD
      */
-    public static String getCurrentDateString() {
-        return getDateString(System.currentTimeMillis());
+    public static String findCurrentDateString() {
+        return findDateString(System.currentTimeMillis());
     }
 
     /**
@@ -139,7 +170,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * @param offset the offset (in days) to find the date for (like -4 for 4 days ago, 2 for 2 days ahead, etc.)
      * @return formatted date that comes at the offset to the given date
      */
-    public static String getDateOffset(String date, int offset) {
+    public static String findDateOffset(String date, int offset) {
         // Make sure the newDate is valid
         String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
         boolean matches = Pattern.matches(pattern, date);
@@ -161,8 +192,8 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
         long nextDateInMillis = dateInMillis + (MILLISECONDS_IN_A_DAY * offset);
 
-        // Use getDateString to find String of next date
-        return getDateString(nextDateInMillis);
+        // Use findDateString to find String of next date
+        return findDateString(nextDateInMillis);
     }
 
     /**
