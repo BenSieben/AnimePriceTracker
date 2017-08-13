@@ -436,9 +436,9 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             //   we do not run into errors when trying to collect all the product data from Sentai Filmworks
             try {
                 long millisecondsToSleep = 1000;
-                System.out.println("Waiting " + (millisecondsToSleep / 1000.0) +
-                        " seconds before going to next page, " + nextPageLink + " to avoid HTTP response 430" +
-                        " which blocks accessing the website temporarily");
+                System.out.println("\nWaiting " + (millisecondsToSleep / 1000.0) +
+                        " second(s) before going to next page, " + nextPageLink + " to avoid HTTP response 430" +
+                        " which blocks accessing the website temporarily\n");
                 Thread.sleep(millisecondsToSleep);  // wait for 30 seconds
             }
             catch(InterruptedException ex) {
