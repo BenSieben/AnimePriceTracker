@@ -21,7 +21,7 @@ public class CrawlData {
         }
     };
 
-    // Name of the data being crawled (ex: "Sentai Filmworks Crawl Date")
+    // Name of the data being crawled (ex: "Sentai Filmworks Crawl Data")
     private String title;
 
     // Structure to hold all the product information, with product title leading to Product details
@@ -129,5 +129,16 @@ public class CrawlData {
             }
             productMap.put(product.getProductName(), existingProduct);
         }
+    }
+
+    /**
+     * Returns the name of the crawl data and the product map contents as a String
+     * @return String containing crawl data name and product map contents
+     */
+    @Override
+    public String toString() {
+        String result = title;
+        result += " --- " + productMap.toString();
+        return result;
     }
 }
