@@ -8,10 +8,10 @@ import b7.tools.tracking.SentaiFilmworksCrawler;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        parseBaseSentaiFilmworksPage();
+        //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        //runAnimeCrawlerController();
+        runAnimeCrawlerController();
     }
 
     /**
@@ -57,8 +57,13 @@ public class AnimePriceTracker {
      * Runs the AnimeCrawlerController
      */
     private static void runAnimeCrawlerController() {
+        long startTime = System.currentTimeMillis();
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         animeCrawlerController.visitAllSentaiFilmworksPages();
         animeCrawlerController.saveSentaiFilmworksCrawler(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        long endTime = System.currentTimeMillis();
+        long runTime = endTime - startTime;
+        double runTimeInSeconds = runTime / 1000.0;
+        System.out.println("Took " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
     }
 }
