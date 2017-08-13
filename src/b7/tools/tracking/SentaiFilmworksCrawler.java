@@ -1,15 +1,12 @@
 package b7.tools.tracking;
 
-import b7.tools.tracking.WebCrawler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,6 +78,14 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     }
 
     /**
+     * Sets the crawl data to the given crawl data
+     * @param crawlData the new crawl data to set for this SentaiFilmworksCrawler
+     */
+    public void setCrawlData(CrawlData crawlData) {
+        this.crawlData = crawlData;
+    }
+
+    /**
      * Saves the HTML code of the INITIAL_URL contents to a local file
      * (BASE_PAGE_NAME)
      * @param getDataAgain true to retrieve the INITIAL_URL contents even if the base page is already detected,
@@ -96,7 +101,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             }
         }
 
-        String fullPageHTML = super.getInitialURLContents();
+        String fullPageHTML = super.readInitialURLContents();
         BufferedWriter bufferedWriter;
         try {
             File file = new File(BASE_PAGE_PATH);
@@ -206,7 +211,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println("Price ($): " + singlePrice);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
-                Map<String, String> productLinks = getProductLinks(productLink);
+                Map<String, String> productLinks = findProductLinks(productLink);
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
                     productPrice = Jsoup.parse(productPrice).text();
@@ -304,7 +309,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @param productURL URL that leads to product page (without any GET query)
      * @return Map of all the different possible product variant URLs, mapped to by product format
      */
-    private Map<String, String> getProductLinks(String productURL) {
+    private Map<String, String> findProductLinks(String productURL) {
         String productHTML = WebCrawler.readUrlContents(productURL);
         Map<String, String> productLinks = new HashMap<>();
 
