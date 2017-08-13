@@ -439,7 +439,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println("\nWaiting " + (millisecondsToSleep / 1000.0) +
                         " second(s) before going to next page, " + nextPageLink + " to avoid HTTP response 430" +
                         " which blocks accessing the website temporarily\n");
-                Thread.sleep(millisecondsToSleep);  // wait for 30 seconds
+                Thread.sleep(millisecondsToSleep);  // wait for millisecondsToSleep
             }
             catch(InterruptedException ex) {
                 // Triggers if thread gets interrupted by another  thread while sleeping
