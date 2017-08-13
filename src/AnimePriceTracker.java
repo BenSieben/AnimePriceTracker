@@ -11,7 +11,7 @@ public class AnimePriceTracker {
         //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        runAnimeCrawlerController();
+        runAnimeCrawlerControllerPriceUpdate();
     }
 
     /**
@@ -54,9 +54,10 @@ public class AnimePriceTracker {
     }
 
     /**
-     * Runs the AnimeCrawlerController
+     * Runs the AnimeCrawlerController to load existing crawl data, visit all pages,
+     * update information, and save the results back
      */
-    private static void runAnimeCrawlerController() {
+    private static void runAnimeCrawlerControllerPriceUpdate() {
         long startTime = System.currentTimeMillis();
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         animeCrawlerController.visitAllSentaiFilmworksPages();
