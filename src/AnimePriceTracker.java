@@ -1,3 +1,4 @@
+import b7.tools.tracking.AnimeCrawlerController;
 import b7.tools.tracking.SentaiFilmworksCrawler;
 
 /**
@@ -7,9 +8,11 @@ import b7.tools.tracking.SentaiFilmworksCrawler;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        parseBaseSentaiFilmworksPage();
+        //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController();
+        animeCrawlerController.visitAllSentaiFilmworksPages();
     }
 
     /**
