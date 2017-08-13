@@ -363,17 +363,19 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
     /**
      * Attempts to visit all store pages with product listings
+     * @param printProgress true to print out crawling progress to standard output, false to not print
      */
-    public void visitAllPages() {
-        visitAllPages(INITIAL_URL);
+    public void visitAllPages(boolean printProgress) {
+        visitAllPages(INITIAL_URL, printProgress);
     }
 
     /**
      * Visits the given pageURL and looks for link to next page to visit that link, updating the crawl
      * data with Product information as data is analyzed
      * @param pageURL URL to visit
+     * @param printProgress true to print out crawling progress to standard output, false to not print
      */
-    private void visitAllPages(String pageURL) {
+    private void visitAllPages(String pageURL, boolean printProgress) {
         String pageHTML = WebCrawler.readUrlContents(pageURL);
 
         // Use Jsoup to start parsing the HTML code of the page
@@ -403,7 +405,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                         singlePriceElement.substring(singlePriceElement.indexOf("$") + 1));
 
                 // Now update the crawl data with the obtained information
-                updateCrawlData(productTitle, productLink, singlePrice);
+                updateCrawlData(productTitle, productLink, singlePrice, printProgress);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
                 Map<String, String> productLinks = findProductLinks(productLink);
@@ -418,7 +420,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                     String productFullName = productTitle + " (" + formatType + ")";
 
                     // Now update the crawl data with the obtained information
-                    updateCrawlData(productFullName, productLinks.get(formatType), formatPrice);
+                    updateCrawlData(productFullName, productLinks.get(formatType), formatPrice, printProgress);
                 }
             }
         }
@@ -430,7 +432,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
             //System.out.println("Found next page: " + nextPageLink);
-            visitAllPages(nextPageLink);
+            visitAllPages(nextPageLink, printProgress);
         }
         else {
             // If last link does not point to next page, we must be on the last page now
@@ -443,12 +445,17 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @param productName the name of the product
      * @param productURL the link to the product
      * @param price the current price of the product
+     * @param printProduct true to print the product information to standard output, false to not print
      */
-    private void updateCrawlData(String productName, String productURL, double price) {
+    private void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
         // Create a Product with a PriceDateInfo corresponding to info in given parameters
         Product productToAdd = new Product(productName, productURL);
         PriceDateInfo productPriceInfo = new PriceDateInfo(price);
         productToAdd.addNewPriceDateInfo(productPriceInfo);
+
+        if(printProduct) {
+            System.out.println(productToAdd);
+        }
 
         // Add the product to the crawl data
         crawlData.addProduct(productToAdd);

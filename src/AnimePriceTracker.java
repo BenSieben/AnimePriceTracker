@@ -25,10 +25,13 @@ public class AnimePriceTracker {
 
     /**
      * Sets up code to call methods to traverse all pages for Sentai Filmworks store
+     * (but not load or save found results). Will set printProgress to true
+     * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
+     * during page crawling
      */
     private static void visitAllSentaiFilmworksPages() {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
-        sentaiFilmworksCrawler.visitAllPages();
+        sentaiFilmworksCrawler.visitAllPages(true);
     }
 
     /**
@@ -55,12 +58,14 @@ public class AnimePriceTracker {
 
     /**
      * Runs the AnimeCrawlerController to load existing crawl data, visit all pages,
-     * update information, and save the results back
+     * update information, and save the results back. Will set printProgress to true
+     * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
+     * during page crawling
      */
     private static void runAnimeCrawlerControllerPriceUpdate() {
         long startTime = System.currentTimeMillis();
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
-        animeCrawlerController.visitAllSentaiFilmworksPages();
+        animeCrawlerController.visitAllSentaiFilmworksPages(true);
         animeCrawlerController.saveSentaiFilmworksCrawler(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         long endTime = System.currentTimeMillis();
         long runTime = endTime - startTime;
