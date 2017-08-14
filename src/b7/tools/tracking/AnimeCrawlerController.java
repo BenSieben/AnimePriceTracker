@@ -59,9 +59,10 @@ public class AnimeCrawlerController {
 
     /**
      * Saves the Crawl Data in the SentaiFilmworksCrawler in this controller in CSV format to the specified filename
+     * that has appears correctly in Excel
      * @param filename the filename to use for the saved Crawl Data in CSV format from the SentaiFilmworksCrawler
      */
-    public void saveSentaiFilmworksCrawlDataToCSV(String filename) {
-        CrawlerDataHandler.saveCrawlDataToCSV(sentaiFilmworksCrawler.getCrawlData(), SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
+    public void saveSentaiFilmworksCrawlDataToExcelCSV(String filename) {
+        CrawlerDataHandler.saveCrawlDataToExcelCSV(sentaiFilmworksCrawler.getCrawlData(), SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
     }
 }

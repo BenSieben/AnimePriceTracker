@@ -7,6 +7,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to provide helpful methods to deal
@@ -33,12 +35,12 @@ public class CrawlerDataHandler {
             mapper.writeValue(file, crawler);
         }
         catch(JsonMappingException ex) {
-            System.err.println("[ERROR] Could not save Sentai Filmworks Crawler to " + filename);
-            ex.printStackTrace();
+            System.err.println("[ERROR] JsonMappingException Could not save Sentai Filmworks Crawler to " + filename);
+            //ex.printStackTrace();
         }
         catch(IOException ex) {
-            System.err.println("[ERROR] Could not save Sentai Filmworks Crawler to " + filename);
-            ex.printStackTrace();
+            System.err.println("[ERROR] IOException Could not save Sentai Filmworks Crawler to " + filename);
+            //ex.printStackTrace();
         }
     }
 
@@ -55,11 +57,11 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not load Sentai Filmworks Crawler from " + filename);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not load Sentai Filmworks Crawler from " + filename);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         return null;
     }
@@ -82,11 +84,11 @@ public class CrawlerDataHandler {
             mapper.writeValue(file, crawler);
         }
         catch(JsonMappingException ex) {
-            System.err.println("[ERROR] Could not save Crawl Data to " + filename);
+            System.err.println("[ERROR] JsonMappingException Could not save Crawl Data to " + filename);
             ex.printStackTrace();
         }
         catch(IOException ex) {
-            System.err.println("[ERROR] Could not save Crawl Data to " + filename);
+            System.err.println("[ERROR] IOException Could not save Crawl Data to " + filename);
             ex.printStackTrace();
         }
     }
@@ -104,21 +106,21 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not load Crawl Data from " + filename);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not load Crawl Data from " + filename);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         return null;
     }
 
     /**
-     * Takes the given crawl data, and saves it in a CSV format to the specified filename
+     * Takes the given crawl data, and saves it in a Excel-friendly CSV format to the specified filename
      * @param crawlData the crawl data to generate a CSV for
      * @param filename the filename to use to save the CSV data to
      */
-    public static void saveCrawlDataToCSV(CrawlData crawlData, String filename) {
+    public static void saveCrawlDataToExcelCSV(CrawlData crawlData, String filename) {
         // Try to infer a path of folders that we might have to make from the filename
         int forwardSlashLastIndex = filename.lastIndexOf("/");
         File path = new File(filename.substring(0, forwardSlashLastIndex));
@@ -129,20 +131,60 @@ public class CrawlerDataHandler {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
 
             // Add a header line to describe the columns of the CSV data
-            String headerLine = "Name,Current Price,Lowest Price,\n";
+            String headerLine = "Name,URL,Current Price ($),Lowest Price,Most Recent Last Price Occurrence\n";
             bufferedWriter.write(headerLine);
 
-            // TODO go through the crawl data, convert the data to CSV-friendly format, and write results to the file
+            // Go through the crawl data, convert the data to CSV-friendly format, and write results to the file
+            Map<String, Product> crawlDataMap = crawlData.getProductMap();
+            Set<String> crawlDataMapKeys = crawlDataMap.keySet();
+            for(String key : crawlDataMapKeys) {
+                System.out.println(key);
+                Product currentProduct = crawlDataMap.get(key);
+
+                // Pull information from the current product (and escape any commas which might be present in name / URL)
+                String currentProductName = formatForExcelCSV(currentProduct.getProductName());
+                String currentURL = formatForExcelCSV(currentProduct.getProductURL());
+                String currentPrice = currentProduct.getLatestPriceDateInfo().formattedPrice(null);
+
+                PriceDateInfo lowestPricePriceDateInfo = currentProduct.getLowestPricePriceDateInfo();
+                String lowestPrice = lowestPricePriceDateInfo.formattedPrice(null);
+                String lowestPriceStartDate = lowestPricePriceDateInfo.getStartDate();
+                String lowestPriceEndDate = lowestPricePriceDateInfo.getEndDate();
+                String lowestPriceDateRange = formatForExcelCSV(lowestPriceStartDate + " through " + lowestPriceEndDate);
+
+                // Write the data to the file
+                String line = String.format("%s,%s,%s,%s,%s\n", currentProductName, currentURL, currentPrice,
+                        lowestPrice, lowestPriceDateRange);
+                bufferedWriter.write(line);
+            }
 
             bufferedWriter.close();
         }
         catch(JsonMappingException ex) {
-            System.err.println("[ERROR] Could not save CSV version of Crawl Data to " + filename);
-            ex.printStackTrace();
+            System.err.println("[ERROR] JsonMappingException Could not save CSV version of Crawl Data to " + filename);
+            //ex.printStackTrace();
         }
         catch(IOException ex) {
-            System.err.println("[ERROR] Could not save CSV version of Crawl Data to " + filename);
-            ex.printStackTrace();
+            System.err.println("[ERROR] IOException Could not save CSV version of Crawl Data to " + filename);
+            //ex.printStackTrace();
         }
+    }
+
+    /**
+     * Returns a formatted version of the parameter string that makes it safe for use in a CSV loaded by
+     * Excel
+     * @param content the String to format
+     * @return the formatted version of the given content
+     */
+    public static String formatForExcelCSV(String content) {
+        if(content == null) return null;
+
+        // Replace any quotes with double-quotes
+        String formattedContent = content.replaceAll("\"", "\"\"");
+
+        // Surround content with a pair of quotes (to handle things like commas in the String)
+        formattedContent = "\"" + formattedContent + "\"";
+
+        return formattedContent;
     }
 }
