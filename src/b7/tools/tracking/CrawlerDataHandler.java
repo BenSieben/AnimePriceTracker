@@ -36,11 +36,11 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not save Sentai Filmworks Crawler to " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not save Sentai Filmworks Crawler to " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -57,11 +57,11 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not load Sentai Filmworks Crawler from " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not load Sentai Filmworks Crawler from " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         return null;
     }
@@ -106,11 +106,11 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not load Crawl Data from " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not load Crawl Data from " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         return null;
     }
@@ -162,11 +162,11 @@ public class CrawlerDataHandler {
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not save CSV version of Crawl Data to " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException Could not save CSV version of Crawl Data to " + filename);
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
