@@ -3,7 +3,9 @@ package b7.tools.tracking;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -109,5 +111,38 @@ public class CrawlerDataHandler {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Takes the given crawl data, and saves it in a CSV format to the specified filename
+     * @param crawlData the crawl data to generate a CSV for
+     * @param filename the filename to use to save the CSV data to
+     */
+    public static void saveCrawlDataToCSV(CrawlData crawlData, String filename) {
+        // Try to infer a path of folders that we might have to make from the filename
+        int forwardSlashLastIndex = filename.lastIndexOf("/");
+        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        try {
+            if(!path.exists()) {  // Create path directories if they do not exist
+                path.mkdirs();
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
+
+            // Add a header line to describe the columns of the CSV data
+            String headerLine = "Name,Current Price,Lowest Price,\n";
+            bufferedWriter.write(headerLine);
+
+            // TODO go through the crawl data, convert the data to CSV-friendly format, and write results to the file
+
+            bufferedWriter.close();
+        }
+        catch(JsonMappingException ex) {
+            System.err.println("[ERROR] Could not save CSV version of Crawl Data to " + filename);
+            ex.printStackTrace();
+        }
+        catch(IOException ex) {
+            System.err.println("[ERROR] Could not save CSV version of Crawl Data to " + filename);
+            ex.printStackTrace();
+        }
     }
 }

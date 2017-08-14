@@ -9,6 +9,7 @@ public class AnimeCrawlerController {
     // Constants for where we will place save data for any crawlers we use
     public static final String CRAWLERS_PATH = "savedata/crawlers/";  // Folder we save crawlers in
     public static final String SENTAI_FILMWORKS_CRAWLER_FILENAME = CRAWLERS_PATH + "sentaifilmworks.json";
+    public static final String SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME = CRAWLERS_PATH + "sentaifilmworks.csv";
 
     // The SentaiFilmworksCrawler being used by the controller
     private SentaiFilmworksCrawler sentaiFilmworksCrawler;
@@ -54,5 +55,13 @@ public class AnimeCrawlerController {
      */
     private SentaiFilmworksCrawler loadSentaiFilmworksCrawler(String filename) {
         return CrawlerDataHandler.loadSentaiFilmworksCrawler(filename);
+    }
+
+    /**
+     * Saves the Crawl Data in the SentaiFilmworksCrawler in this controller in CSV format to the specified filename
+     * @param filename the filename to use for the saved Crawl Data in CSV format from the SentaiFilmworksCrawler
+     */
+    public void saveSentaiFilmworksCrawlDataToCSV(String filename) {
+        CrawlerDataHandler.saveCrawlDataToCSV(sentaiFilmworksCrawler.getCrawlData(), SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
     }
 }

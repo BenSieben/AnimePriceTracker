@@ -11,7 +11,8 @@ public class AnimePriceTracker {
         //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        runAnimeCrawlerControllerPriceUpdate();
+        //runAnimeCrawlerControllerPriceUpdate();
+        makeCSVsForAnimeCrawlerControllerCrawlData();
     }
 
     /**
@@ -71,5 +72,13 @@ public class AnimePriceTracker {
         long runTime = endTime - startTime;
         double runTimeInSeconds = runTime / 1000.0;
         System.out.println("Took " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
+    }
+
+    /**
+     * Runs AnimeCrawlerController to load existing crawl data and then save it in CSV format back to a file
+     */
+    private static void makeCSVsForAnimeCrawlerControllerCrawlData() {
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        animeCrawlerController.saveSentaiFilmworksCrawlDataToCSV(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
     }
 }
