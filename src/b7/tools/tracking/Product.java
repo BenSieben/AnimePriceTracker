@@ -256,6 +256,43 @@ public class Product {
         this.priceHistory = priceHistory;
     }
 
+    /**
+     * Returns the most recent PriceDateInfo entry in the price history list (null if empty)
+     * @return the most recent PriceDateInfo entry in the price history list (null if empty)
+     */
+    public PriceDateInfo getLatestPriceDateInfo() {
+        if(priceHistory.size() == 0) {
+            return null;
+        }
+        sortPriceHistory();
+        return priceHistory.get(priceHistory.size() - 1);
+    }
+
+    /**
+     * Returns the PriceDateInfo in the priceHistory with the lowest price. If there are multiple
+     * occurrences of the same lowest price, the latest entry is the one that is returned
+     * @return lowest price PriceDateInfo in the priceHistory (null if there is nothing in price history)
+     */
+    public PriceDateInfo getLowestPricePriceDateInfo() {
+        if(priceHistory.size() == 0) {
+            return null;
+        }
+        sortPriceHistory();
+
+        // Find the lowest price value / index in the price history, then return it
+        double lowestPrice = Double.MAX_VALUE;
+        int lowestPriceIndex = 0;
+        for (int i = 0; i < priceHistory.size(); i++) {
+            PriceDateInfo currentInfo = priceHistory.get(i);
+            if(lowestPrice <= currentInfo.getPrice()) {  // Found new low price / same lowest price again
+                lowestPrice = currentInfo.getPrice();
+                lowestPriceIndex = i;
+            }
+        }
+
+        return priceHistory.get(lowestPriceIndex);
+    }
+
     @Override
     public String toString() {
         String result = productName;
