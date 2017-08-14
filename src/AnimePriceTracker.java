@@ -1,4 +1,5 @@
 import b7.tools.tracking.AnimeCrawlerController;
+import b7.tools.tracking.RightStufCrawler;
 import b7.tools.tracking.SentaiFilmworksCrawler;
 
 /**
@@ -11,8 +12,9 @@ public class AnimePriceTracker {
         //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        runAnimeCrawlerControllerPriceUpdate();
+        //runAnimeCrawlerControllerPriceUpdate();
         //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+        parseBaseRightStufPage();
     }
 
     /**
@@ -22,6 +24,15 @@ public class AnimePriceTracker {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
         sentaiFilmworksCrawler.saveBasePage(false);
         sentaiFilmworksCrawler.parseBasePage();
+    }
+
+    /**
+     * Sets up code to call methods to parse the base Right Stuf store page
+     */
+    private static void parseBaseRightStufPage() {
+        RightStufCrawler rightStufCrawler = new RightStufCrawler();
+        rightStufCrawler.saveBasePage(false);
+        rightStufCrawler.parseBasePage();
     }
 
     /**
