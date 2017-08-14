@@ -36,9 +36,10 @@ public class AnimeCrawlerController {
     /**
      * Uses the Sentai Filmworks Crawler to visit all pages (to get updated pricing information)
      * @param printProgress true to print out found products to standard output, false to not print
+     * @return true if all pages were successfully visited, false otherwise
      */
-    public void visitAllSentaiFilmworksPages(boolean printProgress) {
-        sentaiFilmworksCrawler.visitAllPages(printProgress);
+    public boolean visitAllSentaiFilmworksPages(boolean printProgress) {
+        return sentaiFilmworksCrawler.visitAllPages(printProgress);
     }
 
     /**

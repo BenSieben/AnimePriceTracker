@@ -8,10 +8,10 @@ import b7.tools.tracking.SentaiFilmworksCrawler;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        parseBaseSentaiFilmworksPage();
+        //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        //runAnimeCrawlerControllerPriceUpdate();
+        runAnimeCrawlerControllerPriceUpdate();
         //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
     }
 
@@ -64,14 +64,22 @@ public class AnimePriceTracker {
      * during page crawling
      */
     private static void runAnimeCrawlerControllerPriceUpdate() {
+        // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
-        animeCrawlerController.visitAllSentaiFilmworksPages(true);
+        boolean visitSuccessful = animeCrawlerController.visitAllSentaiFilmworksPages(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages failed (likely accessing too many pages too rapidly on website)\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages failed (likely accessing too many pages too rapidly on website)\n");
+        }
+        // Save the updated information back to file
         animeCrawlerController.saveSentaiFilmworksCrawler(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         long endTime = System.currentTimeMillis();
         long runTime = endTime - startTime;
         double runTimeInSeconds = runTime / 1000.0;
-        System.out.println("Took " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
     }
 
     /**

@@ -378,9 +378,10 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     /**
      * Attempts to visit all store pages with product listings
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public void visitAllPages(boolean printProgress) {
-        visitAllPages(INITIAL_URL, printProgress);
+    public boolean visitAllPages(boolean printProgress) {
+        return visitAllPages(INITIAL_URL, printProgress);
     }
 
     /**
@@ -388,11 +389,13 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * data with Product information as data is analyzed
      * @param pageURL URL to visit
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages was successful, false if there was an error during the process
      */
-    private void visitAllPages(String pageURL, boolean printProgress) {
+    private boolean visitAllPages(String pageURL, boolean printProgress) {
         String pageHTML = WebCrawler.readUrlContents(pageURL);
-        if(pageHTML == null) {  // readUrlContents() failed for some reason or another
+        if(pageHTML == null) {  // readUrlContents() failed for some reason or another, so return false
             System.err.println("Could not read URL contents of " + pageURL);
+            return false;
         }
 
         // Use Jsoup to start parsing the HTML code of the page
@@ -466,9 +469,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
             visitAllPages(nextPageLink, printProgress);
         }
-        else {
-            // If last link does not point to next page, we must be on the last page now so we are done
-        }
+        // If last link does not point to next page, we must be on the last page now so we are done
+        return true;
     }
 
     /**
