@@ -69,7 +69,7 @@ public class AnimePriceTracker {
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
         boolean visitSuccessful = animeCrawlerController.visitAllSentaiFilmworksPages(true);
         if(visitSuccessful) {
-            System.out.println("\nVisiting all pages failed (likely accessing too many pages too rapidly on website)\n");
+            System.out.println("\nVisiting all pages worked!\n");
         }
         else {
             System.out.println("\nVisiting all pages failed (likely accessing too many pages too rapidly on website)\n");
