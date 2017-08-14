@@ -9,7 +9,8 @@ public class AnimeCrawlerController {
     // Constants for where we will place save data for any crawlers we use
     public static final String CRAWLERS_PATH = "savedata/crawlers/";  // Folder we save crawlers in
     public static final String SENTAI_FILMWORKS_CRAWLER_FILENAME = CRAWLERS_PATH + "sentaifilmworks.json";
-    public static final String SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME = CRAWLERS_PATH + "sentaifilmworks.csv";
+    public static final String CSVS_PATH = "savedata/csvs/";  // Folder we save CSVs from crawl data in
+    public static final String SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME = CSVS_PATH + "sentaifilmworks.csv";
 
     // The SentaiFilmworksCrawler being used by the controller
     private SentaiFilmworksCrawler sentaiFilmworksCrawler;
