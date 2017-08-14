@@ -51,7 +51,7 @@ public class WebCrawler {
     /**
      * Reads the given URL and returns the HTML on that page
      * @param URL the URL to read the contents of
-     * @return the contents of the URL
+     * @return the contents of the URL, or null if an exception occurred
      */
     public static String readUrlContents(String URL) {
         // Use a StringBuilder to efficiently append all the page contents that gets returned at the end of the method
@@ -74,10 +74,12 @@ public class WebCrawler {
         catch(MalformedURLException ex) {
             System.err.println("Malformed URL " + URL + " could not be instantiated");
             ex.printStackTrace();
+            return null;
         }
         catch(IOException ex) {
             System.err.println("Could not open a connection to " + URL);
             ex.printStackTrace();
+            return null;
         }
         return stringBuilder.toString();
     }
