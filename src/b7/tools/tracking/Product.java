@@ -260,7 +260,7 @@ public class Product {
      * Returns the most recent PriceDateInfo entry in the price history list (null if empty)
      * @return the most recent PriceDateInfo entry in the price history list (null if empty)
      */
-    public PriceDateInfo getLatestPriceDateInfo() {
+    public PriceDateInfo findLatestPriceDateInfo() {
         if(priceHistory.size() == 0) {
             return null;
         }
@@ -273,7 +273,7 @@ public class Product {
      * occurrences of the same lowest price, the latest entry is the one that is returned
      * @return lowest price PriceDateInfo in the priceHistory (null if there is nothing in price history)
      */
-    public PriceDateInfo getLowestPricePriceDateInfo() {
+    public PriceDateInfo findLowestPricePriceDateInfo() {
         if(priceHistory.size() == 0) {
             return null;
         }

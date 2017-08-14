@@ -144,9 +144,9 @@ public class CrawlerDataHandler {
                 // Pull information from the current product (and escape any commas which might be present in name / URL)
                 String currentProductName = formatForExcelCSV(currentProduct.getProductName());
                 String currentURL = formatForExcelCSV(currentProduct.getProductURL());
-                String currentPrice = currentProduct.getLatestPriceDateInfo().formattedPrice(null);
+                String currentPrice = currentProduct.findLatestPriceDateInfo().formattedPrice(null);
 
-                PriceDateInfo lowestPricePriceDateInfo = currentProduct.getLowestPricePriceDateInfo();
+                PriceDateInfo lowestPricePriceDateInfo = currentProduct.findLowestPricePriceDateInfo();
                 String lowestPrice = lowestPricePriceDateInfo.formattedPrice(null);
                 String lowestPriceStartDate = lowestPricePriceDateInfo.getStartDate();
                 String lowestPriceEndDate = lowestPricePriceDateInfo.getEndDate();
