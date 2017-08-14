@@ -74,6 +74,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @return a copy of the Crawl data
      */
     public CrawlData getCrawlData() {
+        System.out.println(crawlData);
         return new CrawlData(crawlData.getTitle(), crawlData.getProductMap());
     }
 
@@ -211,6 +212,18 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 System.out.println("Price ($): " + singlePrice);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
+                // Find information about multiple formats and print out the details
+                for(Element productPriceElement : productPriceElements) {
+                    // Extract the format type and price from the paragraph tag inside the productPriceElement
+                    String productFormatAndPrice = productPriceElement.getElementsByTag("p").first().html();
+                    // Split by ": $ " to get index 0 as format and index 1 as price
+                    String[] productFormatAndPriceList = productFormatAndPrice.split(": \\$ ");
+                    // Now print out the information
+                    System.out.println("Format: " + productFormatAndPriceList[0] +
+                            ", Price ($): " + productFormatAndPriceList[1] + ", Link: " + productLink);
+                }
+                /*// This method of visiting product pages for multi-format items causes too many page visits,
+                //   so it has been commented out
                 Map<String, String> productLinks = findProductLinks(productLink);
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
@@ -221,6 +234,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                     System.out.println("Format: " + formatType +
                             ", Price ($): " + formatPrice + ", Link: " + productLinks.get(formatType));
                 }
+                */
             }
             System.out.println();
         }
@@ -377,6 +391,9 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      */
     private void visitAllPages(String pageURL, boolean printProgress) {
         String pageHTML = WebCrawler.readUrlContents(pageURL);
+        if(pageHTML == null) {  // readUrlContents() failed for some reason or another
+            System.err.println("Could not read URL contents of " + pageURL);
+        }
 
         // Use Jsoup to start parsing the HTML code of the page
         Document document = Jsoup.parse(pageHTML);
@@ -408,6 +425,22 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                 updateCrawlData(productTitle, productLink, singlePrice, printProgress);
             }
             else {  // Has multiple formats (i.e., DVD and Blu-Ray)
+                // Find information about multiple formats and add the data to the crawl data
+                for(Element productPriceElement : productPriceElements) {
+                    // Extract the format type and price from the paragraph tag inside the productPriceElement
+                    String productFormatAndPrice = productPriceElement.getElementsByTag("p").first().html();
+                    // Split by ": $ " to get index 0 as format and index 1 as price
+                    String[] productFormatAndPriceList = productFormatAndPrice.split(": \\$ ");
+                    double formatPrice = Double.parseDouble(productFormatAndPriceList[1]);
+
+                    // Name of multi-format product is "<regularName> (<format>)"
+                    String productFullName = productTitle + " (" + productFormatAndPriceList[0] + ")";
+
+                    // Update the crawl data with the obtained information
+                    updateCrawlData(productFullName, productLink, formatPrice, printProgress);
+                }
+                /*// This method of visiting product pages for multi-format items causes too many page visits,
+                //   so it has been commented out
                 Map<String, String> productLinks = findProductLinks(productLink);
                 for(Element priceElement : productPriceElements) {
                     String productPrice = priceElement.getElementsByTag("p").first().html();
@@ -421,7 +454,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
 
                     // Now update the crawl data with the obtained information
                     updateCrawlData(productFullName, productLinks.get(formatType), formatPrice, printProgress);
-                }
+                }*/
             }
         }
 
@@ -431,20 +464,6 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
-            // Utilize waiting mechanism (loading all pages very fast results in java.io.IOException eventually,
-            //   where HTTP response code is 430 because we are loading too many pages too fast) so that
-            //   we do not run into errors when trying to collect all the product data from Sentai Filmworks
-            try {
-                long millisecondsToSleep = 1000;
-                System.out.println("\nWaiting " + (millisecondsToSleep / 1000.0) +
-                        " second(s) before going to next page, " + nextPageLink + " to avoid HTTP response 430" +
-                        " which blocks accessing the website temporarily\n");
-                Thread.sleep(millisecondsToSleep);  // wait for millisecondsToSleep
-            }
-            catch(InterruptedException ex) {
-                // Triggers if thread gets interrupted by another  thread while sleeping
-                ex.printStackTrace();
-            }
             visitAllPages(nextPageLink, printProgress);
         }
         else {

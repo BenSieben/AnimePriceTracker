@@ -8,11 +8,11 @@ import b7.tools.tracking.SentaiFilmworksCrawler;
 public class AnimePriceTracker {
 
     public static void main(String[] args) {
-        //parseBaseSentaiFilmworksPage();
+        parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
         //runAnimeCrawlerControllerPriceUpdate();
-        makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+        //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
     }
 
     /**
