@@ -131,7 +131,7 @@ public class CrawlerDataHandler {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
 
             // Add a header line to describe the columns of the CSV data
-            String headerLine = "Name,URL,Current Price ($),Lowest Price ($),Most Recent Last Price Occurrence\n";
+            String headerLine = "Name,Current Price ($),Lowest Price ($),Most Recent Last Price Occurrence,URL\n";
             bufferedWriter.write(headerLine);
 
             // Go through the crawl data, convert the data to CSV-friendly format, and write results to the file
@@ -153,8 +153,8 @@ public class CrawlerDataHandler {
                 String lowestPriceDateRange = formatForExcelCSV(lowestPriceStartDate + " through " + lowestPriceEndDate);
 
                 // Write the data to the file
-                String line = String.format("%s,%s,%s,%s,%s\n", currentProductName, currentURL, currentPrice,
-                        lowestPrice, lowestPriceDateRange);
+                String line = String.format("%s,%s,%s,%s,%s\n", currentProductName, currentPrice,
+                        lowestPrice, lowestPriceDateRange, currentURL);
                 bufferedWriter.write(line);
             }
 
