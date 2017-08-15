@@ -12,9 +12,9 @@ public class AnimePriceTracker {
         //parseBaseSentaiFilmworksPage();
         //visitAllSentaiFilmworksPages();
         //parseSampleSentaiFilmworksProductPages();
-        runAnimeCrawlerControllerPriceUpdate();
-        makeExcelCSVsForAnimeCrawlerControllerCrawlData();
-        //parseBaseRightStufPage();
+        //runAnimeCrawlerControllerPriceUpdate();
+        //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+        parseBaseRightStufPage();
     }
 
     /**

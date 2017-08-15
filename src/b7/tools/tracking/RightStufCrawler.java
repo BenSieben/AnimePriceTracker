@@ -119,7 +119,7 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
-        //System.out.println(document.html());
+        System.out.println(document.html());
 
         // Find elements which have matching product class, so that we can extract information from each one
         Elements productElements = document.getElementsByClass("N/A");
