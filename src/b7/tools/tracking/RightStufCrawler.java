@@ -74,7 +74,9 @@ public class RightStufCrawler extends WebCrawler {
             }
         }
 
-        String fullPageHTML = super.readInitialURLContents();
+        // Use readUrlContentsWithJavaScript() too have a headless browser visit Right Stuf,
+        //   because Right Stuf requires JavaScript to load their web page HTML properly
+        String fullPageHTML = WebCrawler.readUrlContentsWithJavaScript(INITIAL_URL, null);
         BufferedWriter bufferedWriter;
         try {
             File file = new File(BASE_PAGE_PATH);
@@ -117,7 +119,7 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
-        System.out.println(document.html());
+        //System.out.println(document.html());
 
         // Find elements which have matching product class, so that we can extract information from each one
         Elements productElements = document.getElementsByClass("N/A");
