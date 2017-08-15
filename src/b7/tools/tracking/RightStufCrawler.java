@@ -16,6 +16,18 @@ public class RightStufCrawler extends WebCrawler {
     // The base URL to start crawling from
     public final static String INITIAL_URL = "https://www.rightstufanime.com/category/Blu~ray,DVD?page=1&show=96";
 
+    // The base URL of the website (to resolve relative links to the proper path)
+    public final static String STORE_URL = "https://www.rightstufanime.com/";
+
+    // Qualifiers to help use parse pages to get relevant content
+    public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-table";
+    public static final String PRODUCT_TITLE_CLASS = "facets-item-cell-table-title";
+    public static final String PRODUCT_PRICE_DIV_CLASS = "product-views-price";
+    public static final String PRODUCT_PRICE_SPAN_CLASS = "product-views-price-lead";
+    public static final String PRODUCT_PRICE_ATTRIBUTE = "data-rate";
+    public static final String NEXT_PAGE_NAV_CLASS = "global-views-pagination";
+    public static final String NEXT_PAGE_LIST_ITEM_CLASS = "global-views-pagination-next";
+
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
     // Where we will save the test base page
@@ -119,18 +131,48 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
-        System.out.println(document.html());
 
         // Find elements which have matching product class, so that we can extract information from each one
-        Elements productElements = document.getElementsByClass("N/A");
-        for(Element product : productElements) {
-            // Get the product info inside each product element
-            // Extract the URL to the product page
+        Elements productElements = document.getElementsByClass(PRODUCT_INFORMATION_DIV_CLASS);
+
+        // Find elements which have matching product class, so that we can extract information from each one
+        for(Element productElement : productElements) {
             // Extract title (and convert any HTML entities like &amp; back to regular characters)
-            // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
+            Element productTitleElement = productElement.getElementsByClass(PRODUCT_TITLE_CLASS).first();
+            // The title text is surrounded by an anchor that links to the product page
+            String relativeLink = productTitleElement.getElementsByTag("a").first().attr("href");
+            String productLink = STORE_URL + relativeLink;
+            System.out.println(productLink);
+            // Pull title information and parse it to convert any special characters like "&amp;" back to "&"
+            String productTitle = Jsoup.parse(productTitleElement.html()).text().trim();
+            System.out.println(productTitle);
+
+            // Extract product price
+            // Get the div element which contains the product price information
+            Element priceDivElement = productElement.getElementsByClass(PRODUCT_PRICE_DIV_CLASS).first();
+            // Get the span element which specifically has the sale price (not the MSRP value)
+            Element productPriceSpanElement = priceDivElement.getElementsByClass(PRODUCT_PRICE_SPAN_CLASS).first();;
+            double productPrice = Double.parseDouble(productPriceSpanElement.attr(PRODUCT_PRICE_ATTRIBUTE));
+            System.out.println("Price ($): " + productPrice);
+
+            System.out.println();
         }
 
-        // Get link to next page
-
+        // Find link to next page
+        // Get nav element that has link to next page
+        Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
+        //  Find next page list item from the nav element (should only be 1 result if next page element is present)
+        Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
+        if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
+            // Get direct access to next page list item element
+            Element nextPageListItem = nextPageListItemElements.first();
+            // Extract anchor href value from element link
+            String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
+            String nextPageLink = STORE_URL + nextPageAnchor;
+            System.out.println("Next page: " + nextPageLink);
+        }
+        else {
+            // No next page list item found, so we are on the last page
+        }
     }
 }
