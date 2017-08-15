@@ -436,8 +436,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                     String[] productFormatAndPriceList = productFormatAndPrice.split(": \\$ ");
                     double formatPrice = Double.parseDouble(productFormatAndPriceList[1]);
 
-                    // Name of multi-format product is "<regularName> (<format>)"
-                    String productFullName = productTitle + " (" + productFormatAndPriceList[0] + ")";
+                    // Name of multi-format product is "<regularName> <format>"
+                    String productFullName = productTitle + " " + productFormatAndPriceList[0];
 
                     // Update the crawl data with the obtained information
                     updateCrawlData(productFullName, productLink, formatPrice, printProgress);
