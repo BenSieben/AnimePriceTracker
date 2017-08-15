@@ -131,7 +131,7 @@ public class CrawlerDataHandler {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
 
             // Add a header line to describe the columns of the CSV data
-            String headerLine = "Name,Current Price ($),Lowest Price ($),Most Recent Last Price Occurrence,URL\n";
+            String headerLine = "Name,Current Price ($),Lowest Price ($),Most Recent Lowest Price Occurrence,URL\n";
             bufferedWriter.write(headerLine);
 
             // Go through the crawl data, convert the data to CSV-friendly format, and write results to the file
