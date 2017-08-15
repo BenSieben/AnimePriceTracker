@@ -29,7 +29,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     public final static String PAGINATION_ID = "pagination";
     public final static String NEXT_PAGE_HTML = "&gt;";
 
-    // Certain qualifiers used to help us  search through product pages for relevant information
+    // Certain qualifiers used to help us search through product pages for relevant information
     public final static String PRODUCT_DESCRIPTION_ID = "product-description";
     public final static String PRODUCT_FORMAT_SELECTOR_CLASS = "x-second";
     public final static String PRODUCT_PRICE_ID = "product-price";
