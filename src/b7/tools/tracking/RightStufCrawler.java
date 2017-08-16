@@ -17,7 +17,7 @@ public class RightStufCrawler extends WebCrawler {
     public final static String INITIAL_URL = "https://www.rightstufanime.com/category/Blu~ray,DVD?page=1&show=96";
 
     // The base URL of the website (to resolve relative links to the proper path)
-    public final static String STORE_URL = "https://www.rightstufanime.com/";
+    public final static String STORE_URL = "https://www.rightstufanime.com";
 
     // Qualifiers to help use parse pages to get relevant content
     public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-table";
@@ -168,7 +168,7 @@ public class RightStufCrawler extends WebCrawler {
             Element nextPageListItem = nextPageListItemElements.first();
             // Extract anchor href value from element link
             String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
-            String nextPageLink = STORE_URL + nextPageAnchor;
+            String nextPageLink = STORE_URL + "/" + nextPageAnchor;
             System.out.println("Next page: " + nextPageLink);
         }
         else {
