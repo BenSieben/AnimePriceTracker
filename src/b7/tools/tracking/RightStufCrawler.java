@@ -19,6 +19,9 @@ public class RightStufCrawler extends WebCrawler {
     // The base URL of the website (to resolve relative links to the proper path)
     public final static String STORE_URL = "https://www.rightstufanime.com";
 
+    // Part of the web page returned by Right Stuf when it thinks the browser does not have JavaScript
+    public final static int RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT = 100;
+
     // Qualifiers to help use parse pages to get relevant content
     public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-table";
     public static final String PRODUCT_TITLE_CLASS = "facets-item-cell-table-title";
@@ -131,6 +134,7 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
+        System.out.println(document.toString());
 
         // Find elements which have matching product class, so that we can extract information from each one
         Elements productElements = document.getElementsByClass(PRODUCT_INFORMATION_DIV_CLASS);
@@ -193,8 +197,73 @@ public class RightStufCrawler extends WebCrawler {
      * @return true if visiting all pages was successful, false if there was an error during the process
      */
     private boolean visitAllPages(String pageURL, boolean printProgress) {
-        // TODO implement visitAllPages
-        return false;
+        // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
+        String pageHTML = WebCrawler.readUrlContentsWithJavaScript(pageURL, null);
+
+        // Check that the page was successfully read (did NOT get some warning about not having JavaScript which means the page loaded incorrectly)
+        // We do that by counting number of newline characters present on loaded pages (page is much smaller if
+        //   Right Stuf only has the message about needing JavaScript)
+        int numberOfNewlines = 0;
+        int startIndex = 0;
+        while(true) {
+            startIndex = pageHTML.indexOf("\n", startIndex);
+            if(startIndex == -1) {
+                break;
+            }
+            startIndex++;
+            numberOfNewlines++;
+        }
+        // readUrlContentsWithJavaScript() got back error HTML from Right Stuf, not product listings, so try again
+        if(numberOfNewlines <= RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT) {
+            System.err.println("Got back error HTML from Right Stuf indicating no JavaScript at \"" + pageURL +
+                    "\"; attempting to make another connection...");
+            return visitAllPages(pageURL, printProgress);
+        }
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(pageHTML);
+
+        // Find elements which have matching product class, so that we can extract information from each one
+        Elements productElements = document.getElementsByClass(PRODUCT_INFORMATION_DIV_CLASS);
+
+        // Find elements which have matching product class, so that we can extract information from each one
+        for(Element productElement : productElements) {
+            // Extract title (and convert any HTML entities like &amp; back to regular characters)
+            Element productTitleElement = productElement.getElementsByClass(PRODUCT_TITLE_CLASS).first();
+            // The title text is surrounded by an anchor that links to the product page
+            String relativeLink = productTitleElement.getElementsByTag("a").first().attr("href");
+            String productLink = STORE_URL + relativeLink;
+            // Pull title information and parse it to convert any special characters like "&amp;" back to "&"
+            String productTitle = Jsoup.parse(productTitleElement.html()).text().trim();
+
+            // Extract product price
+            // Get the div element which contains the product price information
+            Element priceDivElement = productElement.getElementsByClass(PRODUCT_PRICE_DIV_CLASS).first();
+            // Get the span element which specifically has the sale price (not the MSRP value)
+            Element productPriceSpanElement = priceDivElement.getElementsByClass(PRODUCT_PRICE_SPAN_CLASS).first();;
+            double productPrice = Double.parseDouble(productPriceSpanElement.attr(PRODUCT_PRICE_ATTRIBUTE));
+
+            // Add product information to the crawl data
+            updateCrawlData(productTitle, productLink, productPrice, printProgress);
+        }
+
+        // Find link to next page
+        // Get nav element that has link to next page
+        Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
+        //  Find next page list item from the nav element (should only be 1 result if next page element is present)
+        Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
+        if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
+            // Get direct access to next page list item element
+            Element nextPageListItem = nextPageListItemElements.first();
+            // Extract anchor href value from element link
+            String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
+            String nextPageLink = STORE_URL + "/" + nextPageAnchor;
+
+            // Visit the next page
+            visitAllPages(nextPageLink, printProgress);
+        }
+        // No next page list item found, so we are on the last page
+        return true;
     }
 
     /**
