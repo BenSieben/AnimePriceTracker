@@ -117,7 +117,6 @@ public class WebCrawler {
             String executeCommand = phantomJSPath + " " + LOAD_PAGE_JS_FILE_PATH + " " + URL;
             // With terminal / command line in root folder of repository, command looks like:
             //   ./bin/phantomjs-2.1.1-windows/phantomjs.exe ./scripts/loadpage.js <URL>
-            System.out.println("Executing " + executeCommand);
             Process process = Runtime.getRuntime().exec(executeCommand);
             InputStream inputStream = process.getInputStream();
             Scanner scanner = new Scanner(inputStream);
