@@ -175,4 +175,57 @@ public class RightStufCrawler extends WebCrawler {
             // No next page list item found, so we are on the last page
         }
     }
+
+    /**
+     * Attempts to visit all store pages with product listings
+     * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
+     */
+    public boolean visitAllPages(boolean printProgress) {
+        return visitAllPages(INITIAL_URL, printProgress);
+    }
+
+    /**
+     * Visits the given pageURL and looks for link to next page to visit that link, updating the crawl
+     * data with Product information as data is analyzed
+     * @param pageURL URL to visit
+     * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages was successful, false if there was an error during the process
+     */
+    private boolean visitAllPages(String pageURL, boolean printProgress) {
+        // TODO implement visitAllPages
+        return false;
+    }
+
+    /**
+     * Adds a new Product (or updates existing one with same name) in the crawl data
+     * @param productName the name of the product
+     * @param productURL the link to the product
+     * @param price the current price of the product
+     * @param printProduct true to print the product information to standard output, false to not print
+     */
+    private void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
+        // Create a Product with a PriceDateInfo corresponding to info in given parameters
+        Product productToAdd = new Product(productName, productURL);
+        PriceDateInfo productPriceInfo = new PriceDateInfo(price);
+        productToAdd.addNewPriceDateInfo(productPriceInfo);
+
+        if(printProduct) {
+            System.out.println(productToAdd);
+        }
+
+        // Add the product to the crawl data
+        crawlData.addProduct(productToAdd);
+    }
+
+    /**
+     * Returns the contents of the crawl data as a String with "Right Stuf Crawler" on a preceding line
+     * @return the contents of the crawl data as a String with "Right Stuf Crawler" on a preceding line
+     */
+    @Override
+    public String toString() {
+        String result = "Right Stuf Crawler\n";
+        result += crawlData.toString();
+        return result;
+    }
 }
