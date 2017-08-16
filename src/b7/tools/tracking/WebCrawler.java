@@ -124,7 +124,6 @@ public class WebCrawler {
             String line;
             do {
                 line = scanner.nextLine();
-                System.out.println(line);
                 stringBuilder.append(line);
                 stringBuilder.append("\n");
             }
