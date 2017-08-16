@@ -19,8 +19,8 @@ public class AnimePriceTracker {
 
         //parseSampleSentaiFilmworksProductPages();
 
-        runAnimeCrawlerControllerPriceUpdate();
-        makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+        //runAnimeCrawlerControllerPriceUpdate();
+        //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
     }
 
     /**
@@ -131,6 +131,6 @@ public class AnimePriceTracker {
         animeCrawlerController.saveSentaiFilmworksCrawlDataToExcelCSV(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
 
         // Save Right Stuf CSV
-        animeCrawlerController.saveRightStufCrawler(AnimeCrawlerController.RIGHT_STUF_CRAWLER_CSV_FILENAME);
+        animeCrawlerController.saveRightStufCrawlDataToExcelCSV(AnimeCrawlerController.RIGHT_STUF_CRAWLER_CSV_FILENAME);
     }
 }
