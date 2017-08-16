@@ -45,6 +45,33 @@ public class CrawlerDataHandler {
     }
 
     /**
+     * Saves the given RightStufCrawler object into the specified filename (.json format suggested)
+     * @param crawler the RightStufCrawler to save
+     * @param filename the file to save to RightStufCrawler to
+     */
+    public static void saveRightStufCrawler(RightStufCrawler crawler, String filename) {
+        ObjectMapper mapper = new ObjectMapper();
+        // Try to infer a path of folders that we might have to make from the filename
+        int forwardSlashLastIndex = filename.lastIndexOf("/");
+        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        File file = new File(filename);
+        try {
+            if(!path.exists()) {  // Create path directories if they do not exist
+                path.mkdirs();
+            }
+            mapper.writeValue(file, crawler);
+        }
+        catch(JsonMappingException ex) {
+            System.err.println("[ERROR] JsonMappingException Could not save Right Stuf Crawler to " + filename);
+            ex.printStackTrace();
+        }
+        catch(IOException ex) {
+            System.err.println("[ERROR] IOException Could not save Right Stuf Crawler to " + filename);
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * Loads a SentaiFilmworksCrawler object from the specified filename
      * @param filename the file to load a SentaiFilmworksCrawler from
      * @return the loaded SentaiFilmworksCrawler, or null if there was an issue with loading the file
@@ -53,7 +80,35 @@ public class CrawlerDataHandler {
         ObjectMapper mapper = new ObjectMapper();
         File file = new File(filename);
         try {
+            if(!file.exists()) {
+                return null;
+            }
             return mapper.readValue(file, SentaiFilmworksCrawler.class);
+        }
+        catch(JsonMappingException ex) {
+            System.err.println("[ERROR] JsonMappingException Could not load Sentai Filmworks Crawler from " + filename);
+            ex.printStackTrace();
+        }
+        catch(IOException ex) {
+            System.err.println("[ERROR] IOException Could not load Sentai Filmworks Crawler from " + filename);
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Loads a RightStufCrawler object from the specified filename
+     * @param filename the file to load a RightStufCrawler from
+     * @return the loaded RightStufCrawler, or null if there was an issue with loading the file
+     */
+    public static RightStufCrawler loadRightStufCrawler(String filename) {
+        ObjectMapper mapper = new ObjectMapper();
+        File file = new File(filename);
+        try {
+            if(!file.exists()) {
+                return null;
+            }
+            return mapper.readValue(file, RightStufCrawler.class);
         }
         catch(JsonMappingException ex) {
             System.err.println("[ERROR] JsonMappingException Could not load Sentai Filmworks Crawler from " + filename);
