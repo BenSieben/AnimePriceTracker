@@ -19,8 +19,8 @@ public class AnimePriceTracker {
 
         //parseSampleSentaiFilmworksProductPages();
 
-        //runAnimeCrawlerControllerPriceUpdate();
-        //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+        runAnimeCrawlerControllerPriceUpdate();
+        makeExcelCSVsForAnimeCrawlerControllerCrawlData();
     }
 
     /**
