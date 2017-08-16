@@ -1,6 +1,8 @@
 import b7.tools.tracking.AnimeCrawlerController;
 import b7.tools.tracking.RightStufCrawler;
 import b7.tools.tracking.SentaiFilmworksCrawler;
+import b7.tools.tracking.WebCrawler;
+import com.gargoylesoftware.htmlunit.WebClient;
 
 /**
  * Class with main method to run the program to get price information
@@ -14,7 +16,7 @@ public class AnimePriceTracker {
         //parseSampleSentaiFilmworksProductPages();
         //runAnimeCrawlerControllerPriceUpdate();
         //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
-        parseBaseRightStufPage();
+        //parseBaseRightStufPage();
     }
 
     /**
@@ -37,9 +39,7 @@ public class AnimePriceTracker {
 
     /**
      * Sets up code to call methods to traverse all pages for Sentai Filmworks store
-     * (but not load or save found results). Will set printProgress to true
-     * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
-     * during page crawling
+     * (but not load or save found results). Will print progress during page crawling
      */
     private static void visitAllSentaiFilmworksPages() {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
@@ -47,7 +47,16 @@ public class AnimePriceTracker {
     }
 
     /**
-     * Sets up code to call methods to save and parse some sample product pages
+     * Sets up code to call methods to traverse all pages for Right Stuf store
+     * (but not load or save found results). Will print progress during page crawling
+     */
+    private static void visitAllRightStufPages() {
+        RightStufCrawler rightStufCrawler = new RightStufCrawler();
+        rightStufCrawler.visitAllPages(true);
+    }
+
+    /**
+     * Sets up code to call methods to save and parse some sample product pages for Sentai Filmworks
      */
     private static void parseSampleSentaiFilmworksProductPages() {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
@@ -77,16 +86,30 @@ public class AnimePriceTracker {
     private static void runAnimeCrawlerControllerPriceUpdate() {
         // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
-        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        AnimeCrawlerController animeCrawlerController =
+                new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME, AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME);
+
+        // Visit Sentai Filmworks
         boolean visitSuccessful = animeCrawlerController.visitAllSentaiFilmworksPages(true);
         if(visitSuccessful) {
-            System.out.println("\nVisiting all pages worked!\n");
+            System.out.println("\nVisiting all pages worked for Sentai Filmworks!\n");
         }
         else {
-            System.out.println("\nVisiting all pages failed (likely accessing too many pages too rapidly on website)\n");
+            System.out.println("\nVisiting all pages for Sentai Filmworks failed (likely accessing too many pages too rapidly on website)\n");
         }
+
+        // Visit Right Stuf
+        visitSuccessful = animeCrawlerController.visitAllRightStufPages(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages worked for Right Stuf!\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages for Right Stuf failed (likely accessing too many pages too rapidly on website)\n");
+        }
+
         // Save the updated information back to file
         animeCrawlerController.saveSentaiFilmworksCrawler(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        animeCrawlerController.saveRightStufCrawler(AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME);
         long endTime = System.currentTimeMillis();
         long runTime = endTime - startTime;
         double runTimeInSeconds = runTime / 1000.0;
@@ -97,7 +120,13 @@ public class AnimePriceTracker {
      * Runs AnimeCrawlerController to load existing crawl data and then save it in CSV format back to a file
      */
     private static void makeExcelCSVsForAnimeCrawlerControllerCrawlData() {
-        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        AnimeCrawlerController animeCrawlerController =
+                new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME, AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME);
+
+        // Save Sentai Filmworks CSV
         animeCrawlerController.saveSentaiFilmworksCrawlDataToExcelCSV(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
+
+        // Save Right Stuf CSV
+        animeCrawlerController.saveRightStufCrawler(AnimeCrawlerController.RIGHT_STUF_CRAWLER_CSV_FILENAME);
     }
 }
