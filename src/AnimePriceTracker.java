@@ -28,7 +28,7 @@ public class AnimePriceTracker {
      */
     private static void parseBaseSentaiFilmworksPage() {
         SentaiFilmworksCrawler sentaiFilmworksCrawler = new SentaiFilmworksCrawler();
-        sentaiFilmworksCrawler.saveBasePage(false);
+        sentaiFilmworksCrawler.saveBasePage(true);
         sentaiFilmworksCrawler.parseBasePage();
     }
 
@@ -37,7 +37,7 @@ public class AnimePriceTracker {
      */
     private static void parseBaseRightStufPage() {
         RightStufCrawler rightStufCrawler = new RightStufCrawler();
-        rightStufCrawler.saveBasePage(false);
+        rightStufCrawler.saveBasePage(true);
         rightStufCrawler.parseBasePage();
     }
 
