@@ -92,6 +92,27 @@ public class RightStufCrawler extends WebCrawler {
         // Use readUrlContentsWithJavaScript() too have a headless browser visit Right Stuf,
         //   because Right Stuf requires JavaScript to load their web page HTML properly
         String fullPageHTML = WebCrawler.readUrlContentsWithJavaScript(INITIAL_URL, null);
+
+        // Check that the page was successfully read (did NOT get some warning about not having JavaScript which means the page loaded incorrectly)
+        // We do that by counting number of newline characters present on loaded pages (page is much smaller if
+        //   Right Stuf only has the message about needing JavaScript)
+        int numberOfNewlines = 0;
+        int startIndex = 0;
+        while(true) {
+            startIndex = fullPageHTML.indexOf("\n", startIndex);
+            if(startIndex == -1) {
+                break;
+            }
+            startIndex++;
+            numberOfNewlines++;
+        }
+        // readUrlContentsWithJavaScript() got back error HTML from Right Stuf, not product listings, so try again
+        if(numberOfNewlines <= RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT) {
+            System.err.println("\nGot back error HTML from Right Stuf indicating no JavaScript at \"" + INITIAL_URL +
+                    "\"; attempting to make another connection...\n");
+            saveBasePage(getDataAgain);
+        }
+
         BufferedWriter bufferedWriter;
         try {
             File file = new File(BASE_PAGE_PATH);
