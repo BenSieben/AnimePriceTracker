@@ -215,8 +215,8 @@ public class RightStufCrawler extends WebCrawler {
         }
         // readUrlContentsWithJavaScript() got back error HTML from Right Stuf, not product listings, so try again
         if(numberOfNewlines <= RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT) {
-            System.err.println("Got back error HTML from Right Stuf indicating no JavaScript at \"" + pageURL +
-                    "\"; attempting to make another connection...");
+            System.err.println("\nGot back error HTML from Right Stuf indicating no JavaScript at \"" + pageURL +
+                    "\"; attempting to make another connection...\n");
             return visitAllPages(pageURL, printProgress);
         }
 
@@ -260,6 +260,7 @@ public class RightStufCrawler extends WebCrawler {
             String nextPageLink = STORE_URL + "/" + nextPageAnchor;
 
             // Visit the next page
+            if(printProgress) System.out.println();  // Print a spacing line if we are printing progress
             visitAllPages(nextPageLink, printProgress);
         }
         // No next page list item found, so we are on the last page
