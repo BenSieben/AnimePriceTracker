@@ -12,11 +12,15 @@ public class AnimePriceTracker {
 
     public static void main(String[] args) {
         //parseBaseSentaiFilmworksPage();
+        //parseBaseRightStufPage();
+
         //visitAllSentaiFilmworksPages();
+        //visitAllRightStufPages();
+
         //parseSampleSentaiFilmworksProductPages();
+
         //runAnimeCrawlerControllerPriceUpdate();
         //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
-        //parseBaseRightStufPage();
     }
 
     /**
