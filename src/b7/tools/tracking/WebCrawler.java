@@ -127,6 +127,7 @@ public class WebCrawler {
                 stringBuilder.append("\n");
             }
             while(scanner.hasNextLine());
+            scanner.close();
         }
         catch(IOException ex) {
             System.err.println("[ERROR] IOException when getting page with PhantomJS for URL " + URL);
