@@ -1,8 +1,13 @@
 import b7.tools.tracking.AnimeCrawlerController;
+import b7.tools.tracking.AnimePriceTrackerGUI;
 import b7.tools.tracking.RightStufCrawler;
 import b7.tools.tracking.SentaiFilmworksCrawler;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Class with main method to run the program to get price information
@@ -18,6 +23,7 @@ public class AnimePriceTracker {
     public static final int VISIT_ALL_RIGHT_STUF_PAGES = 4;
     public static final int UPDATE_CRAWL_DATA = 5;
     public static final int MAKE_CSVS = 6;
+    public static final int OPEN_GUI = 7;
 
     public static void main(String[] args) {
         // Run the command line interface
@@ -68,6 +74,9 @@ public class AnimePriceTracker {
                 case MAKE_CSVS:
                     makeExcelCSVsForAnimeCrawlerControllerCrawlData();
                     break;
+                case OPEN_GUI:
+                    openGUI();
+                    break;
                 case EXIT_OPTION:
                     break;
                 default: {
@@ -92,6 +101,7 @@ public class AnimePriceTracker {
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
         System.out.println(getCommandString(UPDATE_CRAWL_DATA, "Update crawl data"));
         System.out.println(getCommandString(MAKE_CSVS, "Generate CSVs from updated data"));
+        System.out.println(getCommandString(OPEN_GUI, "Open price tracker GUI"));
         System.out.println(getCommandString(EXIT_OPTION, "Exit the program"));
         System.out.print("--> ");
     }
@@ -210,5 +220,25 @@ public class AnimePriceTracker {
 
         // Save Right Stuf CSV
         animeCrawlerController.saveRightStufCrawlDataToExcelCSV(AnimeCrawlerController.RIGHT_STUF_CRAWLER_CSV_FILENAME);
+    }
+
+    /**
+     * Starts the GUI of the anime price tracker
+     */
+    private static void openGUI() {
+        AnimePriceTrackerGUI animePriceTrackerGUI = new AnimePriceTrackerGUI();
+
+        // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
+        System.out.println("Exit the GUI to get back to the prompt of the command line interface...");
+        final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
+        while(!animePriceTrackerGUI.hasClosed()) {
+            try {
+                Thread.sleep(sleepTimeMillis);
+            }
+            catch(InterruptedException ex) {
+                System.err.println("[ERROR] While waiting for GUI to close, interruption exception occurred");
+                ex.printStackTrace();
+            }
+        }
     }
 }
