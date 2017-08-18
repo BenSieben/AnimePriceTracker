@@ -16,7 +16,8 @@ public class AnimePriceTracker {
     public static final int PARSE_BASE_RIGHT_STUF_PAGE = 2;
     public static final int VISIT_ALL_SENTAI_FILMWORKS_PAGES = 3;
     public static final int VISIT_ALL_RIGHT_STUF_PAGES = 4;
-    public static final int UPDATE_CRAWL_DATA_AND_MAKE_CSVS = 5;
+    public static final int UPDATE_CRAWL_DATA = 5;
+    public static final int MAKE_CSVS = 6;
 
     public static void main(String[] args) {
         // Run the command line interface
@@ -61,8 +62,10 @@ public class AnimePriceTracker {
                 case VISIT_ALL_RIGHT_STUF_PAGES:
                     visitAllRightStufPages();
                     break;
-                case UPDATE_CRAWL_DATA_AND_MAKE_CSVS:
+                case UPDATE_CRAWL_DATA:
                     runAnimeCrawlerControllerPriceUpdate();
+                    break;
+                case MAKE_CSVS:
                     makeExcelCSVsForAnimeCrawlerControllerCrawlData();
                     break;
                 case EXIT_OPTION:
@@ -87,7 +90,8 @@ public class AnimePriceTracker {
         System.out.println(getCommandString(PARSE_BASE_RIGHT_STUF_PAGE , "Parse base Right Stuf page"));
         System.out.println(getCommandString(VISIT_ALL_SENTAI_FILMWORKS_PAGES, "Visit all Sentai Filmworks pages"));
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
-        System.out.println(getCommandString(UPDATE_CRAWL_DATA_AND_MAKE_CSVS, "Update crawl data and generate CSVs from updated data"));
+        System.out.println(getCommandString(UPDATE_CRAWL_DATA, "Update crawl data"));
+        System.out.println(getCommandString(MAKE_CSVS, "Generate CSVs from updated data"));
         System.out.println(getCommandString(EXIT_OPTION, "Exit the program"));
         System.out.print("--> ");
     }
