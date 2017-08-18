@@ -113,4 +113,24 @@ public class AnimeCrawlerController {
     public void saveRightStufCrawlDataToExcelCSV(String filename) {
         CrawlerDataHandler.saveCrawlDataToExcelCSV(rightStufCrawler.getCrawlData(), filename);
     }
+
+    /**
+     * Opens a new AnimePriceTrackerGUI, and waits for the GUI to
+     * be closed before exiting the method
+     */
+    public void openGUI() {
+        AnimePriceTrackerGUI animePriceTrackerGUI = new AnimePriceTrackerGUI();
+
+        // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
+        final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
+        while(!animePriceTrackerGUI.hasClosed()) {
+            try {
+                Thread.sleep(sleepTimeMillis);
+            }
+            catch(InterruptedException ex) {
+                System.err.println("[ERROR] While waiting for GUI to close, interruption exception occurred");
+                ex.printStackTrace();
+            }
+        }
+    }
 }

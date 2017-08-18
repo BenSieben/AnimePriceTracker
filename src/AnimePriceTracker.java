@@ -1,13 +1,8 @@
 import b7.tools.tracking.AnimeCrawlerController;
-import b7.tools.tracking.AnimePriceTrackerGUI;
 import b7.tools.tracking.RightStufCrawler;
 import b7.tools.tracking.SentaiFilmworksCrawler;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Scanner;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Class with main method to run the program to get price information
@@ -75,7 +70,7 @@ public class AnimePriceTracker {
                     makeExcelCSVsForAnimeCrawlerControllerCrawlData();
                     break;
                 case OPEN_GUI:
-                    openGUI();
+                    openAnimePriceTrackerGUI();
                     break;
                 case EXIT_OPTION:
                     break;
@@ -178,8 +173,10 @@ public class AnimePriceTracker {
     private static void runAnimeCrawlerControllerPriceUpdate() {
         // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
-        AnimeCrawlerController animeCrawlerController =
-                new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME, AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME);
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(
+                AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME,
+                AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME
+        );
 
         // Visit Sentai Filmworks
         boolean visitSuccessful = animeCrawlerController.visitAllSentaiFilmworksPages(true);
@@ -212,8 +209,10 @@ public class AnimePriceTracker {
      * Runs AnimeCrawlerController to load existing crawl data and then save it in CSV format back to a file
      */
     private static void makeExcelCSVsForAnimeCrawlerControllerCrawlData() {
-        AnimeCrawlerController animeCrawlerController =
-                new AnimeCrawlerController(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME, AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME);
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(
+                AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME,
+                AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME
+        );
 
         // Save Sentai Filmworks CSV
         animeCrawlerController.saveSentaiFilmworksCrawlDataToExcelCSV(AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
@@ -225,20 +224,12 @@ public class AnimePriceTracker {
     /**
      * Starts the GUI of the anime price tracker
      */
-    private static void openGUI() {
-        AnimePriceTrackerGUI animePriceTrackerGUI = new AnimePriceTrackerGUI();
-
-        // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
+    private static void openAnimePriceTrackerGUI() {
+        AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(
+                AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME,
+                AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME
+        );
         System.out.println("Exit the GUI to get back to the prompt of the command line interface...");
-        final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
-        while(!animePriceTrackerGUI.hasClosed()) {
-            try {
-                Thread.sleep(sleepTimeMillis);
-            }
-            catch(InterruptedException ex) {
-                System.err.println("[ERROR] While waiting for GUI to close, interruption exception occurred");
-                ex.printStackTrace();
-            }
-        }
+        animeCrawlerController.openGUI();
     }
 }
