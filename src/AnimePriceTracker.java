@@ -1,8 +1,8 @@
 import b7.tools.tracking.AnimeCrawlerController;
 import b7.tools.tracking.RightStufCrawler;
 import b7.tools.tracking.SentaiFilmworksCrawler;
-import b7.tools.tracking.WebCrawler;
-import com.gargoylesoftware.htmlunit.WebClient;
+
+import java.util.Scanner;
 
 /**
  * Class with main method to run the program to get price information
@@ -10,17 +10,91 @@ import com.gargoylesoftware.htmlunit.WebClient;
  */
 public class AnimePriceTracker {
 
+    // Integers which correspond to specific command line interface commands
+    public static final int EXIT_OPTION = 0;
+    public static final int PARSE_BASE_SENTAI_FILMWORKS_PAGE = 1;
+    public static final int PARSE_BASE_RIGHT_STUF_PAGE = 2;
+    public static final int VISIT_ALL_SENTAI_FILMWORKS_PAGES = 3;
+    public static final int VISIT_ALL_RIGHT_STUF_PAGES = 4;
+    public static final int UPDATE_CRAWL_DATA_AND_MAKE_CSVS = 5;
+
     public static void main(String[] args) {
-        //parseBaseSentaiFilmworksPage();
-        //parseBaseRightStufPage();
+        // Run the command line interface
+        runCommandLineInterface();
 
-        //visitAllSentaiFilmworksPages();
-        //visitAllRightStufPages();
-
+        // parseSampleSentaiFilmworksProductPages() is not used because product pages are no longer visited
+        // However, it will be left implemented since the code already exists / works
         //parseSampleSentaiFilmworksProductPages();
+    }
 
-        //runAnimeCrawlerControllerPriceUpdate();
-        //makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+    /**
+     * Runs a command line interface for users to interact with the program
+     * by executing chosen commands
+     */
+    private static void runCommandLineInterface() {
+        Scanner scanner = new Scanner(System.in);
+        int option = -1;
+        while(option != EXIT_OPTION) {
+            // Print options to user
+            printCommandLineInterfacePrompt();
+
+            // Make sure user passes an actual number
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            }
+            catch(NumberFormatException ex) {
+                System.err.println("[ERROR] An invalid command was entered; please enter a valid command\n");
+                continue;
+            }
+
+            // Make sure number passed by user is a valid option
+            switch(option) {
+                case PARSE_BASE_SENTAI_FILMWORKS_PAGE:
+                    parseBaseSentaiFilmworksPage();
+                    break;
+                case PARSE_BASE_RIGHT_STUF_PAGE:
+                    parseBaseRightStufPage();
+                    break;
+                case VISIT_ALL_SENTAI_FILMWORKS_PAGES:
+                    visitAllSentaiFilmworksPages();
+                    break;
+                case VISIT_ALL_RIGHT_STUF_PAGES:
+                    visitAllRightStufPages();
+                    break;
+                case UPDATE_CRAWL_DATA_AND_MAKE_CSVS:
+                    runAnimeCrawlerControllerPriceUpdate();
+                    makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+                    break;
+                case EXIT_OPTION:
+                    break;
+                default: {
+                    System.out.println("[ERROR] Invalid number entered\n");
+                }
+            }
+            System.out.println();
+        }
+        scanner.close();
+    }
+
+    /**
+     * Prints general prompt listing what actions user can make
+     * on the command line
+     */
+    private static void printCommandLineInterfacePrompt() {
+        System.out.println("***** Anime Price Tracker *****");
+        System.out.println("Please select from an option below:");
+        System.out.println(getCommandString(PARSE_BASE_SENTAI_FILMWORKS_PAGE, "Parse base Sentai FIlmworks page"));
+        System.out.println(getCommandString(PARSE_BASE_RIGHT_STUF_PAGE , "Parse base Right Stuf page"));
+        System.out.println(getCommandString(VISIT_ALL_SENTAI_FILMWORKS_PAGES, "Visit all Sentai Filmworks pages"));
+        System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
+        System.out.println(getCommandString(UPDATE_CRAWL_DATA_AND_MAKE_CSVS, "Update crawl data and generate CSVs from updated data"));
+        System.out.println(getCommandString(EXIT_OPTION, "Exit the program"));
+        System.out.print("--> ");
+    }
+
+    // Returns a simple command string from a given value and describing text of the command
+    private static String getCommandString(int commandValue, String commandText) {
+        return "[" + commandValue + "] " + commandText;
     }
 
     /**
