@@ -19,8 +19,8 @@ public class RightStufCrawler extends WebCrawler {
     // The base URL of the website (to resolve relative links to the proper path)
     public final static String STORE_URL = "https://www.rightstufanime.com";
 
-    // Part of the web page returned by Right Stuf when it thinks the browser does not have JavaScript
-    public final static int RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT = 100;
+    // How long (in milliseconds) we will wait for the JavaScript on Right Stuf to fully load the web page
+    public final static int PAGE_LOAD_WAIT_TIME = 5000;
 
     // Qualifiers to help use parse pages to get relevant content
     public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-table";
@@ -91,28 +91,9 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use readUrlContentsWithJavaScript() too have a headless browser visit Right Stuf,
         //   because Right Stuf requires JavaScript to load their web page HTML properly
-        String fullPageHTML = WebCrawler.readUrlContentsWithJavaScript(INITIAL_URL, null);
+        String fullPageHTML = WebCrawler.readUrlContentsWithJavaScript(INITIAL_URL, null, PAGE_LOAD_WAIT_TIME);
 
-        // Check that the page was successfully read (did NOT get some warning about not having JavaScript which means the page loaded incorrectly)
-        // We do that by counting number of newline characters present on loaded pages (page is much smaller if
-        //   Right Stuf only has the message about needing JavaScript)
-        int numberOfNewlines = 0;
-        int startIndex = 0;
-        while(true) {
-            startIndex = fullPageHTML.indexOf("\n", startIndex);
-            if(startIndex == -1) {
-                break;
-            }
-            startIndex++;
-            numberOfNewlines++;
-        }
-        // readUrlContentsWithJavaScript() got back error HTML from Right Stuf, not product listings, so try again
-        if(numberOfNewlines <= RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT) {
-            System.err.println("\nGot back error HTML from Right Stuf indicating no JavaScript at \"" + INITIAL_URL +
-                    "\"; attempting to make another connection...\n");
-            saveBasePage(getDataAgain);
-        }
-
+        // We got back correct HTML from Right Stuf, so write the results to a file
         BufferedWriter bufferedWriter;
         try {
             File file = new File(BASE_PAGE_PATH);
@@ -219,27 +200,7 @@ public class RightStufCrawler extends WebCrawler {
      */
     private boolean visitAllPages(String pageURL, boolean printProgress) {
         // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
-        String pageHTML = WebCrawler.readUrlContentsWithJavaScript(pageURL, null);
-
-        // Check that the page was successfully read (did NOT get some warning about not having JavaScript which means the page loaded incorrectly)
-        // We do that by counting number of newline characters present on loaded pages (page is much smaller if
-        //   Right Stuf only has the message about needing JavaScript)
-        int numberOfNewlines = 0;
-        int startIndex = 0;
-        while(true) {
-            startIndex = pageHTML.indexOf("\n", startIndex);
-            if(startIndex == -1) {
-                break;
-            }
-            startIndex++;
-            numberOfNewlines++;
-        }
-        // readUrlContentsWithJavaScript() got back error HTML from Right Stuf, not product listings, so try again
-        if(numberOfNewlines <= RIGHT_STUF_JS_ERROR_HTML_NEWLINE_COUNT) {
-            System.err.println("\nGot back error HTML from Right Stuf indicating no JavaScript at \"" + pageURL +
-                    "\"; attempting to make another connection...\n");
-            return visitAllPages(pageURL, printProgress);
-        }
+        String pageHTML = WebCrawler.readUrlContentsWithJavaScript(pageURL, null, PAGE_LOAD_WAIT_TIME);
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(pageHTML);

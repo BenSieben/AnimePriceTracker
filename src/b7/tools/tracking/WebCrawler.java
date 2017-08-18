@@ -104,9 +104,11 @@ public class WebCrawler {
      * @param URL the URL to open
      * @param phantomJSPath the path to PhantomJS executable that can be used to run PhantomJS on a JavaScript file
      *                      (pass null to use the phantomjs.exe in PHANTOM_JS_WINDOWS_EXE_PATH)
+     * @param pageLoadWaitTime how long (in milliseconds) to wait for the page's JavaScript to load
+     *                         (helpful to get full page contents for some websites which use a lot of JavaScript)
      * @return the HTML code of the URL after being loaded with JavaScript, or null if an error occurs
      */
-    public static String readUrlContentsWithJavaScript(String URL, String phantomJSPath) {
+    public static String readUrlContentsWithJavaScript(String URL, String phantomJSPath, int pageLoadWaitTime) {
         // Use a StringBuilder to efficiently append all the page contents that gets returned at the end of the method
         StringBuilder stringBuilder = new StringBuilder();
         try{
@@ -114,9 +116,9 @@ public class WebCrawler {
             if(phantomJSPath == null) {  // If path is null, we assume user wants to use default Windows executable
                 phantomJSPath = PHANTOM_JS_WINDOWS_EXE_PATH;
             }
-            String executeCommand = phantomJSPath + " " + LOAD_PAGE_JS_FILE_PATH + " " + URL;
+            String executeCommand = phantomJSPath + " " + LOAD_PAGE_JS_FILE_PATH + " " + URL + " " + pageLoadWaitTime;
             // With terminal / command line in root folder of repository, command looks like:
-            //   ./bin/phantomjs-2.1.1-windows/phantomjs.exe ./scripts/loadpage.js <URL>
+            //   ./bin/phantomjs-2.1.1-windows/phantomjs.exe ./scripts/loadpage.js <URL> <pageLoadWaitTime>
             Process process = Runtime.getRuntime().exec(executeCommand);
             InputStream inputStream = process.getInputStream();
             Scanner scanner = new Scanner(inputStream);
