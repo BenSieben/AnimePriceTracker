@@ -83,7 +83,7 @@ public class AnimePriceTracker {
     private static void printCommandLineInterfacePrompt() {
         System.out.println("***** Anime Price Tracker *****");
         System.out.println("Please select from an option below:");
-        System.out.println(getCommandString(PARSE_BASE_SENTAI_FILMWORKS_PAGE, "Parse base Sentai FIlmworks page"));
+        System.out.println(getCommandString(PARSE_BASE_SENTAI_FILMWORKS_PAGE, "Parse base Sentai Filmworks page"));
         System.out.println(getCommandString(PARSE_BASE_RIGHT_STUF_PAGE , "Parse base Right Stuf page"));
         System.out.println(getCommandString(VISIT_ALL_SENTAI_FILMWORKS_PAGES, "Visit all Sentai Filmworks pages"));
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
