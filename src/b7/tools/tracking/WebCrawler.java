@@ -130,6 +130,8 @@ public class WebCrawler {
             }
         }
 
+        System.out.println("Jobs complete!");
+
         // Return the page XML (i.e., HTML)
         return page.asXml();
     }
