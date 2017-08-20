@@ -23,8 +23,8 @@ public class RightStufCrawler extends WebCrawler {
     public final static int PAGE_LOAD_WAIT_TIME = 5000;
 
     // Qualifiers to help use parse pages to get relevant content
-    public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-table";
-    public static final String PRODUCT_TITLE_CLASS = "facets-item-cell-table-title";
+    public static final String PRODUCT_INFORMATION_DIV_CLASS = "facets-item-cell-grid";
+    public static final String PRODUCT_TITLE_CLASS = "facets-item-cell-grid-title";
     public static final String PRODUCT_PRICE_DIV_CLASS = "product-views-price";
     public static final String PRODUCT_PRICE_SPAN_CLASS = "product-views-price-lead";
     public static final String PRODUCT_PRICE_ATTRIBUTE = "data-rate";
@@ -136,7 +136,6 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(stringBuilder.toString());
-        System.out.println(document.toString());
 
         // Find elements which have matching product class, so that we can extract information from each one
         Elements productElements = document.getElementsByClass(PRODUCT_INFORMATION_DIV_CLASS);
