@@ -1,10 +1,8 @@
 package b7.tools.tracking;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.jaunt.JauntException;
-import com.jaunt.UserAgent;
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptJobManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 /**
  * Basic class to represent a web crawler
@@ -99,6 +98,43 @@ public class WebCrawler {
     }
 
     /**
+     * Uses htmlunit headless browser (version 2.27) to read a given URL with JavaScript
+     * The htnlunit page will wait for all jobs on the page to finish before returning the HTML String back
+     * @param url the url to laod
+     * @return String of the contents of the page with all jobs fully completed
+     */
+    public static String readUrlContentsWithJavaScriptHtmlunit(String url) {
+        // Turn off the error messages from htmlunit
+        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+
+        // Access the given url
+        WebClient webClient = new WebClient();
+        HtmlPage page = null;
+        try {
+            System.out.println("Connecting to " + url + " ...");
+            page = webClient.getPage(url);
+            System.out.println("Connected! Now waiting for jobs to complete on the page...");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Wait for page to fully load before getting the final HTML code
+        // From https://stackoverflow.com/questions/16956952/htmlunit-return-a-completely-loaded-page
+        JavaScriptJobManager manager = page.getEnclosingWindow().getJobManager();
+        while (manager.getJobCount() > 0) {
+            try {
+                Thread.sleep(1000);
+            }
+            catch(InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        // Return the page XML (i.e., HTML)
+        return page.asXml();
+    }
+
+    /**
      * Uses the headless browser PhantomJS (version 2.1 used in development, so version 2.0+ recommended)
      * to read a given URL with PhantomJS's Web Page Module
      * @param URL the URL to open
@@ -108,7 +144,7 @@ public class WebCrawler {
      *                         (helpful to get full page contents for some websites which use a lot of JavaScript)
      * @return the HTML code of the URL after being loaded with JavaScript, or null if an error occurs
      */
-    public static String readUrlContentsWithJavaScript(String URL, String phantomJSPath, int pageLoadWaitTime) {
+    public static String readUrlContentsWithJavaScriptPhantomJS(String URL, String phantomJSPath, int pageLoadWaitTime) {
         // Use a StringBuilder to efficiently append all the page contents that gets returned at the end of the method
         StringBuilder stringBuilder = new StringBuilder();
         try{

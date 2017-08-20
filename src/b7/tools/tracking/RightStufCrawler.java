@@ -91,7 +91,7 @@ public class RightStufCrawler extends WebCrawler {
 
         // Use readUrlContentsWithJavaScript() too have a headless browser visit Right Stuf,
         //   because Right Stuf requires JavaScript to load their web page HTML properly
-        String fullPageHTML = WebCrawler.readUrlContentsWithJavaScript(INITIAL_URL, null, PAGE_LOAD_WAIT_TIME);
+        String fullPageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(INITIAL_URL);
 
         // We got back correct HTML from Right Stuf, so write the results to a file
         BufferedWriter bufferedWriter;
@@ -200,7 +200,7 @@ public class RightStufCrawler extends WebCrawler {
      */
     private boolean visitAllPages(String pageURL, boolean printProgress) {
         // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
-        String pageHTML = WebCrawler.readUrlContentsWithJavaScript(pageURL, null, PAGE_LOAD_WAIT_TIME);
+        String pageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(pageURL);
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(pageHTML);
