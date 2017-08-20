@@ -133,7 +133,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * Returns a formatted version of the price to always include two decimal places and (optional) currency in front
      * of the value
      * @param currency currency sign (optional - set to null / empty string if not desired)
-     * @return
+     * @return the formatted price
      */
     public String formattedPrice(String currency) {
         if(currency == null || currency.length() == 0) {
@@ -202,7 +202,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      */
     @Override
     public String toString() {
-        return (startDate + " through " + endDate + " at price " + price);
+        return (startDate + " through " + endDate + " at price " + formattedPrice(null));
     }
 
     /**
