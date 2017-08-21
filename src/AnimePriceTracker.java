@@ -21,6 +21,12 @@ public class AnimePriceTracker {
     public static final int OPEN_GUI = 7;
 
     public static void main(String[] args) {
+        // Check if user specified argument "gui" to indicate to directly open the GUI
+        if(args.length >= 1 && "gui".compareTo(args[0].toLowerCase()) == 0) {
+            openAnimePriceTrackerGUI(false);
+            return;
+        }
+
         // Run the command line interface
         runCommandLineInterface();
 
@@ -70,7 +76,7 @@ public class AnimePriceTracker {
                     makeExcelCSVsForAnimeCrawlerControllerCrawlData();
                     break;
                 case OPEN_GUI:
-                    openAnimePriceTrackerGUI();
+                    openAnimePriceTrackerGUI(true);
                     break;
                 case EXIT_OPTION:
                     break;
@@ -223,13 +229,17 @@ public class AnimePriceTracker {
 
     /**
      * Starts the GUI of the anime price tracker
+     * @param fromCLI true if opened from CLI, false if opened directly (determines
+     *                whether or not we give message to tell user to quit GUI to return to CLI)
      */
-    private static void openAnimePriceTrackerGUI() {
+    private static void openAnimePriceTrackerGUI(boolean fromCLI) {
         AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(
                 AnimeCrawlerController.SENTAI_FILMWORKS_CRAWLER_FILENAME,
                 AnimeCrawlerController.RIGHT_STUF_CRAWLER_FILENAME
         );
-        System.out.println("Exit the GUI to get back to the prompt of the command line interface...");
+        if(fromCLI) {
+            System.out.println("Exit the GUI to get back to the prompt of the command line interface...");
+        }
         animeCrawlerController.openGUI();
     }
 }
