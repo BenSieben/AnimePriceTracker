@@ -284,7 +284,7 @@ public class Product {
         int lowestPriceIndex = 0;
         for (int i = 0; i < priceHistory.size(); i++) {
             PriceDateInfo currentInfo = priceHistory.get(i);
-            if(lowestPrice <= currentInfo.getPrice()) {  // Found new low price / same lowest price again
+            if(lowestPrice >= currentInfo.getPrice()) {  // Found new low price / same lowest price again
                 lowestPrice = currentInfo.getPrice();
                 lowestPriceIndex = i;
             }
