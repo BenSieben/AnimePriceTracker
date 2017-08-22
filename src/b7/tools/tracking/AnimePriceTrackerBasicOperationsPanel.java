@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream;
 public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
 
     // Constant for how often to update the text area
-    public static final int TEXT_AREA_REFRESH_PERIOD = 2000;
+    public static final int TEXT_AREA_REFRESH_PERIOD = 500;
 
     // Buttons on the panel to let users perform actions
     /*
@@ -34,6 +34,9 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
 
     // Text area to let users see output
     private JTextArea outputTextArea;
+
+    // Timer responsible for printing contents of text stream into the text area
+    private Timer outputTextAreaTimer;
 
     /**
      * Constructs a new AnimePriceTrackerBasicOperationsPanel
@@ -93,17 +96,31 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         add(buttonPanel);
         add(textAreaPanel);
 
-        // Update the outputTextArea every 2000 seconds with given argument stream (if text area stream is not null)
-        if(textAreaStream != null) {
-            final ByteArrayOutputStream textStream = textAreaStream;
-            Timer timer = new Timer(TEXT_AREA_REFRESH_PERIOD, new ActionListener() {
+        // Update the outputTextArea with given argument stream
+        changeTextAreaStream(textAreaStream);
+    }
+
+    /**
+     * Updates the panel to relay output from the given newTextAreaStream
+     * @param newTextAreaStream the new stream to send out to the output text area
+     */
+    public void changeTextAreaStream(ByteArrayOutputStream newTextAreaStream) {
+        if(newTextAreaStream != null) {
+            // Stop previous output text area timer if it exists
+            if(outputTextAreaTimer != null) {
+                outputTextAreaTimer.stop();
+            }
+
+            // Set up new timer to track output from the new text area stream
+            final ByteArrayOutputStream textStream = newTextAreaStream;
+            outputTextAreaTimer = new Timer(TEXT_AREA_REFRESH_PERIOD, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Print out contents of textAreaStream
                     changeOutputTextAreaContents(textStream.toString());
                 }
             });
-            timer.start();
+            outputTextAreaTimer.start();
         }
     }
 
