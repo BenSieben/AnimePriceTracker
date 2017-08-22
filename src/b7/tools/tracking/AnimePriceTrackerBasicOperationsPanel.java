@@ -100,7 +100,6 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Print out contents of textAreaStream
-                    System.out.println("Go");
                     changeOutputTextAreaContents(textStream.toString());
                 }
             });
