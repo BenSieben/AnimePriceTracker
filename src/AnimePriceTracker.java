@@ -35,10 +35,6 @@ public class AnimePriceTracker {
 
         // Run the command line interface
         runCommandLineInterface();
-
-        // parseSampleSentaiFilmworksProductPages() is not used because product pages are no longer visited
-        // However, it will be left implemented since the code already exists / works
-        //parseSampleSentaiFilmworksProductPages();
     }
 
     /**
