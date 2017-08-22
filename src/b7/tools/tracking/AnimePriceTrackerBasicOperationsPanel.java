@@ -104,7 +104,7 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
      * Updates the panel to relay output from the given newTextAreaStream
      * @param newTextAreaStream the new stream to send out to the output text area
      */
-    public void changeTextAreaStream(ByteArrayOutputStream newTextAreaStream) {
+    protected void changeTextAreaStream(ByteArrayOutputStream newTextAreaStream) {
         if(newTextAreaStream != null) {
             // Stop previous output text area timer if it exists
             if(outputTextAreaTimer != null) {
@@ -130,6 +130,13 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
      */
     protected void changeOutputTextAreaContents(String newContent) {
         outputTextArea.setText(newContent);
+    }
+
+    /**
+     * Clears the output text area's current contents
+     */
+    protected void clearOutputTextAreaContents() {
+        outputTextArea.setText("");
     }
 
     /**
