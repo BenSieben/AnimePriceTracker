@@ -133,4 +133,104 @@ public class AnimeCrawlerController {
             }
         }
     }
+
+    /**
+     * Sets up code to call methods to parse the base Sentai Filmworks store page
+     */
+    public void parseBaseSentaiFilmworksPage() {
+        sentaiFilmworksCrawler.saveBasePage(true);
+        sentaiFilmworksCrawler.parseBasePage();
+    }
+
+    /**
+     * Sets up code to call methods to parse the base Right Stuf store page
+     */
+    public void parseBaseRightStufPage() {
+        rightStufCrawler.saveBasePage(true);
+        rightStufCrawler.parseBasePage();
+    }
+
+    /**
+     * Sets up code to call methods to traverse all pages for Sentai Filmworks store
+     * (but not load or save found results). Will print progress during page crawling
+     */
+    public void visitAllSentaiFilmworksPages() {
+        sentaiFilmworksCrawler.visitAllPages(true);
+    }
+
+    /**
+     * Sets up code to call methods to traverse all pages for Right Stuf store
+     * (but not load or save found results). Will print progress during page crawling
+     */
+    public void visitAllRightStufPages() {
+        rightStufCrawler.visitAllPages(true);
+    }
+
+    /**
+     * Sets up code to call methods to save and parse some sample product pages for Sentai Filmworks
+     */
+    public void parseSampleSentaiFilmworksProductPages() {
+        // Pick some sample product pages
+        String productURL1 = "https://shop.sentaifilmworks.com/products/young-black-jack-complete-collection";
+        String productURL2 = "https://shop.sentaifilmworks.com/products/yumeria-complete-collection";
+        String productURL3 = "https://shop.sentaifilmworks.com/products/yuyushiki-complete-collection";
+
+        // Save those product pages (do not re-get them if they already exist)
+        sentaiFilmworksCrawler.saveProductPage(productURL1, true);
+        sentaiFilmworksCrawler.saveProductPage(productURL2, true);
+        sentaiFilmworksCrawler.saveProductPage(productURL3, true);
+
+        // Parse those product pages
+        sentaiFilmworksCrawler.parseProductPage(productURL1);
+        sentaiFilmworksCrawler.parseProductPage(productURL2);
+        sentaiFilmworksCrawler.parseProductPage(productURL3);
+    }
+
+    /**
+     * Runs the AnimeCrawlerController to load existing crawl data, visit all pages,
+     * update information, and save the results back. Will set printProgress to true
+     * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
+     * during page crawling
+     */
+    public void runAnimeCrawlerControllerPriceUpdate() {
+        // Load existing data and try to update that information
+        long startTime = System.currentTimeMillis();
+
+        // Visit Sentai Filmworks
+        boolean visitSuccessful = visitAllSentaiFilmworksPages(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages worked for Sentai Filmworks!\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages for Sentai Filmworks failed (likely accessing too many pages too rapidly on website)\n");
+        }
+
+        // Visit Right Stuf
+        visitSuccessful = visitAllRightStufPages(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages worked for Right Stuf!\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages for Right Stuf failed (likely accessing too many pages too rapidly on website)\n");
+        }
+
+        // Save the updated information back to file
+        saveSentaiFilmworksCrawler(SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        saveRightStufCrawler(RIGHT_STUF_CRAWLER_FILENAME);
+        long endTime = System.currentTimeMillis();
+        long runTime = endTime - startTime;
+        double runTimeInSeconds = runTime / 1000.0;
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
+    }
+
+    /**
+     * Saves crawl data in CSV format back to a file
+     */
+    public void makeExcelCSVsForAnimeCrawlerControllerCrawlData() {
+        // Save Sentai Filmworks CSV
+        saveSentaiFilmworksCrawlDataToExcelCSV(SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME);
+
+        // Save Right Stuf CSV
+        saveRightStufCrawlDataToExcelCSV(RIGHT_STUF_CRAWLER_CSV_FILENAME);
+    }
 }
