@@ -1,5 +1,6 @@
 package b7.tools.tracking;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -132,76 +133,58 @@ public class AnimeCrawlerController {
                 // Set up GUI for running a method (lock down everything & capture output to text area)
                 animePriceTrackerGUI.startRunBasicOperation();
 
-                // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addParseBaseSentaiFilmworksPageButtonActionListener");
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        parseBaseSentaiFilmworksPage();
+                        return null;
+                    }
 
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
+
         animePriceTrackerGUI.addParseBaseRightStufPageButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Set up GUI for running a method (lock down everything & capture output to text area)
-                animePriceTrackerGUI.startRunBasicOperation();
-
                 // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addParseBaseRightStufPageButtonActionListener");
-
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
             }
         });
         animePriceTrackerGUI.addVisitAllSentaiFilmworksPagesButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Set up GUI for running a method (lock down everything & capture output to text area)
-                animePriceTrackerGUI.startRunBasicOperation();
-
                 // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addVisitAllSentaiFilmworksPagesButtonActionListener");
-
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
             }
         });
         animePriceTrackerGUI.addVisitAllRightStufPagesButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Set up GUI for running a method (lock down everything & capture output to text area)
-                animePriceTrackerGUI.startRunBasicOperation();
-
                 // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addVisitAllRightStufPagesButtonActionListener");
-
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
             }
         });
         animePriceTrackerGUI.addUpdateCrawlDataButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Set up GUI for running a method (lock down everything & capture output to text area)
-                animePriceTrackerGUI.startRunBasicOperation();
-
                 // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addUpdateCrawlDataButtonActionListener");
-
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
             }
         });
         animePriceTrackerGUI.addMakeCsvsButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Set up GUI for running a method (lock down everything & capture output to text area)
-                animePriceTrackerGUI.startRunBasicOperation();
-
                 // TODO actually perform action
-                animePriceTrackerGUI.changeBasicOperationMessageLabel("addMakeCsvsButtonActionListener");
-
-                // Re-enable all GUI components and reset System.out / System.err streams to defaults
-                animePriceTrackerGUI.stopRunBasicOperation();
             }
         });
 

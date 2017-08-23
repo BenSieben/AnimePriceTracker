@@ -14,17 +14,9 @@ import java.io.ByteArrayOutputStream;
 public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
 
     // Constant for how often to update the text area
-    public static final int TEXT_AREA_REFRESH_PERIOD = 500;
+    public static final int TEXT_AREA_REFRESH_PERIOD = 1;
 
     // Buttons on the panel to let users perform actions
-    /*
-    public static final int PARSE_BASE_SENTAI_FILMWORKS_PAGE = 1;
-    public static final int PARSE_BASE_RIGHT_STUF_PAGE = 2;
-    public static final int VISIT_ALL_SENTAI_FILMWORKS_PAGES = 3;
-    public static final int VISIT_ALL_RIGHT_STUF_PAGES = 4;
-    public static final int UPDATE_CRAWL_DATA = 5;
-    public static final int MAKE_CSVS = 6;
-     */
     private JButton parseBaseSentaiFilmworksPageButton,
             parseBaseRightStufPageButton,
             visitAllSentaiFilmworksPagesButton,
@@ -141,6 +133,20 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
             });
             outputTextAreaTimer.start();
         }
+    }
+
+    /**
+     * Starts timer used for output text area updates
+     */
+    protected void startOutputTextAreaTimer() {
+        if(outputTextAreaTimer != null) outputTextAreaTimer.start();
+    }
+
+    /**
+     * Stops timer used for output text area updates
+     */
+    protected void stopOutputTextAreaTimer() {
+        if(outputTextAreaTimer != null) outputTextAreaTimer.stop();
     }
 
     /**

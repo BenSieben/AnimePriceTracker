@@ -39,7 +39,6 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         super("Anime Price Tracker");
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
         addWindowListener(this);
 
         // Construct JPanels to construct the complete GUI in this JFrame
@@ -96,6 +95,7 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         basicOperationsPanel.clearOutputTextAreaContents();
         setEnablingOfAllComponents(false);
         modifyOutputStreams(false);
+        basicOperationsPanel.changeTextAreaStream(frameOutputStream);
     }
 
     /**
@@ -106,6 +106,7 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         // Re-enable all GUI components and reset System.out / System.err streams to defaults
         setEnablingOfAllComponents(true);
         modifyOutputStreams(true);
+        basicOperationsPanel.stopOutputTextAreaTimer();
     }
 
     /**
