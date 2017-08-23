@@ -133,6 +133,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addParseBaseSentaiFilmworksPageButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();
@@ -145,6 +146,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addParseBaseRightStufPageButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();
@@ -157,6 +159,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addVisitAllSentaiFilmworksPagesButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();
@@ -169,6 +172,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addVisitAllRightStufPagesButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();
@@ -181,6 +185,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addUpdateCrawlDataButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();
@@ -193,6 +198,7 @@ public class AnimeCrawlerController {
                 animePriceTrackerGUI.startRunBasicOperation();
 
                 // TODO actually perform action
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("addMakeCsvsButtonActionListener");
 
                 // Re-enable all GUI components and reset System.out / System.err streams to defaults
                 animePriceTrackerGUI.stopRunBasicOperation();

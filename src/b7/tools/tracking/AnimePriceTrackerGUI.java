@@ -51,11 +51,6 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         // Change System.out / System.err to be our own output stream so we can capture things written to System.out
         frameOutputStream = new ByteArrayOutputStream();
         frameOutputStreamCapture = new PrintStream(frameOutputStream);
-        System.setOut(frameOutputStreamCapture);
-        System.setErr(frameOutputStreamCapture);
-
-        frameOutputStreamCapture.println("Hi");
-        System.out.println(frameOutputStream.toString());
 
         // Make tabbed pane to let users have tabs to switch between
         tabPane = new JTabbedPane();
@@ -81,6 +76,14 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         setVisible(true);
 
         hasClosed = false;
+    }
+
+    /**
+     * Changes the message in the basic operations panel to the given new content
+     * @param newContent the text to place on the message label
+     */
+    protected void changeBasicOperationMessageLabel(String newContent) {
+        basicOperationsPanel.changeMessageLabelContents(newContent);
     }
 
     /**

@@ -35,6 +35,9 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
     // Text area to let users see output
     private JTextArea outputTextArea;
 
+    // Little label at bottom of panel to give short messages to user
+    private JLabel messageLabel;
+
     // Timer responsible for printing contents of text stream into the text area
     private Timer outputTextAreaTimer;
 
@@ -45,7 +48,11 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
      */
     public AnimePriceTrackerBasicOperationsPanel(ByteArrayOutputStream textAreaStream) {
         super();
-        setLayout(new GridLayout(0, 2));
+        setLayout(new BorderLayout());
+
+        // Make JPanel to hold main components (buttons / output area)
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(0, 2));
 
         // Create button panel to hold buttons
         JPanel buttonPanel = new JPanel();
@@ -93,8 +100,20 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         textAreaPanel.add(textAreaScrollPane, BorderLayout.CENTER);
 
         // Add final button panel / text area panel to main panel
-        add(buttonPanel);
-        add(textAreaPanel);
+        mainPanel.add(buttonPanel);
+        mainPanel.add(textAreaPanel);
+
+        // Create JPanel for the message label and add label to it
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new GridLayout(0, 1));
+        messageLabel = new JLabel("Pick from an option above to perform an operation");
+        messageLabel.setForeground(Color.RED);
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        messagePanel.add(messageLabel);
+
+        // Add main panel and message panel to this panel
+        add(mainPanel, BorderLayout.CENTER);
+        add(messagePanel, BorderLayout.SOUTH);
 
         // Update the outputTextArea with given argument stream
         changeTextAreaStream(textAreaStream);
@@ -137,6 +156,14 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
      */
     protected void clearOutputTextAreaContents() {
         outputTextArea.setText("");
+    }
+
+    /**
+     * Changes the message label's contents to show the given new content
+     * @param newContent the text to show in the message label
+     */
+    protected void changeMessageLabelContents(String newContent) {
+        messageLabel.setText(newContent);
     }
 
     /**
