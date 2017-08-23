@@ -35,6 +35,9 @@ public class AnimePriceTracker {
 
         // Run the command line interface
         runCommandLineInterface();
+
+        // Force program to exit (terminate any background processes which might still be running)
+        System.exit(0);
     }
 
     /**
