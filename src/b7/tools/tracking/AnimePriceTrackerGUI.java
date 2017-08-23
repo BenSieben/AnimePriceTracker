@@ -65,50 +65,6 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         tabPane.addTab("Basic Commands", null, basicOperationsPanel,
                 "Perform commands that can also be found on the command line interface");
 
-        // Add action listeners for the buttons on the basic operations panel
-        basicOperationsPanel.addParseBaseRightStufPageButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addParseBaseRightStufPageButtonActionListener");
-            }
-        });
-        basicOperationsPanel.addParseBaseRightStufPageButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addParseBaseRightStufPageButtonActionListener");
-            }
-        });
-        basicOperationsPanel.addVisitAllSentaiFilmworksPagesButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addVisitAllSentaiFilmworksPagesButtonActionListener");
-            }
-        });
-        basicOperationsPanel.addVisitAllRightStufPagesButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addVisitAllSentaiFilmworksPagesButtonActionListener");
-            }
-        });
-        basicOperationsPanel.addUpdateCrawlDataButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addUpdateCrawlDataButtonActionListener");
-            }
-        });
-        basicOperationsPanel.addMakeCsvsButtonActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
-                System.out.println("addMakeCsvsButtonActionListener");
-            }
-        });
-
         // TODO Create tab for graphing price history of products
         tabPane.addTab("Graph Product History", null, new JPanel(),
                 "Show graphs of product history");
@@ -176,6 +132,109 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
     }
 
     /**
+     * Sets up System.out / System.err to redirect to custom streams that go
+     * to the text area in the basic operations panel and disables components
+     * on the GUI until stopRunBasicOperation() is called
+     */
+    protected void startRunBasicOperation() {
+        // Disable all GUI components and set up System.out / System.err to stream to output text area
+        basicOperationsPanel.clearOutputTextAreaContents();
+        setEnablingOfAllComponents(false);
+        modifyOutputStreams(false);
+    }
+
+    /**
+     * Restores System.out / System.err to their default values (going to console output) and
+     * restores functionality of GUI
+     */
+    protected void stopRunBasicOperation() {
+        // Re-enable all GUI components and reset System.out / System.err streams to defaults
+        setEnablingOfAllComponents(true);
+        modifyOutputStreams(true);
+    }
+
+    /**
+     * Adds new ActionListener for the parseBaseSentaiFilmworksPageButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addParseBaseSentaiFilmworksPageButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addParseBaseSentaiFilmworksPageButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the parseBaseRightStufPageButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addParseBaseRightStufPageButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addParseBaseRightStufPageButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the visitAllSentaiFilmworksPagesButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addVisitAllSentaiFilmworksPagesButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addVisitAllSentaiFilmworksPagesButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the visitAllRightStufPagesButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addVisitAllRightStufPagesButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addVisitAllRightStufPagesButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the updateCrawlDataButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addUpdateCrawlDataButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addUpdateCrawlDataButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the makeCsvsButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addMakeCsvsButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addMakeCsvsButtonActionListener(listener);
+    }
+
+    /**
+     * Changes System.out / System.err to different streams
+     * @param setBackDefaultStreams true to change System.out / System.err to their default values,
+     *                              false to change System.out / System.err to a new stream used
+     *                              to send output to the basic operations panel text area
+     */
+    private void modifyOutputStreams(boolean setBackDefaultStreams) {
+        // Remove existing frame output stream if it exists
+        if(frameOutputStreamCapture != null && frameOutputStream != null) {
+            frameOutputStreamCapture.close();
+            try {
+                frameOutputStream.close();
+            }
+            catch(IOException ex) {
+                // Do nothing if IOException occurs when trying to close stream
+            }
+        }
+
+        // Depending on boolean argument, we set System.out / System.err to defaults or custom ones
+        if(setBackDefaultStreams) {
+            // Set back default System.out / System.err streams
+            System.setOut(new PrintStream(originalOutputStream));
+            System.setErr(new PrintStream(originalErrStream));
+        }
+        else {
+            // Change System.out / System.err to be our own output stream so we can capture things written to System.out
+            frameOutputStream = new ByteArrayOutputStream();
+            frameOutputStreamCapture = new PrintStream(frameOutputStream);
+            System.setOut(frameOutputStreamCapture);
+            System.setErr(frameOutputStreamCapture);
+        }
+    }
+
+    /**
      * Sets enabling of all components in the GUI to be set to the given argument
      * (true = enable everything, false = disable everything)
      * @param enable true to enable all components, false to disable all components
@@ -203,15 +262,8 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         hasClosed = true;
-        System.setOut(new PrintStream(originalOutputStream));
-        System.setErr(new PrintStream(originalErrStream));
-        frameOutputStreamCapture.close();
-        try {
-            frameOutputStream.close();
-        }
-        catch(IOException ex) {
-            // Do nothing if IOException occurs when trying to close stream
-        }
+        modifyOutputStreams(true);
+        dispose();
     }
 
     /**

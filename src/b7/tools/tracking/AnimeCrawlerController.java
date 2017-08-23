@@ -1,5 +1,8 @@
 package b7.tools.tracking;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * Main controller of crawlers used for
  * tracking anime products
@@ -119,7 +122,82 @@ public class AnimeCrawlerController {
      * be closed before exiting the method
      */
     public void openGUI() {
-        AnimePriceTrackerGUI animePriceTrackerGUI = new AnimePriceTrackerGUI();
+        // Create new AnimePriceTrackerGUI
+        final AnimePriceTrackerGUI animePriceTrackerGUI = new AnimePriceTrackerGUI();
+
+        // Add action listeners for the buttons on the basic operations panel
+        animePriceTrackerGUI.addParseBaseSentaiFilmworksPageButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
+        animePriceTrackerGUI.addParseBaseRightStufPageButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
+        animePriceTrackerGUI.addVisitAllSentaiFilmworksPagesButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
+        animePriceTrackerGUI.addVisitAllRightStufPagesButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
+        animePriceTrackerGUI.addUpdateCrawlDataButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
+        animePriceTrackerGUI.addMakeCsvsButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+
+                // TODO actually perform action
+
+                // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                animePriceTrackerGUI.stopRunBasicOperation();
+            }
+        });
 
         // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
         final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
