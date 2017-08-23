@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 
 /**
- * JPanel that draws a basic Gui for performing basic commands
+ * JPanel that draws a basic GUI for performing basic commands
  * that can also be performed from the command line interface
  * in AnimePriceTracker
  */
