@@ -30,11 +30,11 @@ public class AnimePriceTracker {
         // Check if user specified argument "gui" to indicate to directly open the GUI
         if(args.length >= 1 && "gui".compareTo(args[0].toLowerCase()) == 0) {
             animeCrawlerController.openGUI();
-            return;
         }
-
-        // Run the command line interface
-        runCommandLineInterface();
+        else {
+            // Run the command line interface
+            runCommandLineInterface();
+        }
 
         // Force program to exit (terminate any background processes which might still be running)
         System.exit(0);
