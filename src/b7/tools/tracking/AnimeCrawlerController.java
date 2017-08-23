@@ -161,35 +161,155 @@ public class AnimeCrawlerController {
         animePriceTrackerGUI.addParseBaseRightStufPageButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+
+                // Spawn and execute a new SwingWorker to call the appropriate method, and restore GUI controls when done processing
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        parseBaseRightStufPage();
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
 
         animePriceTrackerGUI.addVisitAllSentaiFilmworksPagesButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+
+                // Spawn and execute a new SwingWorker to call the appropriate method, and restore GUI controls when done processing
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        visitAllSentaiFilmworksPages();
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
 
         animePriceTrackerGUI.addVisitAllRightStufPagesButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+
+                // Spawn and execute a new SwingWorker to call the appropriate method, and restore GUI controls when done processing
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        visitAllRightStufPages();
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
 
         animePriceTrackerGUI.addUpdateCrawlDataButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+
+                // Spawn and execute a new SwingWorker to call the appropriate method, and restore GUI controls when done processing
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        runAnimeCrawlerControllerPriceUpdate();
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
 
         animePriceTrackerGUI.addMakeCsvsButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO actually perform action
+                // Set up GUI for running a method (lock down everything & capture output to text area)
+                animePriceTrackerGUI.startRunBasicOperation();
+                animePriceTrackerGUI.changeBasicOperationMessageLabel("Please do not close the window until this message changes to \"Done!\"");
+
+                // Spawn and execute a new SwingWorker to call the appropriate method, and restore GUI controls when done processing
+                SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        makeExcelCSVsForAnimeCrawlerControllerCrawlData();
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            // Re-enable all GUI components and reset System.out / System.err streams to defaults
+                            animePriceTrackerGUI.stopRunBasicOperation();
+                            animePriceTrackerGUI.changeBasicOperationMessageLabel("Done!");
+                        }
+                        catch (Exception ex) {
+                            // Do nothing
+                        }
+                    }
+                };
+                runMethodWorker.execute();
             }
         });
 
