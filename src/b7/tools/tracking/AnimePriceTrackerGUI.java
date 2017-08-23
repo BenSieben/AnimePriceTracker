@@ -69,54 +69,6 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         tabPane.addTab("Graph Product History", null, new JPanel(),
                 "Show graphs of product history");
 
-        // Making a pretend tab to add for testing things out
-        JPanel testButtonPanel = new JPanel();
-        final JButton testButton = new JButton("Press me!");
-        testButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Below command will freeze the GUI until it is completed
-                Thread thread = new Thread(){
-                    @Override
-                    public void run() {
-                        testButton.setEnabled(false);
-                        RightStufCrawler rightStufCrawler = new RightStufCrawler();
-                        try {
-                            sleep(5000);
-                        }
-                        catch(InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        rightStufCrawler.parseBasePage();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                testButton.setText("Done!");
-                                testButton.setEnabled(true);
-                            }
-                        });
-                    }
-                };
-                thread.start();
-                // The below code causes GUI to freeze up until thread created just above finishes
-                /*SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            thread.join();
-                        }
-                        catch(InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });*/
-            }
-        });
-        testButtonPanel.add(testButton);
-
-        tabPane.addTab("Sample Tab", null, testButtonPanel,
-                "Sample tab which is for testing purposes");
-
         // Add tabPane to this frame so it shows up
         add(tabPane);
 
