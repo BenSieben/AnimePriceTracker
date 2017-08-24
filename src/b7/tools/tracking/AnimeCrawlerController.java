@@ -3,6 +3,10 @@ package b7.tools.tracking;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Main controller of crawlers used for
@@ -313,38 +317,24 @@ public class AnimeCrawlerController {
             }
         });
 
-        // TODO set up buttons on the graph product panel
-        // Make some stuff up for testing (in select product from websites panel)
-        /*List<JRadioButton> sampleWebsites = new ArrayList<JRadioButton>();
-        List<JRadioButton> sampleProducts = new ArrayList<JRadioButton>();
-        for(int i = 0; i < 2; i++) {
-            JRadioButton button = new JRadioButton("website " + i);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Change");
-                    List<JRadioButton> newList = new ArrayList<>();
-                    newList.add(new JRadioButton("changed"));
-                    changeSelectWebsiteButtonGroupButtons(newList);
-                }
-            });
-            sampleWebsites.add(button);
-        }
-        for(int i = 0; i < 100; i++) {
-            JRadioButton button = new JRadioButton("website " + i);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Change");
-                    List<JRadioButton> newList = new ArrayList<>();
-                    newList.add(new JRadioButton("changed"));
-                    changeSelectProductButtonGroupButtons(newList);
-                }
-            });
-            sampleProducts.add(button);
-        }
-        changeSelectWebsiteButtonGroupButtons(sampleWebsites);
-        changeSelectProductButtonGroupButtons(sampleProducts);*/
+        // Set up buttons on the graph product panel
+        // Create product buttons
+        final List<JRadioButton> sentaiFilmworksProductButtons = createProductButtons(
+                sentaiFilmworksCrawler.getCrawlData(), animePriceTrackerGUI);
+        final List<JRadioButton> rightStufProductButtons = createProductButtons(
+                rightStufCrawler.getCrawlData(), animePriceTrackerGUI);
+
+        // Create website buttons
+        final List<JRadioButton> websiteButtons = createWebsiteButtons(
+                sentaiFilmworksProductButtons, rightStufProductButtons, animePriceTrackerGUI);
+
+        // Set Sentai Filmworks website (and first product in the Sentai Filmworks products) as selected
+        //websiteButtons.get(0).setSelected(true);
+        //sentaiFilmworksProductButtons.get(0).setSelected(true);
+
+        // Set the lists to be the initial buttons
+        animePriceTrackerGUI.changeSelectWebsiteButtonGroupButtons(websiteButtons);
+        animePriceTrackerGUI.changeSelectProductButtonGroupButtons(sentaiFilmworksProductButtons);
 
         // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
         final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
@@ -357,6 +347,73 @@ public class AnimeCrawlerController {
                 ex.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Creates product JRadioButtons in a List to send to the select product from websites panel
+     * @param crawlData the data to get products from
+     * @param gui the AnimePriceTrackerGUI to set product buttons for
+     * @return a list of JRadioButtons to use to list out all products from the given crawl data
+     */
+    private List<JRadioButton> createProductButtons(CrawlData crawlData, final AnimePriceTrackerGUI gui) {
+        List<JRadioButton> productButtons = new ArrayList<>();
+
+        // Make product buttons from the given crawl data
+        Map<String, Product> crawlDataProducts = crawlData.getProductMap();
+        Set<String> crawlDataKeys = crawlDataProducts.keySet();
+        for(String key : crawlDataKeys) {
+            final Product currentProduct = crawlDataProducts.get(key);
+            JRadioButton buttonToAdd = new JRadioButton(currentProduct.getProductName());
+            buttonToAdd.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Each product button changes the product that gets graphed on the line graph panel
+                    gui.changeProductLineGraphPanelProduct(currentProduct);
+                    gui.repaint();
+                }
+            });
+            productButtons.add(buttonToAdd);
+        }
+
+        return productButtons;
+    }
+
+    /**
+     * Creates website JRadioButtons in a List to send to the select product from websites panel
+     * @param sentaiFilmworksProducts list of JRadioButtons associated with Sentai Filmworks products
+     * @param rightStufProducts list of JRadioButtons associated with Right Stuf products
+     * @param gui the AnimePriceTrackerGUI to set website buttons for
+     */
+    private List<JRadioButton> createWebsiteButtons(final List<JRadioButton> sentaiFilmworksProducts,
+                                                    final List<JRadioButton> rightStufProducts,
+                                                    final AnimePriceTrackerGUI gui) {
+        List<JRadioButton> websiteButtons = new ArrayList<>();
+
+        // Create Sentai Filmworks button
+        JRadioButton sentaiFilmworksWebsiteButton = new JRadioButton("Sentai Filmworks");
+        sentaiFilmworksWebsiteButton.setSelected(true);
+        sentaiFilmworksWebsiteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Change product list to be Sentai Filmworks products on GUI
+                gui.changeSelectProductButtonGroupButtons(sentaiFilmworksProducts);
+            }
+        });
+
+        // Create Right Stuf button
+        JRadioButton rightStufWebsiteButton = new JRadioButton("Right Stuf");
+        rightStufWebsiteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Change product list to be Right Stuf products on GUI
+                gui.changeSelectProductButtonGroupButtons(rightStufProducts);
+            }
+        });
+
+        // Add buttons to the list and return it
+        websiteButtons.add(sentaiFilmworksWebsiteButton);
+        websiteButtons.add(rightStufWebsiteButton);
+        return websiteButtons;
     }
 
     /**
