@@ -46,9 +46,23 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        String currentCoordinates = "(" + x + ", " + y + ")";
-        g.drawString(currentCoordinates, 100, 100);
+
+        // Original pixel size of window (to scale the graph to panel re-sizing)
+        final double defaultWidth = 629.0;
+        final double defaultHeight = 621.0;
+
+        // Find current width / height of panel to determine scaling factors for width / height
+        double widthFactor = getWidth() / defaultWidth;
+        double heightFactor = getHeight() / defaultHeight;
+
         // TODO implement drawing actual graph
+        String currentCoordinates = "(" + x + ", " + y + ")";
+        g.drawString(currentCoordinates, (int)(100 * widthFactor), (int)(100 * heightFactor));
+        String productName = "No product selected";
+        if(currentProduct != null) {
+            productName = currentProduct.getProductName();
+        }
+        g.drawString(productName, (int)(100 * widthFactor), (int)(200 * heightFactor));
     }
 
     /**
