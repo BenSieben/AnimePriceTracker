@@ -313,6 +313,39 @@ public class AnimeCrawlerController {
             }
         });
 
+        // TODO set up buttons on the graph product panel
+        // Make some stuff up for testing (in select product from websites panel)
+        /*List<JRadioButton> sampleWebsites = new ArrayList<JRadioButton>();
+        List<JRadioButton> sampleProducts = new ArrayList<JRadioButton>();
+        for(int i = 0; i < 2; i++) {
+            JRadioButton button = new JRadioButton("website " + i);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Change");
+                    List<JRadioButton> newList = new ArrayList<>();
+                    newList.add(new JRadioButton("changed"));
+                    changeSelectWebsiteButtonGroupButtons(newList);
+                }
+            });
+            sampleWebsites.add(button);
+        }
+        for(int i = 0; i < 100; i++) {
+            JRadioButton button = new JRadioButton("website " + i);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Change");
+                    List<JRadioButton> newList = new ArrayList<>();
+                    newList.add(new JRadioButton("changed"));
+                    changeSelectProductButtonGroupButtons(newList);
+                }
+            });
+            sampleProducts.add(button);
+        }
+        changeSelectWebsiteButtonGroupButtons(sampleWebsites);
+        changeSelectProductButtonGroupButtons(sampleProducts);*/
+
         // Use a repeatedly-checking while loop on whether or not the GUI has been closed yet
         final int sleepTimeMillis = 1000;  // How long (milliseconds) to wait between checks on GUI closing state
         while(!animePriceTrackerGUI.hasClosed()) {
