@@ -48,27 +48,6 @@ public class SelectProductFromWebsitesPanel extends JPanel {
         // Add both "scrollable" sub-panels to this main panel
         add(selectWebsiteScroller);
         add(selectProductFromWebsiteScroller);
-
-        List<JRadioButton> sampleWebsites = new ArrayList<JRadioButton>();
-        List<JRadioButton> sampleProducts = new ArrayList<JRadioButton>();
-        for(int i = 0; i < 2; i++) {
-            JRadioButton button = new JRadioButton("website " + i);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Change");
-                    List<JRadioButton> newList = new ArrayList<>();
-                    newList.add(new JRadioButton("changed"));
-                    changeSelectWebsiteButtonGroupButtons(newList);
-                }
-            });
-            sampleWebsites.add(button);
-        }
-        for(int i = 0; i < 100; i++) {
-            sampleProducts.add(new JRadioButton("product " + i));
-        }
-        changeSelectWebsiteButtonGroupButtons(sampleWebsites);
-        changeSelectProductButtonGroupButtons(sampleProducts);
     }
 
     /**
@@ -76,27 +55,15 @@ public class SelectProductFromWebsitesPanel extends JPanel {
      * @param newWebsites list of the radio buttons to use as the website choices
      */
     protected void changeSelectWebsiteButtonGroupButtons(List<JRadioButton> newWebsites) {
-        // TODO properly swap out buttons for new one (or come up with alternate GUI strategy)
         if(newWebsites != null && newWebsites.size() > 0) {
-            // Remove old contents
-            selectWebsiteScroller.remove(selectWebsitePanel);
-            remove(selectWebsiteScroller);
-            remove(selectProductFromWebsiteScroller);
-            selectWebsiteButtonGroup = new ButtonGroup();
+            // Remove old contents of panel
+            removeAll();
 
             // Set up new scroller with new buttons
+            selectWebsiteButtonGroup = new ButtonGroup();
             selectWebsitePanel = new JPanel();
             selectWebsitePanel.setLayout(new GridLayout(0, 1));
             selectWebsiteScroller = new JScrollPane(selectWebsitePanel);  // Make panel "scrollable"
-
-            // Remove old buttons
-            /*Enumeration<AbstractButton> oldButtons = selectWebsiteButtonGroup.getElements();
-            while(oldButtons.hasMoreElements()) {
-                JRadioButton currentButton = (JRadioButton)oldButtons.nextElement();
-                System.out.println("OK");
-                selectWebsiteButtonGroup.remove(currentButton);
-                selectWebsitePanel.remove(currentButton);
-            }*/
 
             // Add new buttons
             for(JRadioButton button : newWebsites) {
@@ -107,7 +74,6 @@ public class SelectProductFromWebsitesPanel extends JPanel {
             // Add back the two main panels
             add(selectWebsiteScroller);
             add(selectProductFromWebsiteScroller);
-            requestFocus();
         }
     }
 
@@ -117,20 +83,24 @@ public class SelectProductFromWebsitesPanel extends JPanel {
      */
     protected void changeSelectProductButtonGroupButtons(List<JRadioButton> newProducts) {
         if(newProducts != null && newProducts.size() > 0) {
-            // Remove old buttons
-            Enumeration<AbstractButton> oldButtons = selectProductButtonGroup.getElements();
-            while(oldButtons.hasMoreElements()) {
-                selectProductButtonGroup.remove(oldButtons.nextElement());
-            }
+            // Remove old contents of panel
+            removeAll();
+
+            // Set up new scroller with new buttons
+            selectProductButtonGroup = new ButtonGroup();
+            selectProductFromWebsitePanel = new JPanel();
+            selectProductFromWebsitePanel.setLayout(new GridLayout(0, 1));
+            selectProductFromWebsiteScroller = new JScrollPane(selectProductFromWebsitePanel);  // Make panel "scrollable"
 
             // Add new buttons
-            selectProductButtonGroup.clearSelection();
             for(JRadioButton button : newProducts) {
                 selectProductButtonGroup.add(button);
                 selectProductFromWebsitePanel.add(button);
             }
 
-            repaint();
+            // Add back the two main panels
+            add(selectWebsiteScroller);
+            add(selectProductFromWebsiteScroller);
         }
     }
 }
