@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 /**
  * Class to make a GUI interface for the Anime
@@ -60,7 +61,7 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         tabPane.addTab("Basic Commands", null, basicOperationsPanel,
                 "Perform commands that can also be found on the command line interface");
 
-        // TODO Create tab for graphing price history of products
+        // Create tab for graphing price history of products
         graphPanel = new AnimePriceTrackerGraphPanel();
         tabPane.addTab("Graph Product History", null, graphPanel,
                 "Show graphs of product history");
@@ -77,6 +78,30 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         setVisible(true);
 
         hasClosed = false;
+    }
+
+    /**
+     * Sets the Product being graphed by the ProductLineGraphPanel to be the given product
+     * @param product the new Product to graph
+     */
+    protected void changeProductLineGraphPanelProduct(Product product) {
+        graphPanel.changeProductLineGraphPanelProduct(product);
+    }
+
+    /**
+     * Changes the radio buttons associated with the select website button group on the select product from websites panel in the graph panel
+     * @param newWebsites list of the radio buttons to use as the new website choices
+     */
+    protected void changeSelectWebsiteButtonGroupButtons(java.util.List<JRadioButton> newWebsites) {
+        graphPanel.changeSelectWebsiteButtonGroupButtons(newWebsites);
+    }
+
+    /**
+     * Changes the radio buttons associated with the select product from website button group on the select product from websites panel in the graph panel
+     * @param newProducts list of the radio buttons to use as the new product choices
+     */
+    protected void changeSelectProductButtonGroupButtons(List<JRadioButton> newProducts) {
+        graphPanel.changeSelectProductButtonGroupButtons(newProducts);
     }
 
     /**

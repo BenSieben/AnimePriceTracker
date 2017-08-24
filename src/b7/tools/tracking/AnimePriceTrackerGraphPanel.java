@@ -3,6 +3,7 @@ package b7.tools.tracking;
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 /**
  * JPanel that draws a basic GUI for drawing
@@ -66,5 +67,21 @@ public class AnimePriceTrackerGraphPanel extends JPanel {
      */
     protected void changeProductLineGraphPanelProduct(Product product) {
         productLineGraphPanel.setCurrentProduct(product);
+    }
+
+    /**
+     * Changes the radio buttons associated with the select website button group on the select product from websites panel
+     * @param newWebsites list of the radio buttons to use as the new website choices
+     */
+    protected void changeSelectWebsiteButtonGroupButtons(java.util.List<JRadioButton> newWebsites) {
+        selectProductFromWebsitesPanel.changeSelectWebsiteButtonGroupButtons(newWebsites);
+    }
+
+    /**
+     * Changes the radio buttons associated with the select product from website button group on the select product from websites panel
+     * @param newProducts list of the radio buttons to use as the new product choices
+     */
+    protected void changeSelectProductButtonGroupButtons(List<JRadioButton> newProducts) {
+        selectProductFromWebsitesPanel.changeSelectProductButtonGroupButtons(newProducts);
     }
 }
