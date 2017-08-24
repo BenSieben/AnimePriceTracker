@@ -61,7 +61,6 @@ public class RightStufCrawler extends WebCrawler {
      * @return a copy of the Crawl data
      */
     public CrawlData getCrawlData() {
-        System.out.println(crawlData);
         return new CrawlData(crawlData.getTitle(), crawlData.getProductMap());
     }
 
