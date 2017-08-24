@@ -31,6 +31,7 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
     // Various swing components used in the GUI
     private JTabbedPane tabPane;
     private AnimePriceTrackerBasicOperationsPanel basicOperationsPanel;
+    private AnimePriceTrackerGraphPanel graphPanel;
 
     /**
      * Constructs a new AnimePriceTrackerGUI
@@ -54,13 +55,14 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
         // Make tabbed pane to let users have tabs to switch between
         tabPane = new JTabbedPane();
 
-        // TODO Create tab for basic CLI operations and add it to the tabPane
+        // Create tab for basic CLI operations and add it to the tabPane
         basicOperationsPanel = new AnimePriceTrackerBasicOperationsPanel(frameOutputStream);
         tabPane.addTab("Basic Commands", null, basicOperationsPanel,
                 "Perform commands that can also be found on the command line interface");
 
         // TODO Create tab for graphing price history of products
-        tabPane.addTab("Graph Product History", null, new JPanel(),
+        graphPanel = new AnimePriceTrackerGraphPanel();
+        tabPane.addTab("Graph Product History", null, graphPanel,
                 "Show graphs of product history");
 
         // Add tabPane to this frame so it shows up
