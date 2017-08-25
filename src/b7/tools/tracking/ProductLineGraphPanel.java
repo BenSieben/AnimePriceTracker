@@ -107,10 +107,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         double highestPrice = Double.MIN_VALUE;
         for(int i = 0; i < currentProductHistory.size(); i++) {
             PriceDateInfo currentInfo = currentProductHistory.get(i);
+
             if(lowestPrice > currentInfo.getPrice()) {
                 lowestPrice = currentInfo.getPrice();
                 lowestPriceString = currentInfo.formattedPrice(null);
             }
+
             if(highestPrice < currentInfo.getPrice()) {
                 highestPrice = currentInfo.getPrice();
                 highestPriceString = currentInfo.formattedPrice(null);
@@ -121,6 +123,22 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         String latestDate = currentProductHistory.get(currentProductHistory.size() - 1).getEndDate();
 
         // TODO Draw lowest / highest price and date values onto graph
+        if(lowestPrice == highestPrice) {
+            // TODO Handle special case where lowest and highest price are the same
+            return;
+        }
+
+        g.drawString(lowestPriceString, (int)(5 * widthFactor), (int)(540 * heightFactor));
+        g.drawLine((int)(55 * widthFactor), (int)(530 * heightFactor), (int)(65 * widthFactor), (int)(530 * heightFactor));
+
+        g.drawString(highestPriceString, (int)(5 * widthFactor), (int)(75 * heightFactor));
+        g.drawLine((int)(55 * widthFactor), (int)(70 * heightFactor), (int)(65 * widthFactor), (int)(70 * heightFactor));
+
+        g.drawString(earliestDate, (int)(65 * widthFactor), (int)(560 * heightFactor));
+        g.drawLine((int)(70 * widthFactor), (int)(535 * heightFactor), (int)(70 * widthFactor), (int)(545 * heightFactor));
+
+        g.drawString(latestDate, (int)(525 * widthFactor), (int)(560 * heightFactor));
+        g.drawLine((int)(530 * widthFactor), (int)(535 * heightFactor), (int)(530 * widthFactor), (int)(545 * heightFactor));
     }
 
     /**
