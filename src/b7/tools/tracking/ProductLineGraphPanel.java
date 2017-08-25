@@ -81,17 +81,17 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         // Continue drawing graph if current product is not null
         if(currentProduct != null) {
             // Draw the different components of the graph
-            drawAxes(g, widthFactor, heightFactor);
+            drawGraph(g, widthFactor, heightFactor);
         }
     }
 
     /**
-     * Draws the x-axis (dates) and y-axis (prices) for the currentProduct
+     * Draws the line graph for the currentProduct
      * @param g the Graphics object from paintComponent
      * @param widthFactor the width factor computed in paintComponent
      * @param heightFactor the height factor computed in paintComponent
      */
-    private void drawAxes(Graphics g, double widthFactor, double heightFactor) {
+    private void drawGraph(Graphics g, double widthFactor, double heightFactor) {
         // Draw x-axis
         g.drawLine((int)(40 * widthFactor), (int)(540 * heightFactor), (int)(540 * widthFactor), (int)(540 * heightFactor));
         g.drawString("Date", (int)(550 * widthFactor), (int)(545 * heightFactor));
