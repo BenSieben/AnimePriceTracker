@@ -143,14 +143,22 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         if(earliestDate.compareTo(latestDate) == 0) {
             // Handle special case where earliest and latest date are the same (and so price is also the same)
             // Draw x-axis and y-axis tick mark in center of x-axis and y-axis lines
+            g.drawString(lowestPriceString,
+                    (int)((X_AXIS_START_X - 55) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 + 5) * heightFactor));
             g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
                     (int)((X_AXIS_START_X + 5) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
+
+            g.drawString(earliestDate,
+                    (int)((X_AXIS_START_X + GRAPH_WIDTH / 2 - 35) * widthFactor),
+                    (int)((Y_AXIS_END_Y + 20) * heightFactor));
             g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_END_Y - 5) * heightFactor),
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_END_Y + 5) * heightFactor));
+
             g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
@@ -163,7 +171,18 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         if(lowestPrice == highestPrice) {
             // TODO Handle special case where lowest and highest price are the same
+            // Draw y-axis tick mark for the one price the product has
+            g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
+                    (int)((X_AXIS_START_X + 5) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
 
+            // Draw x-axis tick marks for start / end dates
+            g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+            g2d.drawLine((int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+
+            g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+            g2d.drawLine((int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
             // Reset font back to original font
             g.setFont(originalFont);
