@@ -92,12 +92,30 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
      * @param heightFactor the height factor computed in paintComponent
      */
     private void drawGraph(Graphics g, double widthFactor, double heightFactor) {
+        // Change font of Graphics
+        Font originalFont = g.getFont();
+        Font newFont = new Font("Arial", Font.BOLD, (int)(12 * heightFactor));
+        g.setFont(newFont);
+
+        // Create Graphics2D object from Graphics g
+        // Set 5 px thickness
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setStroke(new BasicStroke(2));
+
+        // Some constants for where x-axis / y-axis start and stop drawing
+        final int X_AXIS_START_X = 60;
+        final int X_AXIS_END_X = 540;
+        final int Y_AXIS_START_Y = 60;
+        final int Y_AXIS_END_Y = 540;
+        final int GRAPH_WIDTH = X_AXIS_END_X - X_AXIS_START_X;
+        final int GRAPH_HEIGHT = Y_AXIS_END_Y - Y_AXIS_START_Y;
+
         // Draw x-axis
-        g.drawLine((int)(40 * widthFactor), (int)(540 * heightFactor), (int)(540 * widthFactor), (int)(540 * heightFactor));
+        g2d.drawLine((int)(X_AXIS_START_X * widthFactor), (int)(Y_AXIS_END_Y * heightFactor), (int)(X_AXIS_END_X * widthFactor), (int)(Y_AXIS_END_Y * heightFactor));
         g.drawString("Date", (int)(550 * widthFactor), (int)(545 * heightFactor));
 
         // Draw y-axis
-        g.drawLine((int)(60 * widthFactor), (int)(60 * heightFactor), (int)(60 * widthFactor), (int)(560 * heightFactor));
+        g2d.drawLine((int)(X_AXIS_START_X * widthFactor), (int)(Y_AXIS_START_Y * heightFactor), (int)(X_AXIS_START_X * widthFactor), (int)(Y_AXIS_END_Y * heightFactor));
         g.drawString("Price ($)", (int)(40 * widthFactor), (int)(50 * heightFactor));
 
         // Compute lowest / highest price and date values
@@ -122,29 +140,52 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         String earliestDate = currentProductHistory.get(0).getStartDate();
         String latestDate = currentProductHistory.get(currentProductHistory.size() - 1).getEndDate();
 
-        // TODO Draw lowest / highest price and date values onto graph
         if(earliestDate.compareTo(latestDate) == 0) {
-            // TODO Handle special case where earliest and latest date are the same (and so price is also the same)
+            // Handle special case where earliest and latest date are the same (and so price is also the same)
+            // Draw x-axis and y-axis tick mark in center of x-axis and y-axis lines
+            g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
+                    (int)((X_AXIS_START_X + 5) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
+            g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
+                    (int)((Y_AXIS_END_Y - 5) * heightFactor),
+                    (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
+                    (int)((Y_AXIS_END_Y + 5) * heightFactor));
+            g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
+                    (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
+
+            // Reset font back to original font
+            g.setFont(originalFont);
             return;
         }
 
         if(lowestPrice == highestPrice) {
             // TODO Handle special case where lowest and highest price are the same
+
+
+            // Reset font back to original font
+            g.setFont(originalFont);
             return;
         }
 
+        // TODO Draw lowest / highest price and date values onto graph
         // Normal case: multiple prices and multiple dates
-        g.drawString(lowestPriceString, (int)(5 * widthFactor), (int)(540 * heightFactor));
-        g.drawLine((int)(55 * widthFactor), (int)(530 * heightFactor), (int)(65 * widthFactor), (int)(530 * heightFactor));
+        // Draw x-axis and y-axis tick marks denoting highest / lowest prices and dates for the current product
+        g.drawString(lowestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)((Y_AXIS_END_Y - 20) * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)((Y_AXIS_END_Y - 20) * heightFactor));
 
-        g.drawString(highestPriceString, (int)(5 * widthFactor), (int)(75 * heightFactor));
-        g.drawLine((int)(55 * widthFactor), (int)(70 * heightFactor), (int)(65 * widthFactor), (int)(70 * heightFactor));
+        g.drawString(highestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_START_Y + 25) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)((Y_AXIS_START_Y + 20) * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)((Y_AXIS_START_Y + 20) * heightFactor));
 
-        g.drawString(earliestDate, (int)(65 * widthFactor), (int)(560 * heightFactor));
-        g.drawLine((int)(70 * widthFactor), (int)(535 * heightFactor), (int)(70 * widthFactor), (int)(545 * heightFactor));
+        g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-        g.drawString(latestDate, (int)(525 * widthFactor), (int)(560 * heightFactor));
-        g.drawLine((int)(530 * widthFactor), (int)(535 * heightFactor), (int)(530 * widthFactor), (int)(545 * heightFactor));
+        g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+
+        g.setFont(originalFont);
     }
 
     /**
