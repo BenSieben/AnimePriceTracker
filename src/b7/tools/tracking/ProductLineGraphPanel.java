@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.List;
 
 /**
  * Class for illustrating a given Product
@@ -77,8 +78,11 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g.drawString(productName, (int)(5 * widthFactor), (int)(25 * heightFactor));
         g.setFont(originalFont);
 
-        // Draw the different components of the graph
-        drawAxes(g, widthFactor, heightFactor);
+        // Continue drawing graph if current product is not null
+        if(currentProduct != null) {
+            // Draw the different components of the graph
+            drawAxes(g, widthFactor, heightFactor);
+        }
     }
 
     /**
@@ -94,9 +98,29 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         // Draw y-axis
         g.drawLine((int)(60 * widthFactor), (int)(60 * heightFactor), (int)(60 * widthFactor), (int)(560 * heightFactor));
-        g.drawString("Price", (int)(45 * widthFactor), (int)(50 * heightFactor));
+        g.drawString("Price ($)", (int)(40 * widthFactor), (int)(50 * heightFactor));
 
-        // TODO compute lowest / highest price and date values
+        // Compute lowest / highest price and date values
+        List<PriceDateInfo> currentProductHistory = currentProduct.getPriceHistory();
+        String lowestPriceString = null, highestPriceString = null;
+        double lowestPrice = Double.MAX_VALUE;
+        double highestPrice = Double.MIN_VALUE;
+        for(int i = 0; i < currentProductHistory.size(); i++) {
+            PriceDateInfo currentInfo = currentProductHistory.get(i);
+            if(lowestPrice > currentInfo.getPrice()) {
+                lowestPrice = currentInfo.getPrice();
+                lowestPriceString = currentInfo.formattedPrice(null);
+            }
+            if(highestPrice < currentInfo.getPrice()) {
+                highestPrice = currentInfo.getPrice();
+                highestPriceString = currentInfo.formattedPrice(null);
+            }
+        }
+
+        String earliestDate = currentProductHistory.get(0).getStartDate();
+        String latestDate = currentProductHistory.get(currentProductHistory.size() - 1).getEndDate();
+
+        // TODO Draw lowest / highest price and date values onto graph
     }
 
     /**
