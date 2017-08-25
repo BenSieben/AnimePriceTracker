@@ -105,10 +105,28 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         // Some constants for where x-axis / y-axis start and stop drawing
         final int X_AXIS_START_X = 60;
         final int X_AXIS_END_X = 540;
+
         final int Y_AXIS_START_Y = 60;
         final int Y_AXIS_END_Y = 540;
+
         final int GRAPH_WIDTH = X_AXIS_END_X - X_AXIS_START_X;
         final int GRAPH_HEIGHT = Y_AXIS_END_Y - Y_AXIS_START_Y;
+
+        // Where we draw tick marks on y-axis for normal product
+        final int TOP_PRICE_TICK_Y = Y_AXIS_START_Y + 20;
+        final int BOT_PRICE_TICK_Y = Y_AXIS_END_Y - 20;
+
+        // Where we draw tick marks on x-axis for normal product
+        final int START_DATE_TICK_X = X_AXIS_START_X + 20;
+        final int END_DATE_TICK_X = X_AXIS_END_X - 20;
+
+        // Distance between the ticks in horizontal and vertical measurements
+        final int TICK_WIDTH = END_DATE_TICK_X - START_DATE_TICK_X;
+        final int TICK_HEIGHT = BOT_PRICE_TICK_Y - TOP_PRICE_TICK_Y;
+
+        // Constant for line color on line graph
+        final Color LINE_COLOR = new Color(10, 93, 201);
+        Color originalColor = g.getColor();
 
         // Draw x-axis
         g2d.drawLine((int)(X_AXIS_START_X * widthFactor), (int)(Y_AXIS_END_Y * heightFactor), (int)(X_AXIS_END_X * widthFactor), (int)(Y_AXIS_END_Y * heightFactor));
@@ -159,19 +177,24 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
+            g.setColor(LINE_COLOR);
             g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
 
-            // Reset font back to original font
+            // Reset graphics back to original font / color
             g.setFont(originalFont);
+            g.setColor(originalColor);
             return;
         }
 
         if(lowestPrice == highestPrice) {
-            // TODO Handle special case where lowest and highest price are the same
+            // Handle special case where lowest and highest price are the same
             // Draw y-axis tick mark for the one price the product has
+            g.drawString(lowestPriceString,
+                    (int)((X_AXIS_START_X - 55) * widthFactor),
+                    (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 + 5) * heightFactor));
             g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
                     (int)((X_AXIS_START_X + 5) * widthFactor),
@@ -179,13 +202,18 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
             // Draw x-axis tick marks for start / end dates
             g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
-            g2d.drawLine((int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+            g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
             g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
-            g2d.drawLine((int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+            g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-            // Reset font back to original font
+            // Draw line graph (single, flat line)
+            g.setColor(LINE_COLOR);
+            g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
+
+            // Reset graphics back to original font / color
             g.setFont(originalFont);
+            g.setColor(originalColor);
             return;
         }
 
@@ -193,18 +221,20 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         // Normal case: multiple prices and multiple dates
         // Draw x-axis and y-axis tick marks denoting highest / lowest prices and dates for the current product
         g.drawString(lowestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
-        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)((Y_AXIS_END_Y - 20) * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)((Y_AXIS_END_Y - 20) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(BOT_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(BOT_PRICE_TICK_Y * heightFactor));
 
         g.drawString(highestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_START_Y + 25) * heightFactor));
-        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)((Y_AXIS_START_Y + 20) * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)((Y_AXIS_START_Y + 20) * heightFactor));
+        g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor));
 
         g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
-        g2d.drawLine((int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_START_X + 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+        g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
         g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
-        g2d.drawLine((int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)((X_AXIS_END_X - 20) * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+        g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
+        // Reset graphics back to original font / color
         g.setFont(originalFont);
+        g.setColor(originalColor);
     }
 
     /**
