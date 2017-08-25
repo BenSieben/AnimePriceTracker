@@ -14,8 +14,8 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
     // The product to graph
     private Product currentProduct;
 
-    private int x;
-    private int y;
+    // Current coordinates of mouse
+    private int x, y;
 
     /**
      * Constructs a new ProductLineGraphPanel with no product to graph
@@ -47,7 +47,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Original pixel size of window (to scale the graph to panel re-sizing)
+        // Original pixel size of window (to scale the graph to any panel re-sizing)
         final double defaultWidth = 629.0;
         final double defaultHeight = 621.0;
 
@@ -57,12 +57,46 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         // TODO implement drawing actual graph
         String currentCoordinates = "(" + x + ", " + y + ")";
-        g.drawString(currentCoordinates, (int)(100 * widthFactor), (int)(100 * heightFactor));
+        g.drawString(currentCoordinates, (int)(10 * widthFactor), (int)(600 * heightFactor));
         String productName = "No product selected";
         if(currentProduct != null) {
+            // Max length of what we will draw of title
+            final int MAX_TITLE_LENGTH = 65;
+
+            // Retrieve product name and trim it down if it is too long
             productName = currentProduct.getProductName();
+            if(productName.length() > MAX_TITLE_LENGTH) {
+                productName = productName.substring(0, MAX_TITLE_LENGTH - 3) + "...";  // -3 because we include "..."
+            }
         }
-        g.drawString(productName, (int)(100 * widthFactor), (int)(200 * heightFactor));
+
+        // Draw product title
+        Font originalFont = g.getFont();
+        Font titleFont = new Font("Arial", Font.BOLD, (int)(20 * heightFactor));
+        g.setFont(titleFont);
+        g.drawString(productName, (int)(5 * widthFactor), (int)(25 * heightFactor));
+        g.setFont(originalFont);
+
+        // Draw the different components of the graph
+        drawAxes(g, widthFactor, heightFactor);
+    }
+
+    /**
+     * Draws the x-axis (dates) and y-axis (prices) for the currentProduct
+     * @param g the Graphics object from paintComponent
+     * @param widthFactor the width factor computed in paintComponent
+     * @param heightFactor the height factor computed in paintComponent
+     */
+    private void drawAxes(Graphics g, double widthFactor, double heightFactor) {
+        // Draw x-axis
+        g.drawLine((int)(40 * widthFactor), (int)(540 * heightFactor), (int)(540 * widthFactor), (int)(540 * heightFactor));
+        g.drawString("Date", (int)(550 * widthFactor), (int)(545 * heightFactor));
+
+        // Draw y-axis
+        g.drawLine((int)(60 * widthFactor), (int)(60 * heightFactor), (int)(60 * widthFactor), (int)(560 * heightFactor));
+        g.drawString("Price", (int)(45 * widthFactor), (int)(50 * heightFactor));
+
+        // TODO compute lowest / highest price and date values
     }
 
     /**
