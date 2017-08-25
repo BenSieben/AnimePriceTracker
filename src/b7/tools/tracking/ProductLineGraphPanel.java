@@ -123,11 +123,17 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         String latestDate = currentProductHistory.get(currentProductHistory.size() - 1).getEndDate();
 
         // TODO Draw lowest / highest price and date values onto graph
+        if(earliestDate.compareTo(latestDate) == 0) {
+            // TODO Handle special case where earliest and latest date are the same (and so price is also the same)
+            return;
+        }
+
         if(lowestPrice == highestPrice) {
             // TODO Handle special case where lowest and highest price are the same
             return;
         }
 
+        // Normal case: multiple prices and multiple dates
         g.drawString(lowestPriceString, (int)(5 * widthFactor), (int)(540 * heightFactor));
         g.drawLine((int)(55 * widthFactor), (int)(530 * heightFactor), (int)(65 * widthFactor), (int)(530 * heightFactor));
 
