@@ -35,7 +35,7 @@ public class AnimePriceTrackerGraphPanel extends JPanel {
         // Make selection panels
         JPanel mainSelectProductFromWebsitesPanel = new JPanel();
         mainSelectProductFromWebsitesPanel.setLayout(new BorderLayout());
-        JLabel selectProductFromWebsitesLabel = new JLabel("Select product from website(s)");
+        JLabel selectProductFromWebsitesLabel = new JLabel("Select a product from a website");
         selectProductFromWebsitesPanel = new SelectProductFromWebsitesPanel();
         mainSelectProductFromWebsitesPanel.add(selectProductFromWebsitesLabel, BorderLayout.NORTH);
         mainSelectProductFromWebsitesPanel.add(selectProductFromWebsitesPanel, BorderLayout.CENTER);
