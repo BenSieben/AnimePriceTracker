@@ -217,7 +217,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             return;
         }
 
-        // TODO Draw lowest / highest price and date values onto graph
+        // Draw lowest / highest price and date values onto graph
         // Normal case: multiple prices and multiple dates
         // Draw x-axis and y-axis tick marks denoting highest / lowest prices and dates for the current product
         g.drawString(lowestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
@@ -231,6 +231,27 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
+
+        // Find difference in lowest / highest prices and dates (to scale our line graph drawing accurately)
+        double totalPriceDifference = highestPrice - lowestPrice;
+        long earliestDateInMillis = PriceDateInfo.findMillisFromDateString(earliestDate);
+        long latestDateInMillis = PriceDateInfo.findMillisFromDateString(latestDate);
+        long totalDateDifferenceInMillis = latestDateInMillis - earliestDateInMillis;
+
+        // Loop through all price date info objects in current product history to graph them
+        for (int i = 0; i < currentProductHistory.size(); i++) {
+            PriceDateInfo currentInfo = currentProductHistory.get(i);
+
+            // Find y-coordinate to draw current info at
+            double currentPriceDifference = currentInfo.getPrice() - lowestPrice;
+            int lineYCoordinate = (int)((BOT_PRICE_TICK_Y - ((currentPriceDifference / totalPriceDifference) * TICK_HEIGHT)) * heightFactor);
+
+            // TODO Find x-coordinates to draw current info at
+
+            if(i != currentProductHistory.size() - 1) {
+                // TODO Draw vertical line to partition different price date info segments
+            }
+        }
 
         // Reset graphics back to original font / color
         g.setFont(originalFont);
