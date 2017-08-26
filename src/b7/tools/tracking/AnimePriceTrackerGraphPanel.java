@@ -2,7 +2,6 @@ package b7.tools.tracking;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 /**
@@ -66,7 +65,7 @@ public class AnimePriceTrackerGraphPanel extends JPanel {
      * @param product the new Product to graph
      */
     protected void changeProductLineGraphPanelProduct(Product product) {
-        productLineGraphPanel.setCurrentProduct(product);
+        productLineGraphPanel.setProduct(product);
     }
 
     /**
