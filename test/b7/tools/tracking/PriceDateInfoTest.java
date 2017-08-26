@@ -169,6 +169,29 @@ public class PriceDateInfoTest {
     }
 
     @Test
+    public void testFindMillisFromDateString1() {
+        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
+
+        String currentDate = PriceDateInfo.findCurrentDateString();
+
+        long currentTime = System.currentTimeMillis();
+        long currentDateInMillis = PriceDateInfo.findMillisFromDateString(currentDate);
+
+        // The two time measurement should be less than a day's worth of milliseconds apart
+        assertTrue(Math.abs(currentTime - currentDateInMillis) < MILLISECONDS_IN_A_DAY);
+    }
+
+    @Test
+    public void testFindMillisFromDateString2() {
+        long expectedResult = -1;
+
+        String badDateString = "2017-08-01 10:50";
+        long badDateMillis = PriceDateInfo.findMillisFromDateString(badDateString);
+
+        assertTrue(expectedResult == badDateMillis);
+    }
+
+    @Test
     public void testEquals() {
         PriceDateInfo priceDateInfo1 = new PriceDateInfo("2017-08-08", "2017-08-10", 19.99);
         PriceDateInfo priceDateInfo2 = new PriceDateInfo("2017-08-08", "2017-08-10", 19.99);

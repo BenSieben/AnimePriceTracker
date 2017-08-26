@@ -1,5 +1,6 @@
 package b7.tools.tracking;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -154,6 +155,37 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         Date date = new Date(dateInMilliseconds);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return simpleDateFormat.format(date);
+    }
+
+    /**
+     * Takes a date string (in proper format YYYY-MM-DD) and gives back the time
+     * in milliseconds for the beginning of that date
+     * @param dateString the date string to find the milliseconds of
+     * @return the milliseconds of the given date if it is a valid format, or -1 if the date string could
+     * not be parsed
+     */
+    public static long findMillisFromDateString(String dateString) {
+        // Make sure the date string is valid
+        // Make sure the newDate is valid
+        String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
+        boolean matches = Pattern.matches(pattern, dateString);
+        if(dateString == null || !matches) {
+            return -1;
+        }
+
+        // Create date with given date string and use a SimpleDateFormat to convert it into a date object,
+        //   and then use that date object to get the time in milliseconds for the date string
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = simpleDateFormat.parse(dateString);
+            return date.getTime();
+        }
+        catch(ParseException ex) {
+            // Uncomment below to print error statement on parse exception
+            //System.err.println("[ERROR] Could not parse given date string " + dateString);
+            //ex.printStackTrace();
+        }
+        return -1;
     }
 
     /**
