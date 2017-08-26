@@ -98,9 +98,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g.setFont(newFont);
 
         // Create Graphics2D object from Graphics g
-        // Set 5 px thickness
         Graphics2D g2d = (Graphics2D)g;
-        g2d.setStroke(new BasicStroke(2));
+        Stroke regularStroke = new BasicStroke(2.0f);  // 2px thick solid line
+        // Create dotted kind of stroke to use when partitioning different price date info objects in current product history
+        final float[] dashArray = {10.0f};
+        Stroke dottedStroke = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, dashArray, 0.0f);
+        g2d.setStroke(regularStroke);
 
         // Some constants for where x-axis / y-axis start and stop drawing
         final int X_AXIS_START_X = 60;
@@ -125,7 +128,8 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         final int TICK_HEIGHT = BOT_PRICE_TICK_Y - TOP_PRICE_TICK_Y;
 
         // Constant for line color on line graph
-        final Color LINE_COLOR = new Color(10, 93, 201);
+        final Color lineColor = new Color(10, 93, 201);
+        final Color dashedLineColor = new Color(234, 115, 4);
         Color originalColor = g.getColor();
 
         // Draw x-axis
@@ -177,7 +181,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-            g.setColor(LINE_COLOR);
+            g.setColor(lineColor);
             g.drawLine((int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor),
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
@@ -208,7 +212,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
             // Draw line graph (single, flat line)
-            g.setColor(LINE_COLOR);
+            g.setColor(lineColor);
             g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
 
             // Reset graphics back to original font / color
@@ -246,10 +250,24 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             double currentPriceDifference = currentInfo.getPrice() - lowestPrice;
             int lineYCoordinate = (int)((BOT_PRICE_TICK_Y - ((currentPriceDifference / totalPriceDifference) * TICK_HEIGHT)) * heightFactor);
 
-            // TODO Find x-coordinates to draw current info at
+            // TODO fix x-coordinate math (one-day price date infos draw a single dot, which is no good)
+            // Find x-coordinates to draw current info at
+            long currentStartDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getStartDate()) - earliestDateInMillis;
+            long currentEndDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getEndDate()) - earliestDateInMillis;
+            int lineXStartCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentStartDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
+            int lineXEndCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentEndDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
+
+            g.setColor(lineColor);
+            g2d.drawLine(lineXStartCoordinate, lineYCoordinate, lineXEndCoordinate, lineYCoordinate);
 
             if(i != currentProductHistory.size() - 1) {
-                // TODO Draw vertical line to partition different price date info segments
+                // Draw vertical line to partition different price date info segments
+                g2d.setStroke(dottedStroke);
+                g.setColor(dashedLineColor);
+                g2d.drawLine(lineXEndCoordinate, (int)(TOP_PRICE_TICK_Y * heightFactor), lineXEndCoordinate, (int)(BOT_PRICE_TICK_Y * heightFactor));
+
+                g2d.setStroke(regularStroke);
+                g.setColor(originalColor);
             }
         }
 
