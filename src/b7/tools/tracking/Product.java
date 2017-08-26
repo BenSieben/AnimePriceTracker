@@ -1,5 +1,7 @@
 package b7.tools.tracking;
 
+import b7.tools.DateTool;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -118,7 +120,7 @@ public class Product {
                 }
                 else {  // p1 is cheaper or more expensive than p2 (we do same thing in both situations)
                     // set p2's start date to a day after p1's end date to resolve duplicate entries on same date(s)
-                    p2.setStartDate(PriceDateInfo.findDateOffset(p1.getEndDate(), 1));
+                    p2.setStartDate(DateTool.findDateOffset(p1.getEndDate(), 1));
                     mergedPriceDateList.add(p1);
                     mergedPriceDateList.add(p2);
                 }
@@ -142,13 +144,13 @@ public class Product {
             int p1EndVSP2End = p1.getEndDate().compareTo(p2.getEndDate());
             if(p1EndVSP2End < 0) {  // p1 ends before p2 ends
                 // move p1's end date to just before p2's start date to fix any date gap
-                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
+                p1.setEndDate(DateTool.findDateOffset(p2.getStartDate(), -1));
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
             }
             else if(p1EndVSP2End == 0) {  // p1 ends same day as p2 ends
                 // move p1's end date to just before p2's start date to fix duplicate date data
-                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
+                p1.setEndDate(DateTool.findDateOffset(p2.getStartDate(), -1));
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
             }
@@ -156,8 +158,8 @@ public class Product {
                 // if p1 ends after p2 ends, then we make three PriceDateInfo objects
                 //   to fit p2 in the middle of p1 but preserve p1's part that comes after p2
                 String originalP1EndDate = p1.getEndDate();
-                p1.setEndDate(PriceDateInfo.findDateOffset(p2.getStartDate(), -1));
-                PriceDateInfo p3 = new PriceDateInfo(PriceDateInfo.findDateOffset(p2.getEndDate(), 1),
+                p1.setEndDate(DateTool.findDateOffset(p2.getStartDate(), -1));
+                PriceDateInfo p3 = new PriceDateInfo(DateTool.findDateOffset(p2.getEndDate(), 1),
                         originalP1EndDate, p1.getPrice());
                 mergedPriceDateList.add(p1);
                 mergedPriceDateList.add(p2);
@@ -166,6 +168,44 @@ public class Product {
             return mergedPriceDateList;
         }
         return mergedPriceDateList;  // Technically impossible to get here, but needed to satisfy compiler
+    }
+
+    /**
+     * Finds lowest price amongst all PriceDateInfo objects
+     * in this Product's price history
+     * @return the lowest price recorded for this Product (returns 0 if price history is empty)
+     */
+    public double findLowestPrice() {
+        if(priceHistory.size() == 0) {
+            return 0;
+        }
+
+        double lowestPrice = priceHistory.get(0).getPrice();
+        for (int i = 1; i < priceHistory.size(); i++) {
+            if(lowestPrice > priceHistory.get(i).getPrice()) {
+                lowestPrice = priceHistory.get(i).getPrice();
+            }
+        }
+        return lowestPrice;
+    }
+
+    /**
+     * Finds highest price amongst all PriceDateInfo objects
+     * in this Product's price history
+     * @return the highest price recorded for this Product (returns 0 if price history is empty)
+     */
+    public double findHighestPrice() {
+        if(priceHistory.size() == 0) {
+            return 0;
+        }
+
+        double highestPrice = priceHistory.get(0).getPrice();
+        for (int i = 1; i < priceHistory.size(); i++) {
+            if(highestPrice < priceHistory.get(i).getPrice()) {
+                highestPrice = priceHistory.get(i).getPrice();
+            }
+        }
+        return highestPrice;
     }
 
     // Helper method to quickly get the lower start date between two PriceDateInfo objects
