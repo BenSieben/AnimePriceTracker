@@ -208,6 +208,28 @@ public class Product {
         return highestPrice;
     }
 
+    /**
+     * Returns the start date of the first PriceDateInfo in the price history
+     * @return the start date of the first PriceDateInfo in the price history (null if price history is empty)
+     */
+    public String findFirstStartDate() {
+        if(priceHistory.size() == 0) {
+            return null;
+        }
+        return priceHistory.get(0).getStartDate();
+    }
+
+    /**
+     * Returns the end date of the last PriceDateInfo in the price history
+     * @return the end date of the last PriceDateInfo in the price history (null if price history is empty)
+     */
+    public String findLastEndDate() {
+        if(priceHistory.size() == 0) {
+            return null;
+        }
+        return priceHistory.get(priceHistory.size() - 1).getEndDate();
+    }
+
     // Helper method to quickly get the lower start date between two PriceDateInfo objects
     private String findMinStartDate(PriceDateInfo p1, PriceDateInfo p2) {
         if(p1.getStartDate().compareTo(p2.getStartDate()) <= 0) {
