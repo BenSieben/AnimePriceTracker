@@ -1,5 +1,7 @@
 package b7.tools.tracking;
 
+import b7.tools.DateTool;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +22,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * Constructs a new PriceDateInfo with today as the startDate and endDate and a price of 0
      */
     public PriceDateInfo() {
-        startDate = findCurrentDateString();
+        startDate = DateTool.findCurrentDateString();
         endDate = startDate;
         setPrice(0.0);
     }
@@ -30,7 +32,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
      * @param price the price to set for the PriceDate
      */
     public PriceDateInfo(double price) {
-        startDate = findCurrentDateString();
+        startDate = DateTool.findCurrentDateString();
         endDate = startDate;
         setPrice(price);
     }
@@ -145,88 +147,7 @@ public class PriceDateInfo implements Comparable<PriceDateInfo> {
         }
     }
 
-    /**
-     * Returns the given dateInMilliseconds in the proper format for the PriceDateInfo
-     * @param dateInMilliseconds milliseconds since January 1, 1970, 00:00:00 GMT to get date for
-     * @return String representation of date that matches given time
-     */
-    public static String findDateString(long dateInMilliseconds) {
-        // Create date with given milliseconds and use a SimpleDateFormat to get desired format to use (YYYY-MM-DD)
-        Date date = new Date(dateInMilliseconds);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return simpleDateFormat.format(date);
-    }
 
-    /**
-     * Takes a date string (in proper format YYYY-MM-DD) and gives back the time
-     * in milliseconds for the beginning of that date
-     * @param dateString the date string to find the milliseconds of
-     * @return the milliseconds of the given date if it is a valid format, or -1 if the date string could
-     * not be parsed
-     */
-    public static long findMillisFromDateString(String dateString) {
-        // Make sure the date string is valid
-        // Make sure the newDate is valid
-        String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
-        boolean matches = Pattern.matches(pattern, dateString);
-        if(dateString == null || !matches) {
-            return -1;
-        }
-
-        // Create date with given date string and use a SimpleDateFormat to convert it into a date object,
-        //   and then use that date object to get the time in milliseconds for the date string
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = simpleDateFormat.parse(dateString);
-            return date.getTime();
-        }
-        catch(ParseException ex) {
-            // Uncomment below to print error statement on parse exception
-            //System.err.println("[ERROR] Could not parse given date string " + dateString);
-            //ex.printStackTrace();
-        }
-        return -1;
-    }
-
-    /**
-     * Returns the current date in the format used by this program in general (YYYY-MM-DD)
-     * @return String representation of current date in the format YYYY-MM-DD
-     */
-    public static String findCurrentDateString() {
-        return findDateString(System.currentTimeMillis());
-    }
-
-    /**
-     * Returns the day that comes at an offset to the given date
-     * @param date the date to determine the offset day for
-     * @param offset the offset (in days) to find the date for (like -4 for 4 days ago, 2 for 2 days ahead, etc.)
-     * @return formatted date that comes at the offset to the given date
-     */
-    public static String findDateOffset(String date, int offset) {
-        // Make sure the newDate is valid
-        String pattern = "^\\d\\d\\d\\d-\\d\\d-\\d\\d$";
-        boolean matches = Pattern.matches(pattern, date);
-        if(date == null || !matches) {
-            return null;
-        }
-
-        // Split the given day to extract year / month / day as integers
-        String[] splitDay = date.split("-");
-        int dateYear = Integer.parseInt(splitDay[0]);
-        int dateMonth = Integer.parseInt(splitDay[1]);
-        int dateDay = Integer.parseInt(splitDay[2]);
-
-        // Use the GregorianCalendar class to help us find the next date by converting back to milliseconds
-        //   passed Month is dateMonth - 1 because here, constructor takes month and assumes it is zero-based
-        //   (i.e., January is 0, not 1 and December is 11, not 12)
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(dateYear, dateMonth - 1, dateDay);
-        long dateInMillis = gregorianCalendar.getTimeInMillis();
-        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
-        long nextDateInMillis = dateInMillis + (MILLISECONDS_IN_A_DAY * offset);
-
-        // Use findDateString to find String of next date
-        return findDateString(nextDateInMillis);
-    }
 
     /**
      * Returns a basic String representation of the start date, end date, and price of the PriceDateInfo

@@ -1,6 +1,9 @@
 package b7.tools.tracking;
 
+import b7.tools.DateTool;
 import org.junit.*;
+
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -16,14 +19,14 @@ public class PriceDateInfoTest {
      */
     @Test
     public void testGetCurrentDateString() {
-        String currentDate = PriceDateInfo.findCurrentDateString();
+        String currentDate = DateTool.findCurrentDateString();
         assertNotNull(currentDate);
     }
 
     @Test
     public void testGetDateString() {
         long millisecondsSince19700101 = 0;
-        String getDateStringResult = PriceDateInfo.findDateString(millisecondsSince19700101);
+        String getDateStringResult = DateTool.findDateString(millisecondsSince19700101);
         // Due to time zones, the result could be last day of 1969 or first dat of 1970
         String expectedResult1 = "1969-12-31";
         String expectedResult2 = "1970-01-01";
@@ -129,7 +132,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset1() {
         String currentDate = "2017-02-28";
         String expectedOffsetDate = "2017-03-01";
-        String offsetDate = PriceDateInfo.findDateOffset(currentDate, 1);
+        String offsetDate = DateTool.findDateOffset(currentDate, 1);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -138,9 +141,9 @@ public class PriceDateInfoTest {
         long currentTimeInMillis = System.currentTimeMillis();
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
         long nextDayTimeInMillis = currentTimeInMillis + MILLISECONDS_IN_A_DAY;
-        String currentDate = PriceDateInfo.findDateString(currentTimeInMillis);
-        String nextDate = PriceDateInfo.findDateString(nextDayTimeInMillis);
-        String nextDayFromGetDateOffset = PriceDateInfo.findDateOffset(currentDate, 1);
+        String currentDate = DateTool.findDateString(currentTimeInMillis);
+        String nextDate = DateTool.findDateString(nextDayTimeInMillis);
+        String nextDayFromGetDateOffset = DateTool.findDateOffset(currentDate, 1);
         assertEquals(nextDate, nextDayFromGetDateOffset);
     }
 
@@ -148,7 +151,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset3() {
         String currentDate = "2017-12-31";
         String expectedOffsetDate = "2017-12-25";
-        String offsetDate = PriceDateInfo.findDateOffset(currentDate, -6);
+        String offsetDate = DateTool.findDateOffset(currentDate, -6);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -156,7 +159,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset4() {
         String currentDate = "2017-01-05";
         String expectedOffsetDate = "2017-01-09";
-        String offsetDate = PriceDateInfo.findDateOffset(currentDate, 4);
+        String offsetDate = DateTool.findDateOffset(currentDate, 4);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -164,7 +167,7 @@ public class PriceDateInfoTest {
     public void testGetDateOffset5() {
         String currentDate = "2017-01-05";
         String expectedOffsetDate = "2016-12-31";
-        String offsetDate = PriceDateInfo.findDateOffset(currentDate, -5);
+        String offsetDate = DateTool.findDateOffset(currentDate, -5);
         assertEquals(expectedOffsetDate, offsetDate);
     }
 
@@ -172,10 +175,10 @@ public class PriceDateInfoTest {
     public void testFindMillisFromDateString1() {
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
 
-        String currentDate = PriceDateInfo.findCurrentDateString();
+        String currentDate = DateTool.findCurrentDateString();
 
         long currentTime = System.currentTimeMillis();
-        long currentDateInMillis = PriceDateInfo.findMillisFromDateString(currentDate);
+        long currentDateInMillis = DateTool.findMillisFromDateString(currentDate);
 
         // The two time measurement should be less than a day's worth of milliseconds apart
         assertTrue(Math.abs(currentTime - currentDateInMillis) < MILLISECONDS_IN_A_DAY);
@@ -186,7 +189,7 @@ public class PriceDateInfoTest {
         long expectedResult = -1;
 
         String badDateString = "2017-08-01 10:50";
-        long badDateMillis = PriceDateInfo.findMillisFromDateString(badDateString);
+        long badDateMillis = DateTool.findMillisFromDateString(badDateString);
 
         assertTrue(expectedResult == badDateMillis);
     }

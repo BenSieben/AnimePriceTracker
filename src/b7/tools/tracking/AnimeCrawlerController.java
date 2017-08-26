@@ -1,5 +1,7 @@
 package b7.tools.tracking;
 
+import b7.tools.DateTool;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,8 +21,8 @@ public class AnimeCrawlerController {
     public static final String SENTAI_FILMWORKS_CRAWLER_FILENAME = CRAWLERS_PATH + "sentaifilmworks.json";
     public static final String RIGHT_STUF_CRAWLER_FILENAME = CRAWLERS_PATH + "rightstuf.json";
     public static final String CSVS_PATH = "savedata/csvs/";  // Folder we save CSVs from crawl data in
-    public static final String SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME = CSVS_PATH + PriceDateInfo.findCurrentDateString() + "_sentaifilmworks.csv";
-    public static final String RIGHT_STUF_CRAWLER_CSV_FILENAME = CSVS_PATH + PriceDateInfo.findCurrentDateString() + "_rightstuf.csv";
+    public static final String SENTAI_FILMWORKS_CRAWLER_CSV_FILENAME = CSVS_PATH + DateTool.findCurrentDateString() + "_sentaifilmworks.csv";
+    public static final String RIGHT_STUF_CRAWLER_CSV_FILENAME = CSVS_PATH + DateTool.findCurrentDateString() + "_rightstuf.csv";
 
     // The SentaiFilmworksCrawler being used by the controller
     private SentaiFilmworksCrawler sentaiFilmworksCrawler;
