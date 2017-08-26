@@ -60,8 +60,6 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         double heightFactor = getHeight() / defaultHeight;
 
         // Draw actual graph
-        String currentCoordinates = "(" + x + ", " + y + ")";
-        g.drawString(currentCoordinates, (int)(10 * widthFactor), (int)(600 * heightFactor));
         String productName = "No product selected";
         if(product != null) {
             // Max length of what we will draw of title
@@ -134,6 +132,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         final Color lineColor = new Color(10, 93, 201);
         final Color dashedLineColor = new Color(234, 115, 4);
         final Color highlightColor = new Color(224, 220, 4);
+        final Color infoTextColor = new Color(1, 178, 137);
         Color originalColor = g.getColor();
 
         // Draw x-axis
@@ -266,6 +265,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
                 // "Highlight" the current PriceDateInfo section as the mouse is currently over it
                 g.setColor(highlightColor);
                 g2d.fillRect(lineXStartCoordinate, (int)(lineYCoordinate - (5 * heightFactor)), lineXEndCoordinate - lineXStartCoordinate, (int)(10 * heightFactor));
+
+                // Write down highlight info information below line graph
+                g.setColor(infoTextColor);
+                int infoXStart = (int)(10 * widthFactor);
+                int infoYStart = (int)(610 * heightFactor);
+                g.drawString(currentInfo.toString(), infoXStart, infoYStart);
             }
 
             g.setColor(lineColor);
