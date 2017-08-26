@@ -1,9 +1,12 @@
 package b7.tools.tracking;
 
+import b7.tools.DateTool;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
 public class ProductLineGraphPanel extends JPanel implements MouseMotionListener {
 
     // The product to graph
-    private Product currentProduct;
+    private Product product;
 
     // Current coordinates of mouse
     private int x, y;
@@ -32,7 +35,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
     public ProductLineGraphPanel(Product product) {
         super();
         setBackground(Color.LIGHT_GRAY);
-        currentProduct = product;
+        this.product = product;
         addMouseMotionListener(this);
     }
 
@@ -40,8 +43,8 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
      * Sets the product to graph to be the argument Product
      * @param product the new Product to graph
      */
-    public void setCurrentProduct(Product product) {
-        currentProduct = product;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     @Override
@@ -60,12 +63,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         String currentCoordinates = "(" + x + ", " + y + ")";
         g.drawString(currentCoordinates, (int)(10 * widthFactor), (int)(600 * heightFactor));
         String productName = "No product selected";
-        if(currentProduct != null) {
+        if(product != null) {
             // Max length of what we will draw of title
             final int MAX_TITLE_LENGTH = 65;
 
             // Retrieve product name and trim it down if it is too long
-            productName = currentProduct.getProductName();
+            productName = product.getProductName();
             if(productName.length() > MAX_TITLE_LENGTH) {
                 productName = productName.substring(0, MAX_TITLE_LENGTH - 3) + "...";  // -3 because we include "..."
             }
@@ -79,14 +82,14 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g.setFont(originalFont);
 
         // Continue drawing graph if current product is not null
-        if(currentProduct != null) {
+        if(product != null) {
             // Draw the different components of the graph
             drawGraph(g, widthFactor, heightFactor);
         }
     }
 
     /**
-     * Draws the line graph for the currentProduct
+     * Draws the line graph for the product
      * @param g the Graphics object from paintComponent
      * @param widthFactor the width factor computed in paintComponent
      * @param heightFactor the height factor computed in paintComponent
@@ -141,31 +144,17 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g.drawString("Price ($)", (int)(40 * widthFactor), (int)(50 * heightFactor));
 
         // Compute lowest / highest price and date values
-        List<PriceDateInfo> currentProductHistory = currentProduct.getPriceHistory();
-        String lowestPriceString = null, highestPriceString = null;
-        double lowestPrice = Double.MAX_VALUE;
-        double highestPrice = Double.MIN_VALUE;
-        for(int i = 0; i < currentProductHistory.size(); i++) {
-            PriceDateInfo currentInfo = currentProductHistory.get(i);
+        List<PriceDateInfo> currentProductHistory = product.getPriceHistory();
+        double lowestPrice = product.findLowestPrice();
+        double highestPrice = product.findHighestPrice();
 
-            if(lowestPrice > currentInfo.getPrice()) {
-                lowestPrice = currentInfo.getPrice();
-                lowestPriceString = currentInfo.formattedPrice(null);
-            }
-
-            if(highestPrice < currentInfo.getPrice()) {
-                highestPrice = currentInfo.getPrice();
-                highestPriceString = currentInfo.formattedPrice(null);
-            }
-        }
-
-        String earliestDate = currentProductHistory.get(0).getStartDate();
-        String latestDate = currentProductHistory.get(currentProductHistory.size() - 1).getEndDate();
+        String earliestDate = product.findFirstStartDate();
+        String latestDate = product.findLastEndDate();
 
         if(earliestDate.compareTo(latestDate) == 0) {
             // Handle special case where earliest and latest date are the same (and so price is also the same)
             // Draw x-axis and y-axis tick mark in center of x-axis and y-axis lines
-            g.drawString(lowestPriceString,
+            g.drawString(lowestPrice + "",
                     (int)((X_AXIS_START_X - 55) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 + 5) * heightFactor));
             g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
@@ -196,7 +185,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         if(lowestPrice == highestPrice) {
             // Handle special case where lowest and highest price are the same
             // Draw y-axis tick mark for the one price the product has
-            g.drawString(lowestPriceString,
+            g.drawString(lowestPrice + "",
                     (int)((X_AXIS_START_X - 55) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 + 5) * heightFactor));
             g.drawLine((int)((X_AXIS_START_X - 5) * widthFactor),
@@ -226,32 +215,32 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         // Find difference in lowest / highest prices and dates (to scale our line graph drawing accurately)
         double totalPriceDifference = highestPrice - lowestPrice;
-        long earliestDateInMillis = PriceDateInfo.findMillisFromDateString(earliestDate);
-        long latestDateInMillis = PriceDateInfo.findMillisFromDateString(latestDate);
 
-        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
-        long totalDateDifferenceInMillis = latestDateInMillis - earliestDateInMillis + MILLISECONDS_IN_A_DAY;  // Add milliseconds in a day because last day goes up till just before midnight next day
+        LocalDate earliestDateLocalDate = DateTool.getLocalDateFromDateString(earliestDate);
+        LocalDate latestDateLocalDate = DateTool.getLocalDateFromDateString(latestDate);
+        int totalDayDifference = DateTool.getDifferenceInLocalDatesInDaysInclusive(earliestDateLocalDate, latestDateLocalDate);
+        double pixelsPerDay = TICK_WIDTH * 1.0 / totalDayDifference;  // How many pixels each day is in width (x-axis) BEFORE including width factor
 
         // Draw x-axis and y-axis tick marks denoting highest / lowest prices and dates for the current product
-        g.drawString(lowestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
+        g.drawString(lowestPrice + "", (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
         g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(BOT_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(BOT_PRICE_TICK_Y * heightFactor));
 
-        g.drawString(highestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_START_Y + 25) * heightFactor));
+        g.drawString(highestPrice + "", (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_START_Y + 25) * heightFactor));
         g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor));
 
         // Make the "ticks" for the dates wider, as one date is not just a point in time, but a range in time
         g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-        // Use MILLISECONDS_IN_A_DAY to find tick mark for start of next day after starting day
-        int earliestDateEndTickX = (int)((START_DATE_TICK_X + ((1.0 * MILLISECONDS_IN_A_DAY / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
+        // Find tick mark for start of next day after starting day
+        int earliestDateEndTickX = (int)((START_DATE_TICK_X + pixelsPerDay) * widthFactor);
         g2d.drawLine(earliestDateEndTickX, (int)((Y_AXIS_END_Y - 5) * heightFactor), earliestDateEndTickX, (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
         g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-        // Use MILLISECONDS_IN_A_DAY to find tick mark for start of next day after starting day
-        int latestDateEndTickX = (int)((END_DATE_TICK_X - ((1.0 * MILLISECONDS_IN_A_DAY / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
+        // Find tick mark for start of next day after starting day
+        int latestDateEndTickX = (int)((END_DATE_TICK_X - pixelsPerDay) * widthFactor);
         g2d.drawLine(latestDateEndTickX, (int)((Y_AXIS_END_Y - 5) * heightFactor), latestDateEndTickX, (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
         // Loop through all price date info objects in current product history to graph them
@@ -263,10 +252,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             int lineYCoordinate = (int)((BOT_PRICE_TICK_Y - ((currentPriceDifference / totalPriceDifference) * TICK_HEIGHT)) * heightFactor);
 
             // Find x-coordinates to draw current info at
-            long currentStartDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getStartDate()) - earliestDateInMillis;
-            long currentEndDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getEndDate()) - earliestDateInMillis + MILLISECONDS_IN_A_DAY;  // Add milliseconds in a day because last day goes up till just before midnight next day
-            int lineXStartCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentStartDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
-            int lineXEndCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentEndDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
+            LocalDate currentStartDateLocalDate = DateTool.getLocalDateFromDateString(currentInfo.getStartDate());
+            LocalDate currentEndDateLocalDate = DateTool.getLocalDateFromDateString(currentInfo.getEndDate());
+            int currentStartDateDifference = DateTool.findDifferenceInLocalDatesInDaysExclusive(earliestDateLocalDate, currentStartDateLocalDate);
+            int currentEndDateDifference = DateTool.getDifferenceInLocalDatesInDaysInclusive(earliestDateLocalDate, currentEndDateLocalDate);
+            int lineXStartCoordinate = (int)((START_DATE_TICK_X + (pixelsPerDay * currentStartDateDifference)) * widthFactor);
+            int lineXEndCoordinate = (int)((START_DATE_TICK_X + (pixelsPerDay * currentEndDateDifference)) * widthFactor);
 
             g.setColor(lineColor);
             g2d.drawLine(lineXStartCoordinate, lineYCoordinate, lineXEndCoordinate, lineYCoordinate);
