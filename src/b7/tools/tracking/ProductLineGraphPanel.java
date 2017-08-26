@@ -230,6 +230,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g.drawString(highestPriceString, (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_START_Y + 25) * heightFactor));
         g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor));
 
+        // TODO make the "ticks" for the dates wider, as one date is not just a point in time, but a range in time
         g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
@@ -240,7 +241,9 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         double totalPriceDifference = highestPrice - lowestPrice;
         long earliestDateInMillis = PriceDateInfo.findMillisFromDateString(earliestDate);
         long latestDateInMillis = PriceDateInfo.findMillisFromDateString(latestDate);
-        long totalDateDifferenceInMillis = latestDateInMillis - earliestDateInMillis;
+
+        final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
+        long totalDateDifferenceInMillis = latestDateInMillis - earliestDateInMillis + MILLISECONDS_IN_A_DAY;  // Add milliseconds in a day because last day goes up till just before midnight next day
 
         // Loop through all price date info objects in current product history to graph them
         for (int i = 0; i < currentProductHistory.size(); i++) {
@@ -250,10 +253,9 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             double currentPriceDifference = currentInfo.getPrice() - lowestPrice;
             int lineYCoordinate = (int)((BOT_PRICE_TICK_Y - ((currentPriceDifference / totalPriceDifference) * TICK_HEIGHT)) * heightFactor);
 
-            // TODO fix x-coordinate math (one-day price date infos draw a single dot, which is no good)
             // Find x-coordinates to draw current info at
             long currentStartDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getStartDate()) - earliestDateInMillis;
-            long currentEndDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getEndDate()) - earliestDateInMillis;
+            long currentEndDateDifference = PriceDateInfo.findMillisFromDateString(currentInfo.getEndDate()) - earliestDateInMillis + MILLISECONDS_IN_A_DAY;  // Add milliseconds in a day because last day goes up till just before midnight next day
             int lineXStartCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentStartDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
             int lineXEndCoordinate = (int)((START_DATE_TICK_X + ((1.0 * currentEndDateDifference / totalDateDifferenceInMillis) * TICK_WIDTH)) * widthFactor);
 
