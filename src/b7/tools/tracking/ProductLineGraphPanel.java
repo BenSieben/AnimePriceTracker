@@ -133,6 +133,7 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         // Constant for line color on line graph
         final Color lineColor = new Color(10, 93, 201);
         final Color dashedLineColor = new Color(234, 115, 4);
+        final Color highlightColor = new Color(224, 220, 4);
         Color originalColor = g.getColor();
 
         // Draw x-axis
@@ -258,6 +259,14 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             int currentEndDateDifference = DateTool.getDifferenceInLocalDatesInDaysInclusive(earliestDateLocalDate, currentEndDateLocalDate);
             int lineXStartCoordinate = (int)((START_DATE_TICK_X + (pixelsPerDay * currentStartDateDifference)) * widthFactor);
             int lineXEndCoordinate = (int)((START_DATE_TICK_X + (pixelsPerDay * currentEndDateDifference)) * widthFactor);
+
+            // Make the mouse placement "highlight" in the currently hovered area
+            if(x >= lineXStartCoordinate && x < lineXEndCoordinate &&
+                    y >= (TOP_PRICE_TICK_Y * heightFactor) && y <= (BOT_PRICE_TICK_Y * heightFactor)) {
+                // "Highlight" the current PriceDateInfo section as the mouse is currently over it
+                g.setColor(highlightColor);
+                g2d.fillRect(lineXStartCoordinate, (int)(lineYCoordinate - (5 * heightFactor)), lineXEndCoordinate - lineXStartCoordinate, (int)(10 * heightFactor));
+            }
 
             g.setColor(lineColor);
             g2d.drawLine(lineXStartCoordinate, lineYCoordinate, lineXEndCoordinate, lineYCoordinate);
