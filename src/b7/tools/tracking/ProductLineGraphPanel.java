@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -229,14 +230,14 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
         g2d.drawLine((int)((X_AXIS_START_X - 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor), (int)((X_AXIS_START_X + 5) * widthFactor), (int)(TOP_PRICE_TICK_Y * heightFactor));
 
         // Make the "ticks" for the dates wider, as one date is not just a point in time, but a range in time
-        g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+        g2d.drawString(earliestDate, (int)((START_DATE_TICK_X + pixelsPerDay / 2.0)), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
         // Find tick mark for start of next day after starting day
         int earliestDateEndTickX = (int)((START_DATE_TICK_X + pixelsPerDay) * widthFactor);
         g2d.drawLine(earliestDateEndTickX, (int)((Y_AXIS_END_Y - 5) * heightFactor), earliestDateEndTickX, (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-        g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+        g2d.drawString(latestDate, (int)((END_DATE_TICK_X - pixelsPerDay / 2.0)), (int)((Y_AXIS_END_Y + 20) * heightFactor));
         g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
         // Find tick mark for start of next day after starting day
