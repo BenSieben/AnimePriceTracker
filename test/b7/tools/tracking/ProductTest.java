@@ -50,7 +50,6 @@ public class ProductTest {
 
     @Test
     public void testAddNewPriceDateInfo1() {
-        System.out.println("\n\n");
         String productName = "Example Product";
         String productURL = "http://www.example.com/products/sample-product";
         Product product = new Product(productName, productURL);
@@ -73,7 +72,6 @@ public class ProductTest {
 
     @Test
     public void testAddNewPriceDateInfo2() {
-        System.out.println("\n\n");
         String productName = "Example Product";
         String productURL = "http://www.example.com/products/sample-product";
         Product product = new Product(productName, productURL);
@@ -97,7 +95,6 @@ public class ProductTest {
 
     @Test
     public void testAddNewPriceDateInfo3() {
-        System.out.println("\n\n");
         String productName = "Example Product";
         String productURL = "http://www.example.com/products/sample-product";
         Product product = new Product(productName, productURL);
@@ -114,6 +111,32 @@ public class ProductTest {
         Product expectedProduct = new Product(productName, productURL);
         expectedProduct.addNewPriceDateInfo(new PriceDateInfo("2017-08-01", "2017-08-05", 9.99));
         expectedProduct.addNewPriceDateInfo(new PriceDateInfo("2017-08-09", "2017-08-12", 9.99));
+
+        // Check expected Product and actual Product are the same
+        assertEquals(expectedProduct.toString(), product.toString());
+        assertTrue(expectedProduct.getPriceHistory().size() == 2);
+    }
+
+    @Test
+    public void testAddNewPriceDateInfo4() {
+        String productName = "Example Product";
+        String productURL = "http://www.example.com/products/sample-product";
+        Product product = new Product(productName, productURL);
+
+        // Create some PriceDateInfo objects to add to the Product
+        PriceDateInfo p1 = new PriceDateInfo("2017-08-01", "2017-08-05", 9.99);
+        PriceDateInfo p2 = new PriceDateInfo("2017-08-09", "2017-08-12", 9.99);
+        PriceDateInfo p3 = new PriceDateInfo("2017-08-13", "2017-08-19", 9.99);
+
+        // Add all the PriceDateInfo objects to the Product
+        product.addNewPriceDateInfo(p1);
+        product.addNewPriceDateInfo(p2);
+        product.addNewPriceDateInfo(p3);
+
+        // Create expected Product
+        Product expectedProduct = new Product(productName, productURL);
+        expectedProduct.addNewPriceDateInfo(new PriceDateInfo("2017-08-01", "2017-08-05", 9.99));
+        expectedProduct.addNewPriceDateInfo(new PriceDateInfo("2017-08-09", "2017-08-19", 9.99));
 
         // Check expected Product and actual Product are the same
         assertEquals(expectedProduct.toString(), product.toString());
