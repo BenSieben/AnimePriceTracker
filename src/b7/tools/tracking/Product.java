@@ -133,20 +133,34 @@ public class Product {
         }
         else {  // p1 must have started before p2 (if it started after, p1.compareTo(p2) would not be negative)
 
-            // First compare the price (if price is same AND p1 ends just before p2 starts, we can "merge" the two)
+            // First compare the price between p1 and p2
+
+            // Compare p1's end date with p2's start date to help determine what the merge results will be
+            int p1EndVSP2Start = p1.getEndDate().compareTo(p2.getStartDate());
+
             double priceComparison = p1.getPrice() - p2.getPrice();
-            boolean p1EndsJustBeforeP2Starts = DateTool.findDateOffset(p1.getEndDate(), 1).equals(p2.getStartDate());
-            if(Math.abs(priceComparison) <= 0.00000000001 && p1EndsJustBeforeP2Starts) {  // p1 is essentially same cost as p2 and p1 ends right before p2 starts
-                String mergeStartDate = findMinStartDate(p1, p2);
-                String mergeEndDate = findMaxEndDate(p1, p2);
-                double mergePrice = p1.getPrice();
-                PriceDateInfo mergeInfo = new PriceDateInfo(mergeStartDate, mergeEndDate, mergePrice);
-                mergedPriceDateList.add(mergeInfo);
+
+            if(Math.abs(priceComparison) <= 0.00000000001) {  // p1 is essentially same cost as p2
+                boolean p1EndsJustBeforeP2Starts = DateTool.findDateOffset(p1.getEndDate(), 1).equals(p2.getStartDate());
+
+                if(p1EndsJustBeforeP2Starts || p1EndVSP2Start >= 0) {  // p1 ends right before p2 starts OR on same day / after p2 starts
+                    // Merge p1 and p2 together since they share some similar date(s)
+                    String mergeStartDate = findMinStartDate(p1, p2);
+                    String mergeEndDate = findMaxEndDate(p1, p2);
+                    double mergePrice = p1.getPrice();
+                    PriceDateInfo mergeInfo = new PriceDateInfo(mergeStartDate, mergeEndDate, mergePrice);
+                    mergedPriceDateList.add(mergeInfo);
+                }
+                else {  // p1 ends before p2 starts by over 1 day, so just add p1 and p2 without modification
+                    mergedPriceDateList.add(p1);
+                    mergedPriceDateList.add(p2);
+                }
+
                 return mergedPriceDateList;
             }
 
-            // Compare p1's end date with p2's start date to determine what the merge results will be
-            int p1EndVSP2Start = p1.getEndDate().compareTo(p2.getStartDate());
+
+            // Down here, the price of p1 and p2 must be different
             if(p1EndVSP2Start < 0) {  // p1 ends before p2 starts
                 // Just add the two elements in order
                 mergedPriceDateList.add(p1);
