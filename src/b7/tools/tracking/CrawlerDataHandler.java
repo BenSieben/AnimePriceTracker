@@ -26,10 +26,13 @@ public class CrawlerDataHandler {
         ObjectMapper mapper = new ObjectMapper();
         // Try to infer a path of folders that we might have to make from the filename
         int forwardSlashLastIndex = filename.lastIndexOf("/");
-        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        File path = null;
         File file = new File(filename);
+        if(forwardSlashLastIndex != -1) {
+            path = new File(filename.substring(0, forwardSlashLastIndex));
+        }
         try {
-            if(!path.exists()) {  // Create path directories if they do not exist
+            if(path != null && !path.exists()) {  // Create path directories if they do not exist
                 path.mkdirs();
             }
             mapper.writeValue(file, crawler);
@@ -53,10 +56,13 @@ public class CrawlerDataHandler {
         ObjectMapper mapper = new ObjectMapper();
         // Try to infer a path of folders that we might have to make from the filename
         int forwardSlashLastIndex = filename.lastIndexOf("/");
-        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        File path = null;
         File file = new File(filename);
+        if(forwardSlashLastIndex != -1) {
+            path = new File(filename.substring(0, forwardSlashLastIndex));
+        }
         try {
-            if(!path.exists()) {  // Create path directories if they do not exist
+            if(path != null && !path.exists()) {  // Create path directories if they do not exist
                 path.mkdirs();
             }
             mapper.writeValue(file, crawler);
@@ -130,10 +136,13 @@ public class CrawlerDataHandler {
         ObjectMapper mapper = new ObjectMapper();
         // Try to infer a path of folders that we might have to make from the filename
         int forwardSlashLastIndex = filename.lastIndexOf("/");
-        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        File path = null;
         File file = new File(filename);
+        if(forwardSlashLastIndex != -1) {
+            path = new File(filename.substring(0, forwardSlashLastIndex));
+        }
         try {
-            if(!path.exists()) {  // Create path directories if they do not exist
+            if(path!= null && !path.exists()) {  // Create path directories if they do not exist
                 path.mkdirs();
             }
             mapper.writeValue(file, crawler);
@@ -178,9 +187,12 @@ public class CrawlerDataHandler {
     public static void saveCrawlDataToExcelCSV(CrawlData crawlData, String filename) {
         // Try to infer a path of folders that we might have to make from the filename
         int forwardSlashLastIndex = filename.lastIndexOf("/");
-        File path = new File(filename.substring(0, forwardSlashLastIndex));
+        File path = null;
+        if(forwardSlashLastIndex != -1) {
+            path = new File(filename.substring(0, forwardSlashLastIndex));
+        }
         try {
-            if(!path.exists()) {  // Create path directories if they do not exist
+            if(path != null && !path.exists()) {  // Create path directories if they do not exist
                 path.mkdirs();
             }
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
