@@ -69,7 +69,7 @@ public class AnimeCrawlerController {
      * @return true if all pages were successfully visited, false otherwise
      */
     public boolean visitAllRightStufPages(boolean printProgress) {
-        return rightStufCrawler.visitAllPages(printProgress);
+        return rightStufCrawler.visitAllPagesMultithreaded(printProgress);
     }
 
     /**
