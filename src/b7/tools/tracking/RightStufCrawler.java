@@ -207,7 +207,7 @@ public class RightStufCrawler extends WebCrawler {
      */
     public boolean visitAllPagesMultithreaded(final boolean printProgress) {
         // Create list of page visitors and set up each one to give back results from the page they visit
-        final int NUMBER_OF_PAGES_TO_VISIT = 100;
+        final int NUMBER_OF_PAGES_TO_VISIT = 200;
         List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
         for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
             final int pageIndex = i;
@@ -219,17 +219,30 @@ public class RightStufCrawler extends WebCrawler {
         }
 
         // Wait for all the page visitors to finish
-        // TODO call cancel() on subsequent pageVisitors when the next page element is not found on a page we just called get() on
-        boolean success = true;
-        for(CompletableFuture<Boolean> pageVisitor : pageVisitors) {
+        boolean foundAllProducts = false;
+        for(int i = 0; i < pageVisitors.size(); i++) {
+            CompletableFuture<Boolean> pageVisitor = pageVisitors.get(i);
             try {
-                success = success && pageVisitor.get();
+                // Get result back from the page visitor
+                foundAllProducts = pageVisitor.get();
+
+                /*
+                If the page visitor indicated no products were on the page, we assume all products have been
+                found and we will cancel the rest of the page visitors by looping through the rest of pageVisitors list
+                */
+                if(foundAllProducts) {
+                    i++;
+                    for(; i < pageVisitors.size(); i++) {
+                        CompletableFuture<Boolean> pageVisitorToCancel = pageVisitors.get(i);
+                        pageVisitorToCancel.cancel(true);
+                    }
+                }
             }
             catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
                 ex.printStackTrace();
             }
         }
-        return success;
+        return true;
     }
 
     /**
@@ -238,7 +251,7 @@ public class RightStufCrawler extends WebCrawler {
      * @param pageURL URL to visit
      * @param printProgress true to print out crawling progress to standard output, false to not print
      * @param visitAllPages true to recursively visit all pages starting from the given page, false to visit the given pageURL only
-     * @return true if visiting all pages was successful, false if there was an error during the process
+     * @return true if there is no more pages to visit, false if there is a link to a next page from the last visited page
      */
     private boolean visitPage(String pageURL, boolean printProgress, boolean visitAllPages) {
         // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
@@ -273,25 +286,29 @@ public class RightStufCrawler extends WebCrawler {
 
         if(printProgress) System.out.println();  // Print a spacing line if we are printing progress
 
-        if(visitAllPages) {  // If visitAllPages is true, then find the link to next page (if it exists) and visit it
-            // Find link to next page
-            // Get nav element that has link to next page
-            Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
-            //  Find next page list item from the nav element (should only be 1 result if next page element is present)
-            Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
-            if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
-                // Get direct access to next page list item element
-                Element nextPageListItem = nextPageListItemElements.first();
-                // Extract anchor href value from element link
-                String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
-                String nextPageLink = STORE_URL + "/" + nextPageAnchor;
+        // Find link to next page
+        // Get nav element that has link to next page
+        Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
+        //  Find next page list item from the nav element (should only be 1 result if next page element is present)
+        Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
 
-                // Visit the next page
-                visitPage(nextPageLink, printProgress, true);
+        if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
+            // Get direct access to next page list item element
+            Element nextPageListItem = nextPageListItemElements.first();
+            // Extract anchor href value from element link
+            String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
+            String nextPageLink = STORE_URL + "/" + nextPageAnchor;
+
+            // Visit the next page
+            if(visitAllPages) {  // If visitAllPages is true, then visit the next page
+                return visitPage(nextPageLink, printProgress, true);
+            }
+            else {  // If visitAllPages is false, return false to indicate the next page or product listings exists for single-page call to visitPage()
+                return false;
             }
         }
 
-        // We reached the end, so return true
+        // We reached the end of all pages, so return false (there are no more pages)
         return true;
     }
 
