@@ -201,6 +201,20 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
             g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
+            // Make the mouse placement "highlight" in the currently hovered area
+            if(x >= (START_DATE_TICK_X * widthFactor) && x < (END_DATE_TICK_X * widthFactor) &&
+                    y >= (TOP_PRICE_TICK_Y * heightFactor) && y <= (BOT_PRICE_TICK_Y * heightFactor)) {
+                // "Highlight" the current PriceDateInfo section as the mouse is currently over it
+                g.setColor(highlightColor);
+                g2d.fillRect((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 - 5) * heightFactor), TICK_WIDTH, (int)(10 * heightFactor));
+
+                // Write down highlight info information below line graph
+                g.setColor(infoTextColor);
+                int infoXStart = (int)(10 * widthFactor);
+                int infoYStart = (int)(610 * heightFactor);
+                g.drawString(currentProductHistory.get(0).toString(), infoXStart, infoYStart);
+            }
+
             // Draw line graph (single, flat line)
             g.setColor(lineColor);
             g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
