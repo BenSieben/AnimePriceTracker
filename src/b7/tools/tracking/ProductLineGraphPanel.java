@@ -189,6 +189,14 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
             return;
         }
 
+        // Find difference in lowest / highest prices and dates (to scale our line graph drawing accurately)
+        double totalPriceDifference = highestPrice - lowestPrice;
+
+        LocalDate earliestDateLocalDate = DateTool.getLocalDateFromDateString(earliestDate);
+        LocalDate latestDateLocalDate = DateTool.getLocalDateFromDateString(latestDate);
+        int totalDayDifference = DateTool.getDifferenceInLocalDatesInDaysInclusive(earliestDateLocalDate, latestDateLocalDate);
+        double pixelsPerDay = TICK_WIDTH * 1.0 / totalDayDifference;  // How many pixels each day is in width (x-axis) BEFORE including width factor
+
         if(lowestPrice == highestPrice) {
             // Handle special case where lowest and highest price are the same
             // Draw y-axis tick mark for the one price the product has
@@ -200,26 +208,26 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
                     (int)((X_AXIS_START_X + 5) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
 
-            // Draw x-axis tick marks for start / end dates
-            g.drawString(earliestDate, (int)((X_AXIS_START_X - 15) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+            // Make the "ticks" for the dates wider, as one date is not just a point in time, but a range in time
+            g2d.drawString(earliestDate, (int)((START_DATE_TICK_X + pixelsPerDay / 2.0)), (int)((Y_AXIS_END_Y + 20) * heightFactor));
             g2d.drawLine((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-            g.drawString(latestDate, (int)((X_AXIS_END_X - 55) * widthFactor), (int)((Y_AXIS_END_Y + 20) * heightFactor));
+            // Find tick mark for start of next day after starting day
+            int earliestDateEndTickX = (int)((START_DATE_TICK_X + pixelsPerDay) * widthFactor);
+            g2d.drawLine(earliestDateEndTickX, (int)((Y_AXIS_END_Y - 5) * heightFactor), earliestDateEndTickX, (int)((Y_AXIS_END_Y + 5) * heightFactor));
+
+            g2d.drawString(latestDate, (int)((END_DATE_TICK_X - pixelsPerDay / 2.0)), (int)((Y_AXIS_END_Y + 20) * heightFactor));
             g2d.drawLine((int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y - 5) * heightFactor), (int)(END_DATE_TICK_X * widthFactor), (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-            // Make the mouse placement "highlight" in the currently hovered area
-            if(x >= (START_DATE_TICK_X * widthFactor) && x < (END_DATE_TICK_X * widthFactor) &&
-                    y >= (TOP_PRICE_TICK_Y * heightFactor) && y <= (BOT_PRICE_TICK_Y * heightFactor)) {
-                // "Highlight" the current PriceDateInfo section as the mouse is currently over it
-                g.setColor(highlightColor);
-                g2d.fillRect((int)(START_DATE_TICK_X * widthFactor), (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2 - 5) * heightFactor), TICK_WIDTH, (int)(10 * heightFactor));
+            // Find tick mark for start of next day after starting day
+            int latestDateEndTickX = (int)((END_DATE_TICK_X - pixelsPerDay) * widthFactor);
+            g2d.drawLine(latestDateEndTickX, (int)((Y_AXIS_END_Y - 5) * heightFactor), latestDateEndTickX, (int)((Y_AXIS_END_Y + 5) * heightFactor));
 
-                // Write down highlight info information below line graph
-                g.setColor(infoTextColor);
-                int infoXStart = (int)(10 * widthFactor);
-                int infoYStart = (int)(610 * heightFactor);
-                g.drawString(currentProductHistory.get(0).toString(), infoXStart, infoYStart);
-            }
+            // Write down highlight info information below line graph
+            g.setColor(infoTextColor);
+            int infoXStart = (int)(10 * widthFactor);
+            int infoYStart = (int)(610 * heightFactor);
+            g.drawString(currentProductHistory.get(0).toString(), infoXStart, infoYStart);
 
             // Draw line graph (single, flat line)
             g.setColor(lineColor);
@@ -233,14 +241,6 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
 
         // Draw lowest / highest price and date values onto graph
         // Normal case: multiple prices and multiple dates
-
-        // Find difference in lowest / highest prices and dates (to scale our line graph drawing accurately)
-        double totalPriceDifference = highestPrice - lowestPrice;
-
-        LocalDate earliestDateLocalDate = DateTool.getLocalDateFromDateString(earliestDate);
-        LocalDate latestDateLocalDate = DateTool.getLocalDateFromDateString(latestDate);
-        int totalDayDifference = DateTool.getDifferenceInLocalDatesInDaysInclusive(earliestDateLocalDate, latestDateLocalDate);
-        double pixelsPerDay = TICK_WIDTH * 1.0 / totalDayDifference;  // How many pixels each day is in width (x-axis) BEFORE including width factor
 
         // Draw x-axis and y-axis tick marks denoting highest / lowest prices and dates for the current product
         g.drawString(lowestPrice + "", (int)((X_AXIS_START_X - 55) * widthFactor), (int)((Y_AXIS_END_Y - 15) * heightFactor));
