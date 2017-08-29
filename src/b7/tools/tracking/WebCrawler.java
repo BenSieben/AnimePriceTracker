@@ -113,7 +113,7 @@ public class WebCrawler {
         try {
             System.out.println("Connecting to " + url + " ...");
             page = webClient.getPage(url);
-            System.out.println("Connected! Now waiting for jobs to complete on the page...");
+            System.out.println("Connected to " + url + "! Now waiting for jobs to complete on the page...");
         } catch (Exception e) {
             e.printStackTrace();
         }
