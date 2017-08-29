@@ -6,6 +6,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -13,8 +17,14 @@ import java.io.*;
  */
 public class RightStufCrawler extends WebCrawler {
 
+    // The base URL to crawl from, not including query parameters
+    public final static String BASE_URL = "https://www.rightstufanime.com/category/Blu~ray,DVD";
+
+    // HTML query used on initial URL
+    public final static String INITIAL_URL_QUERY = "?page=1&show=96";
+
     // The base URL to start crawling from
-    public final static String INITIAL_URL = "https://www.rightstufanime.com/category/Blu~ray,DVD?page=1&show=96";
+    public final static String INITIAL_URL = BASE_URL + INITIAL_URL_QUERY;
 
     // The base URL of the website (to resolve relative links to the proper path)
     public final static String STORE_URL = "https://www.rightstufanime.com";
@@ -185,8 +195,41 @@ public class RightStufCrawler extends WebCrawler {
      * @param printProgress true to print out crawling progress to standard output, false to not print
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public boolean visitAllPages(boolean printProgress) {
-        return visitAllPages(INITIAL_URL, printProgress);
+    public boolean visitAllPages(final boolean printProgress) {
+        return visitPage(INITIAL_URL, printProgress, true);
+    }
+
+    /**
+     * Attempts to visit all store pages with product listings by utilizing multithreading to
+     * visit multiple product listing pages at the same time
+     * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
+     */
+    public boolean visitAllPagesMultithreaded(final boolean printProgress) {
+        // Create list of page visitors and set up each one to give back results from the page they visit
+        final int NUMBER_OF_PAGES_TO_VISIT = 100;
+        List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
+        for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
+            final int pageIndex = i;
+            CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
+                String urlToVisit = BASE_URL + "?page=" + pageIndex + "&show=96";
+                return visitPage(urlToVisit, printProgress, false);
+            });
+            pageVisitors.add(pageVisitor);
+        }
+
+        // Wait for all the page visitors to finish
+        // TODO call cancel() on subsequent pageVisitors when the next page element is not found on a page we just called get() on
+        boolean success = true;
+        for(CompletableFuture<Boolean> pageVisitor : pageVisitors) {
+            try {
+                success = success && pageVisitor.get();
+            }
+            catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
+                ex.printStackTrace();
+            }
+        }
+        return success;
     }
 
     /**
@@ -194,9 +237,10 @@ public class RightStufCrawler extends WebCrawler {
      * data with Product information as data is analyzed
      * @param pageURL URL to visit
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @param visitAllPages true to recursively visit all pages starting from the given page, false to visit the given pageURL only
      * @return true if visiting all pages was successful, false if there was an error during the process
      */
-    private boolean visitAllPages(String pageURL, boolean printProgress) {
+    private boolean visitPage(String pageURL, boolean printProgress, boolean visitAllPages) {
         // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
         String pageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(pageURL);
 
@@ -227,23 +271,27 @@ public class RightStufCrawler extends WebCrawler {
             updateCrawlData(productTitle, productLink, productPrice, printProgress);
         }
 
-        // Find link to next page
-        // Get nav element that has link to next page
-        Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
-        //  Find next page list item from the nav element (should only be 1 result if next page element is present)
-        Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
-        if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
-            // Get direct access to next page list item element
-            Element nextPageListItem = nextPageListItemElements.first();
-            // Extract anchor href value from element link
-            String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
-            String nextPageLink = STORE_URL + "/" + nextPageAnchor;
+        if(printProgress) System.out.println();  // Print a spacing line if we are printing progress
 
-            // Visit the next page
-            if(printProgress) System.out.println();  // Print a spacing line if we are printing progress
-            visitAllPages(nextPageLink, printProgress);
+        if(visitAllPages) {  // If visitAllPages is true, then find the link to next page (if it exists) and visit it
+            // Find link to next page
+            // Get nav element that has link to next page
+            Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
+            //  Find next page list item from the nav element (should only be 1 result if next page element is present)
+            Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
+            if(nextPageListItemElements.size() > 0) {   // Make sure the next page list item was present in the nav
+                // Get direct access to next page list item element
+                Element nextPageListItem = nextPageListItemElements.first();
+                // Extract anchor href value from element link
+                String nextPageAnchor = nextPageListItem.getElementsByTag("a").first().attr("href");
+                String nextPageLink = STORE_URL + "/" + nextPageAnchor;
+
+                // Visit the next page
+                visitPage(nextPageLink, printProgress, true);
+            }
         }
-        // No next page list item found, so we are on the last page
+
+        // We reached the end, so return true
         return true;
     }
 
@@ -254,7 +302,7 @@ public class RightStufCrawler extends WebCrawler {
      * @param price the current price of the product
      * @param printProduct true to print the product information to standard output, false to not print
      */
-    private void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
+    private synchronized void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
         // Create a Product with a PriceDateInfo corresponding to info in given parameters
         Product productToAdd = new Product(productName, productURL);
         PriceDateInfo productPriceInfo = new PriceDateInfo(price);
