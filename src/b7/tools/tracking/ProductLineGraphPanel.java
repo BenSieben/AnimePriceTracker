@@ -177,6 +177,12 @@ public class ProductLineGraphPanel extends JPanel implements MouseMotionListener
                     (int)((X_AXIS_START_X + GRAPH_WIDTH / 2) * widthFactor),
                     (int)((Y_AXIS_START_Y + GRAPH_HEIGHT / 2) * heightFactor));
 
+            // Draw information about the Product below the graph
+            g.setColor(infoTextColor);
+            int infoXStart = (int)(10 * widthFactor);
+            int infoYStart = (int)(610 * heightFactor);
+            g.drawString(currentProductHistory.get(0).toString(), infoXStart, infoYStart);
+
             // Reset graphics back to original font / color
             g.setFont(originalFont);
             g.setColor(originalColor);
