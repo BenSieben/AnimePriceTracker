@@ -284,8 +284,6 @@ public class RightStufCrawler extends WebCrawler {
             updateCrawlData(productTitle, productLink, productPrice, printProgress);
         }
 
-        if(printProgress) System.out.println();  // Print a spacing line if we are printing progress
-
         // Find link to next page
         // Get nav element that has link to next page
         Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
