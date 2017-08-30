@@ -111,9 +111,7 @@ public class WebCrawler {
         WebClient webClient = new WebClient();
         HtmlPage page = null;
         try {
-            System.out.println("Connecting to " + url + " ...");
             page = webClient.getPage(url);
-            System.out.println("Connected to " + url + "! Now waiting for jobs to complete on the page...");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,8 +127,6 @@ public class WebCrawler {
                 ex.printStackTrace();
             }
         }
-
-        System.out.println("Jobs complete!");
 
         // Return the page XML (i.e., HTML)
         return page.asXml();
