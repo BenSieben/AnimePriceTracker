@@ -15,8 +15,11 @@ import java.util.Map;
  */
 public class SentaiFilmworksCrawler extends WebCrawler {
 
-    // The base URL to start crawling from
-    public final static String INITIAL_URL = "https://shop.sentaifilmworks.com/collections/shows?page=1";
+    // The base URL to crawl from, not including query parameters
+    public final static String BASE_URL = "https://shop.sentaifilmworks.com/collections/shows";
+
+    // The URL to start crawling from
+    public final static String INITIAL_URL = BASE_URL + getUrlQuery(1);
 
     // The base URL of the website (to resolve relative links to the proper path)
     public final static String STORE_URL = "https://shop.sentaifilmworks.com";
@@ -67,6 +70,16 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     public SentaiFilmworksCrawler(CrawlData initialCrawlData) {
         super(INITIAL_URL);
         crawlData = initialCrawlData;
+    }
+
+    /**
+     * Creates basic GET query for adding to BASE_URL to visit a specific product
+     * listing page
+     * @param pageNumber the page number to go to
+     * @return the URL query for the chosen page number
+     */
+    public synchronized static String getUrlQuery(int pageNumber) {
+        return String.format("?page=%d", pageNumber);
     }
 
     /**
