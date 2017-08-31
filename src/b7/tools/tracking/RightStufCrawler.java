@@ -20,11 +20,11 @@ public class RightStufCrawler extends WebCrawler {
     // The base URL to crawl from, not including query parameters
     public final static String BASE_URL = "https://www.rightstufanime.com/category/Blu~ray,DVD";
 
-    // HTML query used on initial URL
-    public final static String INITIAL_URL_QUERY = "?page=1&show=96";
+    // How many products we can view per page
+    public static final int PRODUCTS_PER_LISTING_PAGE = 96;
 
     // The base URL to start crawling from
-    public final static String INITIAL_URL = BASE_URL + INITIAL_URL_QUERY;
+    public final static String INITIAL_URL = BASE_URL + getUrlQuery(1, PRODUCTS_PER_LISTING_PAGE);
 
     // The base URL of the website (to resolve relative links to the proper path)
     public final static String STORE_URL = "https://www.rightstufanime.com";
@@ -40,6 +40,8 @@ public class RightStufCrawler extends WebCrawler {
     public static final String PRODUCT_PRICE_ATTRIBUTE = "data-rate";
     public static final String NEXT_PAGE_NAV_CLASS = "global-views-pagination";
     public static final String NEXT_PAGE_LIST_ITEM_CLASS = "global-views-pagination-next";
+    public static final String NUMBER_OF_PRODUCTS_CLASS = "facets-facet-browse-title";
+    public static final String NUMBER_OF_PRODUCTS_ATTRIBUTE = "data-quantity";
 
     // Path we will save the test base page in (so we can create directory if it doesn't already exist)
     public final static String BASE_PAGE_PATH = "savedata/basepages/";
@@ -64,6 +66,17 @@ public class RightStufCrawler extends WebCrawler {
     public RightStufCrawler(CrawlData initialCrawlData) {
         super(INITIAL_URL);
         crawlData = initialCrawlData;
+    }
+
+    /**
+     * Creates basic GET query for adding to BASE_URL to visit a specific product
+     * listing page with a specified number of listings to show on the page
+     * @param pageNumber the page number to go to
+     * @param productsToShowOnPage the number of products to show per page
+     * @return the URL query for the chosen page number and products to show per page
+     */
+    public synchronized static String getUrlQuery(int pageNumber, int productsToShowOnPage) {
+        return String.format("?page=%d&show=%d", pageNumber, productsToShowOnPage);
     }
 
     /**
@@ -207,12 +220,12 @@ public class RightStufCrawler extends WebCrawler {
      */
     public boolean visitAllPagesMultithreaded(final boolean printProgress) {
         // Create list of page visitors and set up each one to give back results from the page they visit
-        final int NUMBER_OF_PAGES_TO_VISIT = 200;
+        final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
         List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
         for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
             final int pageIndex = i;
             CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
-                String urlToVisit = BASE_URL + "?page=" + pageIndex + "&show=96";
+                String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
                 return visitPage(urlToVisit, printProgress, false);
             });
             pageVisitors.add(pageVisitor);
@@ -225,24 +238,35 @@ public class RightStufCrawler extends WebCrawler {
             try {
                 // Get result back from the page visitor
                 foundAllProducts = pageVisitor.get();
-
-                /*
-                If the page visitor indicated no products were on the page, we assume all products have been
-                found and we will cancel the rest of the page visitors by looping through the rest of pageVisitors list
-                */
-                if(foundAllProducts) {
-                    i++;
-                    for(; i < pageVisitors.size(); i++) {
-                        CompletableFuture<Boolean> pageVisitorToCancel = pageVisitors.get(i);
-                        pageVisitorToCancel.cancel(true);
-                    }
-                }
             }
             catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
                 ex.printStackTrace();
             }
         }
-        return true;
+        return foundAllProducts;
+    }
+
+    /**
+     * Uses some math on the INITIAL_URL page to find out how many products are currently
+     * on the Right Stuf store, to determine how many pages of product listings should be
+     * visited to visit all products (plus buffer of 1 extra page)
+     * @return the number of expected pages for Right Stuf product listings, plus 1
+     */
+    public static int findNumberOfListingPages() {
+        // Visit the INITIAL_URL
+        String pageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(INITIAL_URL);
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(pageHTML);
+
+        // Find the element that indicates how many total products are listed at the moment
+        Element totalProductCountElement = document.getElementsByClass(NUMBER_OF_PRODUCTS_CLASS).first();
+
+        // Get attribute information from the element to determine how many products there are
+        int totalPages = Integer.parseInt(totalProductCountElement.attr(NUMBER_OF_PRODUCTS_ATTRIBUTE));
+
+        // Divide total products by number of products per page to get final result of expected pages to visit
+        return totalPages / PRODUCTS_PER_LISTING_PAGE + 2;  // + 2 because we lose 1 page to truncation after division
     }
 
     /**
@@ -287,6 +311,12 @@ public class RightStufCrawler extends WebCrawler {
         // Find link to next page
         // Get nav element that has link to next page
         Element paginationNav = document.getElementsByClass(NEXT_PAGE_NAV_CLASS).last();
+
+        //Make sure paginationNav exists (if it doesn't, we have hit a page that comes after final page)
+        if(paginationNav == null) {
+            return true;  // Indicate there are no more pages from this page
+        }
+
         //  Find next page list item from the nav element (should only be 1 result if next page element is present)
         Elements nextPageListItemElements = paginationNav.getElementsByClass(NEXT_PAGE_LIST_ITEM_CLASS);
 
@@ -306,7 +336,7 @@ public class RightStufCrawler extends WebCrawler {
             }
         }
 
-        // We reached the end of all pages, so return false (there are no more pages)
+        // We reached the end of all pages, so return true (there are no more pages)
         return true;
     }
 
