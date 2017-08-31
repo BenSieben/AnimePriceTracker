@@ -397,7 +397,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
     public boolean visitAllPages(boolean printProgress) {
-        return visitAllPages(INITIAL_URL, printProgress, true);
+        return visitPage(INITIAL_URL, printProgress, true);
     }
 
     /**
@@ -414,7 +414,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             final int pageIndex = i;
             CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
                 String urlToVisit = BASE_URL + getUrlQuery(pageIndex);
-                return visitAllPages(urlToVisit, printProgress, false);
+                return visitPage(urlToVisit, printProgress, false);
             });
             pageVisitors.add(pageVisitor);
         }
@@ -465,7 +465,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @param visitAllPages true to recursively visit all pages starting from given pageURL
      * @return true if visiting all pages was successful, false if there was an error during the process
      */
-    private boolean visitAllPages(String pageURL, boolean printProgress, boolean visitAllPages) {
+    private boolean visitPage(String pageURL, boolean printProgress, boolean visitAllPages) {
         String pageHTML = WebCrawler.readUrlContents(pageURL);
         if(pageHTML == null) {  // readUrlContents() failed for some reason or another, so return false
             System.err.println("Could not read URL contents of " + pageURL);
@@ -542,7 +542,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
             if(visitAllPages) {  // If we are supposed to visit all pages, call method recursively on next page
-                return visitAllPages(nextPageLink, printProgress, true);
+                return visitPage(nextPageLink, printProgress, true);
             }
             else {  // If we are not supposed to visit all pages, return false to indicate more pages do exist
                 return false;
