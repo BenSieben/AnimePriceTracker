@@ -6,8 +6,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -393,7 +397,64 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
     public boolean visitAllPages(boolean printProgress) {
-        return visitAllPages(INITIAL_URL, printProgress);
+        return visitAllPages(INITIAL_URL, printProgress, true);
+    }
+
+    /**
+     * Attempts to visit all store pages with product listings by utilizing multithreading to
+     * visit multiple product listing pages at the same time
+     * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
+     */
+    public boolean visitAllPagesMultithreaded(final boolean printProgress) {
+        // Create list of page visitors and set up each one to give back results from the page they visit
+        final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
+        List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
+        for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
+            final int pageIndex = i;
+            CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
+                String urlToVisit = BASE_URL + getUrlQuery(pageIndex);
+                return visitAllPages(urlToVisit, printProgress, false);
+            });
+            pageVisitors.add(pageVisitor);
+        }
+
+        // Wait for all the page visitors to finish
+        boolean foundAllProducts = false;
+        for(int i = 0; i < pageVisitors.size(); i++) {
+            CompletableFuture<Boolean> pageVisitor = pageVisitors.get(i);
+            try {
+                // Get result back from the page visitor
+                foundAllProducts = pageVisitor.get();
+            }
+            catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
+                ex.printStackTrace();
+            }
+        }
+        return foundAllProducts;
+    }
+
+    /**
+     * Uses some math on the INITIAL_URL page o determine how many pages of product listings should be
+     * visited to visit all products (plus buffer of 1 extra page)
+     * @return the number of expected pages for Sentai Filmworks product listings, plus 1
+     */
+    public static int findNumberOfListingPages() {
+        // Visit the INITIAL_URL
+        String pageHTML = WebCrawler.readUrlContents(INITIAL_URL);
+
+        // Use Jsoup to start parsing the HTML code of the base page
+        Document document = Jsoup.parse(pageHTML);
+
+        // Find the element with the link to last page (and extract that page number)
+        Element paginationElement = document.getElementById(PAGINATION_ID);
+        Elements paginationLinks = paginationElement.select("ul > li > a");
+
+        // The final page link comes before the last link (that links to next page), so keep second-to-last Element
+        Element finalPageElement = paginationLinks.get(paginationLinks.size() - 2);
+
+        int nextPageValue = Integer.parseInt(finalPageElement.html());
+        return nextPageValue + 1;  // Do + 1 to buffer page visits by 1 more
     }
 
     /**
@@ -401,9 +462,10 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * data with Product information as data is analyzed
      * @param pageURL URL to visit
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @param visitAllPages true to recursively visit all pages starting from given pageURL
      * @return true if visiting all pages was successful, false if there was an error during the process
      */
-    private boolean visitAllPages(String pageURL, boolean printProgress) {
+    private boolean visitAllPages(String pageURL, boolean printProgress, boolean visitAllPages) {
         String pageHTML = WebCrawler.readUrlContents(pageURL);
         if(pageHTML == null) {  // readUrlContents() failed for some reason or another, so return false
             System.err.println("Could not read URL contents of " + pageURL);
@@ -479,7 +541,12 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         String nextPageLink = STORE_URL + paginationLinks.last().attr("href");
         String nextPageLinkContents = paginationLinks.last().html();
         if(NEXT_PAGE_HTML.equals(nextPageLinkContents)) {  // Make sure last link points to next page
-            visitAllPages(nextPageLink, printProgress);
+            if(visitAllPages) {  // If we are supposed to visit all pages, call method recursively on next page
+                return visitAllPages(nextPageLink, printProgress, true);
+            }
+            else {  // If we are not supposed to visit all pages, return false to indicate more pages do exist
+                return false;
+            }
         }
         // If last link does not point to next page, we must be on the last page now so we are done
         return true;
@@ -492,7 +559,7 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * @param price the current price of the product
      * @param printProduct true to print the product information to standard output, false to not print
      */
-    private void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
+    private synchronized void updateCrawlData(String productName, String productURL, double price, boolean printProduct) {
         // Create a Product with a PriceDateInfo corresponding to info in given parameters
         Product productToAdd = new Product(productName, productURL);
         PriceDateInfo productPriceInfo = new PriceDateInfo(price);

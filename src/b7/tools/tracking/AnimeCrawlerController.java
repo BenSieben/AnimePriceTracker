@@ -60,7 +60,7 @@ public class AnimeCrawlerController {
      * @return true if all pages were successfully visited, false otherwise
      */
     public boolean visitAllSentaiFilmworksPages(boolean printProgress) {
-        return sentaiFilmworksCrawler.visitAllPages(printProgress);
+        return sentaiFilmworksCrawler.visitAllPagesMultithreaded(printProgress);
     }
 
     /**
