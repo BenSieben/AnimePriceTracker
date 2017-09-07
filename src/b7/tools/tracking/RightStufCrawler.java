@@ -301,11 +301,21 @@ public class RightStufCrawler extends WebCrawler {
             // Get the div element which contains the product price information
             Element priceDivElement = productElement.getElementsByClass(PRODUCT_PRICE_DIV_CLASS).first();
             // Get the span element which specifically has the sale price (not the MSRP value)
-            Element productPriceSpanElement = priceDivElement.getElementsByClass(PRODUCT_PRICE_SPAN_CLASS).first();;
-            double productPrice = Double.parseDouble(productPriceSpanElement.attr(PRODUCT_PRICE_ATTRIBUTE));
+            Element productPriceSpanElement = priceDivElement.getElementsByClass(PRODUCT_PRICE_SPAN_CLASS).first();
+            // Extract product price, and check if the extraction actually got a number or not (if not, retry loading the page again, as that is the likely cause of error)
+            double productPrice;
+            try {
+                productPrice = Double.parseDouble(productPriceSpanElement.attr(PRODUCT_PRICE_ATTRIBUTE));
 
-            // Add product information to the crawl data
-            updateCrawlData(productTitle, productLink, productPrice, printProgress);
+                // Add product information to the crawl data if we got the price successfully
+                updateCrawlData(productTitle, productLink, productPrice, printProgress);
+            }
+            catch(NumberFormatException ex) {
+                ex.printStackTrace();
+                System.err.println("Could not get product Price for " + productTitle + " at " + productLink + " on page " + pageURL + " ; attempting to reload the page");
+                // Try the page again if we ran into an issue parsing a product's price
+                return visitPage(pageURL, printProgress, visitAllPages);
+            }
         }
 
         // Find link to next page
