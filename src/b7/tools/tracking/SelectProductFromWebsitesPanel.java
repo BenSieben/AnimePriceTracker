@@ -1,9 +1,5 @@
 package b7.tools.tracking;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +10,10 @@ import java.awt.*;
  * products of, and then select one of those products
  */
 public class SelectProductFromWebsitesPanel extends JPanel {
+
+    // Constants to define what we want to change scroll unit increment to (as default is extremely slow)
+    private static int VERTICAL_SCROLL_UNIT_INCREMENT = 100;
+    private static int HORIZONTAL_SCROLL_UNIT_INCREMENT = 50;
 
     // ButtonGroups for selecting website / selecting product
     private ButtonGroup selectWebsiteButtonGroup, selectProductButtonGroup;
@@ -39,11 +39,15 @@ public class SelectProductFromWebsitesPanel extends JPanel {
         selectWebsitePanel = new JPanel();
         selectWebsitePanel.setLayout(new GridLayout(0, 1));
         selectWebsiteScroller = new JScrollPane(selectWebsitePanel);  // Make panel "scrollable"
+        selectWebsiteScroller.getVerticalScrollBar().setUnitIncrement(VERTICAL_SCROLL_UNIT_INCREMENT);
+        selectWebsiteScroller.getHorizontalScrollBar().setUnitIncrement(HORIZONTAL_SCROLL_UNIT_INCREMENT);
 
         // Panel where users pick which product from chosen website to graph
         selectProductFromWebsitePanel = new JPanel();
         selectProductFromWebsitePanel.setLayout(new GridLayout(0, 1));
         selectProductFromWebsiteScroller = new JScrollPane(selectProductFromWebsitePanel);  // Make panel "scrollable"
+        selectProductFromWebsiteScroller.getVerticalScrollBar().setUnitIncrement(VERTICAL_SCROLL_UNIT_INCREMENT);
+        selectProductFromWebsiteScroller.getHorizontalScrollBar().setUnitIncrement(HORIZONTAL_SCROLL_UNIT_INCREMENT);
 
         // Add both "scrollable" sub-panels to this main panel
         add(selectWebsiteScroller);
@@ -64,6 +68,8 @@ public class SelectProductFromWebsitesPanel extends JPanel {
             selectWebsitePanel = new JPanel();
             selectWebsitePanel.setLayout(new GridLayout(0, 1));
             selectWebsiteScroller = new JScrollPane(selectWebsitePanel);  // Make panel "scrollable"
+            selectWebsiteScroller.getVerticalScrollBar().setUnitIncrement(VERTICAL_SCROLL_UNIT_INCREMENT);
+            selectWebsiteScroller.getHorizontalScrollBar().setUnitIncrement(HORIZONTAL_SCROLL_UNIT_INCREMENT);
 
             // Add new buttons
             for(JRadioButton button : newWebsites) {
@@ -91,6 +97,8 @@ public class SelectProductFromWebsitesPanel extends JPanel {
             selectProductFromWebsitePanel = new JPanel();
             selectProductFromWebsitePanel.setLayout(new GridLayout(0, 1));
             selectProductFromWebsiteScroller = new JScrollPane(selectProductFromWebsitePanel);  // Make panel "scrollable"
+            selectProductFromWebsiteScroller.getVerticalScrollBar().setUnitIncrement(VERTICAL_SCROLL_UNIT_INCREMENT);
+            selectProductFromWebsiteScroller.getHorizontalScrollBar().setUnitIncrement(HORIZONTAL_SCROLL_UNIT_INCREMENT);
 
             // Add new buttons
             for(JRadioButton button : newProducts) {

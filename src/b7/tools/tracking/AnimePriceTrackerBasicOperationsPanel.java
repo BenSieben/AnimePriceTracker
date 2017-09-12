@@ -89,9 +89,11 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         JLabel textAreaLabel = new JLabel("Output");
 
         // Set up the text area with a scroll pane attached to it
+        int scrollUnitIncrement = 100;  // Scroll increment to use on the output text area's scroll pane
         outputTextArea = new JTextArea();
         outputTextArea.setEditable(false);  // Make it so the output text area cannot be edited by users
         JScrollPane textAreaScrollPane = new JScrollPane(outputTextArea);
+        textAreaScrollPane.getVerticalScrollBar().setUnitIncrement(scrollUnitIncrement);
 
         // Add label / text area to text area panel
         textAreaPanel.add(textAreaLabel, BorderLayout.NORTH);
