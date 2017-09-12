@@ -268,7 +268,7 @@ public class AnimeCrawlerController {
                 SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        runAnimeCrawlerControllerPriceUpdate();
+                        runAnimeCrawlerControllerPriceUpdate(true, true);
                         return null;
                     }
 
@@ -475,8 +475,29 @@ public class AnimeCrawlerController {
      * update information, and save the results back. Will set printProgress to true
      * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
      * during page crawling
+     * @param updateSentaiFilmworks true to update price information for Sentai Filmworks listings, false to not
+     * @param updateRightStuf true to update price information for Right Stuf listing, false to not
      */
-    public void runAnimeCrawlerControllerPriceUpdate() {
+    public void runAnimeCrawlerControllerPriceUpdate(boolean updateSentaiFilmworks, boolean updateRightStuf) {
+        // Load existing data and try to update that information
+        long startTime = System.currentTimeMillis();
+
+        // Visit Sentai Filmworks if boolean argument is set to true
+        if(updateSentaiFilmworks) {
+            runSentaiFilmworksCrawlerPriceUpdate();
+        }
+
+        // Visit Right Stuf if boolean argument is set to true
+        if(updateRightStuf) {
+            runRightStufCrawlerPriceUpdate();
+        }
+    }
+
+    /**
+     * Updates Sentai Filmworks Crawler with current price information and saves
+     * the new information
+     */
+    private void runSentaiFilmworksCrawlerPriceUpdate() {
         // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
 
@@ -489,8 +510,24 @@ public class AnimeCrawlerController {
             System.out.println("\nVisiting all pages for Sentai Filmworks failed (likely accessing too many pages too rapidly on website)\n");
         }
 
+        // Save the updated information back to file
+        saveSentaiFilmworksCrawler(SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        long endTime = System.currentTimeMillis();
+        long runTime = endTime - startTime;
+        double runTimeInSeconds = runTime / 1000.0;
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run price update for Sentai Filmworks");
+    }
+
+    /**
+     * Updates Right Stuf Crawler with current price information and saves
+     * the new information
+     */
+    private void runRightStufCrawlerPriceUpdate() {
+        // Load existing data and try to update that information
+        long startTime = System.currentTimeMillis();
+
         // Visit Right Stuf
-        visitSuccessful = visitAllRightStufPages(true);
+        boolean visitSuccessful = visitAllRightStufPages(true);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Right Stuf!\n");
         }
@@ -499,12 +536,11 @@ public class AnimeCrawlerController {
         }
 
         // Save the updated information back to file
-        saveSentaiFilmworksCrawler(SENTAI_FILMWORKS_CRAWLER_FILENAME);
         saveRightStufCrawler(RIGHT_STUF_CRAWLER_FILENAME);
         long endTime = System.currentTimeMillis();
         long runTime = endTime - startTime;
         double runTimeInSeconds = runTime / 1000.0;
-        System.out.println("\nTook " + runTimeInSeconds + " seconds to run AnimeCrawlerController");
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run price update for Right Stuf");
     }
 
     /**

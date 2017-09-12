@@ -75,7 +75,7 @@ public class AnimePriceTracker {
                     animeCrawlerController.visitAllRightStufPages();
                     break;
                 case UPDATE_CRAWL_DATA:
-                    animeCrawlerController.runAnimeCrawlerControllerPriceUpdate();
+                    animeCrawlerController.runAnimeCrawlerControllerPriceUpdate(true, true);
                     break;
                 case MAKE_CSVS:
                     animeCrawlerController.makeExcelCSVsForAnimeCrawlerControllerCrawlData();
