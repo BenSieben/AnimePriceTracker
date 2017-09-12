@@ -105,7 +105,7 @@ public class AnimePriceTracker {
         System.out.println(getCommandString(PARSE_BASE_RIGHT_STUF_PAGE , "Parse base Right Stuf page"));
         System.out.println(getCommandString(VISIT_ALL_SENTAI_FILMWORKS_PAGES, "Visit all Sentai Filmworks pages"));
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
-        System.out.println(getCommandString(UPDATE_CRAWL_DATA, "Update crawl data"));
+        System.out.println(getCommandString(UPDATE_CRAWL_DATA, "Update crawl data for Sentai Filmworks and Right Stuf"));
         System.out.println(getCommandString(MAKE_CSVS, "Generate CSVs from crawl data"));
         System.out.println(getCommandString(OPEN_GUI, "Open price tracker GUI"));
         System.out.println(getCommandString(EXIT_OPTION, "Exit the program"));
