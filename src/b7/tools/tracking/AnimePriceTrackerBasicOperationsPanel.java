@@ -66,7 +66,7 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         buttonCollectionPanel.add(visitAllSentaiFilmworksPagesButton);
         visitAllRightStufPagesButton = new JButton("Visit all Right Stuf pages");
         buttonCollectionPanel.add(visitAllRightStufPagesButton);
-        updateAllCrawlDataButton = new JButton("Update crawl data");
+        updateAllCrawlDataButton = new JButton("Update crawl data for Sentai Filmworks and Right Stuf");
         buttonCollectionPanel.add(updateAllCrawlDataButton);
         makeCsvsButton = new JButton("Generate CSVs from crawl data");
         buttonCollectionPanel.add(makeCsvsButton);
