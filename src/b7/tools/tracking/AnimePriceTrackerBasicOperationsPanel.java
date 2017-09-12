@@ -21,7 +21,7 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
             parseBaseRightStufPageButton,
             visitAllSentaiFilmworksPagesButton,
             visitAllRightStufPagesButton,
-            updateCrawlDataButton,
+            updateAllCrawlDataButton,
             makeCsvsButton;
 
     // Text area to let users see output
@@ -66,8 +66,8 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         buttonCollectionPanel.add(visitAllSentaiFilmworksPagesButton);
         visitAllRightStufPagesButton = new JButton("Visit all Right Stuf pages");
         buttonCollectionPanel.add(visitAllRightStufPagesButton);
-        updateCrawlDataButton = new JButton("Update crawl data");
-        buttonCollectionPanel.add(updateCrawlDataButton);
+        updateAllCrawlDataButton = new JButton("Update crawl data");
+        buttonCollectionPanel.add(updateAllCrawlDataButton);
         makeCsvsButton = new JButton("Generate CSVs from crawl data");
         buttonCollectionPanel.add(makeCsvsButton);
 
@@ -182,7 +182,7 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         parseBaseRightStufPageButton.setEnabled(enable);
         visitAllSentaiFilmworksPagesButton.setEnabled(enable);
         visitAllRightStufPagesButton.setEnabled(enable);
-        updateCrawlDataButton.setEnabled(enable);
+        updateAllCrawlDataButton.setEnabled(enable);
         makeCsvsButton.setEnabled(enable);
     }
 
@@ -219,11 +219,11 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
     }
 
     /**
-     * Adds new ActionListener for the updateCrawlDataButton JButton
+     * Adds new ActionListener for the updateAllCrawlDataButton JButton
      * @param listener new ActionListener to add to the button
      */
-    protected void addUpdateCrawlDataButtonActionListener(ActionListener listener) {
-        if(listener != null) updateCrawlDataButton.addActionListener(listener);
+    protected void addUpdateAllCrawlDataButtonActionListener(ActionListener listener) {
+        if(listener != null) updateAllCrawlDataButton.addActionListener(listener);
     }
 
     /**

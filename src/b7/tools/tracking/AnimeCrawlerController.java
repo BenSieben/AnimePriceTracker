@@ -257,7 +257,7 @@ public class AnimeCrawlerController {
             }
         });
 
-        animePriceTrackerGUI.addUpdateCrawlDataButtonActionListener(new ActionListener() {
+        animePriceTrackerGUI.addUpdateAllCrawlDataButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Set up GUI for running a method (lock down everything & capture output to text area)

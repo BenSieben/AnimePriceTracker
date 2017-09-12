@@ -2,7 +2,6 @@ package b7.tools.tracking;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -169,11 +168,11 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
     }
 
     /**
-     * Adds new ActionListener for the updateCrawlDataButton JButton on basic operations panel
+     * Adds new ActionListener for the updateAllCrawlDataButton JButton on basic operations panel
      * @param listener new ActionListener to add to the button
      */
-    protected void addUpdateCrawlDataButtonActionListener(ActionListener listener) {
-        basicOperationsPanel.addUpdateCrawlDataButtonActionListener(listener);
+    protected void addUpdateAllCrawlDataButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addUpdateAllCrawlDataButtonActionListener(listener);
     }
 
     /**
