@@ -22,6 +22,8 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
             visitAllSentaiFilmworksPagesButton,
             visitAllRightStufPagesButton,
             updateAllCrawlDataButton,
+            updateSentaiFilmworksCrawlDataButton,
+            updateRightStufCrawlDataButton,
             makeCsvsButton;
 
     // Text area to let users see output
@@ -68,6 +70,10 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         buttonCollectionPanel.add(visitAllRightStufPagesButton);
         updateAllCrawlDataButton = new JButton("Update crawl data for Sentai Filmworks and Right Stuf");
         buttonCollectionPanel.add(updateAllCrawlDataButton);
+        updateSentaiFilmworksCrawlDataButton = new JButton("Update crawl data for Sentai Filmworks");
+        buttonCollectionPanel.add(updateSentaiFilmworksCrawlDataButton);
+        updateRightStufCrawlDataButton = new JButton("Update crawl data for Right Stuf");
+        buttonCollectionPanel.add(updateRightStufCrawlDataButton);
         makeCsvsButton = new JButton("Generate CSVs from crawl data");
         buttonCollectionPanel.add(makeCsvsButton);
 
@@ -183,6 +189,8 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
         visitAllSentaiFilmworksPagesButton.setEnabled(enable);
         visitAllRightStufPagesButton.setEnabled(enable);
         updateAllCrawlDataButton.setEnabled(enable);
+        updateSentaiFilmworksCrawlDataButton.setEnabled(enable);
+        updateRightStufCrawlDataButton.setEnabled(enable);
         makeCsvsButton.setEnabled(enable);
     }
 
@@ -224,6 +232,22 @@ public class AnimePriceTrackerBasicOperationsPanel extends JPanel {
      */
     protected void addUpdateAllCrawlDataButtonActionListener(ActionListener listener) {
         if(listener != null) updateAllCrawlDataButton.addActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the updateSentaiFilmworksCrawlDataButton JButton
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addUpdateSentaiFilmworksCrawlDataButtonActionListener(ActionListener listener) {
+        if(listener != null) updateSentaiFilmworksCrawlDataButton.addActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the updateRightStufCrawlDataButton JButton
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addUpdateRightStufCrawlDataButtonActionListener(ActionListener listener) {
+        if(listener != null) updateRightStufCrawlDataButton.addActionListener(listener);
     }
 
     /**

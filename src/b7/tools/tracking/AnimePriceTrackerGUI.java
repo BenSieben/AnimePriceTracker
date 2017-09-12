@@ -176,6 +176,22 @@ public class AnimePriceTrackerGUI extends JFrame implements WindowListener {
     }
 
     /**
+     * Adds new ActionListener for the updateSentaiFilmworksCrawlDataButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addUpdateSentaiFilmworksCrawlDataButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addUpdateSentaiFilmworksCrawlDataButtonActionListener(listener);
+    }
+
+    /**
+     * Adds new ActionListener for the updateRightStufCrawlDataButton JButton on basic operations panel
+     * @param listener new ActionListener to add to the button
+     */
+    protected void addUpdateRightStufCrawlDataButtonActionListener(ActionListener listener) {
+        basicOperationsPanel.addUpdateRightStufCrawlDataButtonActionListener(listener);
+    }
+
+    /**
      * Adds new ActionListener for the makeCsvsButton JButton on basic operations panel
      * @param listener new ActionListener to add to the button
      */
