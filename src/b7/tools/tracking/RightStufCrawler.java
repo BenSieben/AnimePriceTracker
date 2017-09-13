@@ -212,7 +212,7 @@ public class RightStufCrawler extends WebCrawler {
         // Give message indicating that this process will take a while if printProgress is true
         int maxExpectedRuntime = 90;
         if(printProgress) {
-            System.out.println("The update process can take up to an estimated " + maxExpectedRuntime +
+            System.out.println("The update process for the Right Stuf Crawler can take up to an estimated " + maxExpectedRuntime +
                     " minutes due to how Right Stuf's website is designed. Please be patient\n");
         }
 
@@ -229,7 +229,7 @@ public class RightStufCrawler extends WebCrawler {
         // Give message indicating that this process will take a while if printProgress is true
         int maxExpectedRuntime = 30;
         if(printProgress) {
-            System.out.println("The update process can take up to an estimated " + maxExpectedRuntime +
+            System.out.println("The update process for the Right Stuf Crawler can take up to an estimated " + maxExpectedRuntime +
                     " minutes due to how Right Stuf's website is designed. Please be patient\n");
         }
 
