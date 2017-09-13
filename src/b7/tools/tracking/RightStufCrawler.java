@@ -209,6 +209,13 @@ public class RightStufCrawler extends WebCrawler {
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
     public boolean visitAllPages(final boolean printProgress) {
+        // Give message indicating that this process will take a while if printProgress is true
+        int maxExpectedRuntime = 90;
+        if(printProgress) {
+            System.out.println("The update process can take up to an estimated " + maxExpectedRuntime +
+                    " minutes due to how Right Stuf's website is designed. Please be patient\n");
+        }
+
         return visitPage(INITIAL_URL, printProgress, true);
     }
 
@@ -219,6 +226,13 @@ public class RightStufCrawler extends WebCrawler {
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
     public boolean visitAllPagesMultithreaded(final boolean printProgress) {
+        // Give message indicating that this process will take a while if printProgress is true
+        int maxExpectedRuntime = 30;
+        if(printProgress) {
+            System.out.println("The update process can take up to an estimated " + maxExpectedRuntime +
+                    " minutes due to how Right Stuf's website is designed. Please be patient\n");
+        }
+
         // Create list of page visitors and set up each one to give back results from the page they visit
         final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
         List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
