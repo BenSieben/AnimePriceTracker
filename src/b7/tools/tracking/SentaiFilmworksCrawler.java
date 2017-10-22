@@ -1,6 +1,7 @@
 package b7.tools.tracking;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -225,35 +226,52 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             String productJavaScriptHtml = productJavaScript.html();
             int productJsonStartIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_START_STRING) + PRODUCT_JSON_START_STRING.length();
             int productJsonEndIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_END_STRING);
+
+            // Skip the element if the index searches were not successful
+            if(productJsonStartIndex == -1 || productJsonEndIndex == -1) {
+                System.err.println("[WARNING] Could not find product var in following script (skipping it): " + productJavaScriptHtml);
+                continue;
+            }
+
             productJsonEndIndex = productJavaScriptHtml.lastIndexOf(";", productJsonEndIndex);
             String productJsonString = productJavaScriptHtml.substring(productJsonStartIndex, productJsonEndIndex);
 
             // Create JSONObject from the product JSON String and add it to the JSONProducts list
             JSONObject productJson = new JSONObject(productJsonString);
 
-            // Go through the JSONProducts list to get information about all the products listed
-            JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
-            String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
-            String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
+            // Go through the JSONProducts list to get information about all the products listed, wrapped in try-catch to know when something goes wrong in parsing
+            try {
+                JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
+                String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
+                String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
 
-            // Loop through the variants (there is one variant per video format product can be bought in)
-            for(int i = 0; i < productVariants.length(); i++) {
-                System.out.println(productLink);
+                // Loop through the variants (there is one variant per video format product can be bought in)
+                for(int i = 0; i < productVariants.length(); i++) {
+                    System.out.println(productLink);
 
-                JSONObject productVariant = productVariants.getJSONObject(i);
-                String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
+                    JSONObject productVariant = productVariants.getJSONObject(i);
+                    String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
 
-                // Need to add format to title ONLY if the product has multiple variants
-                if(productVariants.length() > 1) {
-                    productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
+                    // Need to add format to title ONLY if the product has multiple variants
+                    if(productVariants.length() > 1) {
+                        productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
+                    }
+
+                    System.out.println(productFullName);
+
+                    double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
+                    System.out.println("Price ($): " + productPrice);
+
+                    System.out.println();
                 }
-
-                System.out.println(productFullName);
-
-                double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
-                System.out.println("Price ($): " + productPrice);
-
-                System.out.println();
+            }
+            catch(JSONException ex) {
+                ex.printStackTrace();
+                System.err.println("[ERROR] Could not parse product information from following JSON (skipping it): " + productJsonString);
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                System.err.println("[ERROR] Unknown error occurred");
             }
         }
 
@@ -488,31 +506,48 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             String productJavaScriptHtml = productJavaScript.html();
             int productJsonStartIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_START_STRING) + PRODUCT_JSON_START_STRING.length();
             int productJsonEndIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_END_STRING);
+
+            // Skip the element if the index searches were not successful
+            if(productJsonStartIndex == -1 || productJsonEndIndex == -1) {
+                System.err.println("[WARNING] Could not find product var in following script (skipping it): " + productJavaScriptHtml);
+                continue;
+            }
+
             productJsonEndIndex = productJavaScriptHtml.lastIndexOf(";", productJsonEndIndex);
             String productJsonString = productJavaScriptHtml.substring(productJsonStartIndex, productJsonEndIndex);
 
             // Create JSONObject from the product JSON String and add it to the JSONProducts list
             JSONObject productJson = new JSONObject(productJsonString);
 
-            // Go through the JSONProducts list to get information about all the products listed
-            JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
-            String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
-            String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
+            // Go through the JSONProducts list to get information about all the products listed, wrapped in try-catch to know when something goes wrong in parsing
+            try {
+                JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
+                String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
+                String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
 
-            // Loop through the variants (there is one variant per video format product can be bought in)
-            for(int i = 0; i < productVariants.length(); i++) {
-                JSONObject productVariant = productVariants.getJSONObject(i);
-                String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
+                // Loop through the variants (there is one variant per video format product can be bought in)
+                for(int i = 0; i < productVariants.length(); i++) {
+                    JSONObject productVariant = productVariants.getJSONObject(i);
+                    String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
 
-                // Need to add format to title ONLY if the product has multiple variants
-                if(productVariants.length() > 1) {
-                    productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
+                    // Need to add format to title ONLY if the product has multiple variants
+                    if(productVariants.length() > 1) {
+                        productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
+                    }
+
+                    double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
+
+                    // Now update crawl data with product information
+                    updateCrawlData(productFullName, productLink, productPrice, printProgress);
                 }
-
-                double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
-
-                // Now update crawl data with product information
-                updateCrawlData(productFullName, productLink, productPrice, printProgress);
+            }
+            catch(JSONException ex) {
+                ex.printStackTrace();
+                System.err.println("[ERROR] Could not parse product information from following JSON (skipping it): " + productJsonString);
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                System.err.println("[ERROR] Unknown error occurred");
             }
         }
 
