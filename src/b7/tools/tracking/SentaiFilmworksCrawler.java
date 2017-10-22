@@ -232,7 +232,6 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             JSONObject productJson = new JSONObject(productJsonString);
 
             // Go through the JSONProducts list to get information about all the products listed
-
             JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
             String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
             String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
@@ -478,63 +477,42 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         // Use Jsoup to start parsing the HTML code of the page
         Document document = Jsoup.parse(pageHTML);
 
-        // Find elements which have matching product class, so that we can extract information from each one
-        Elements productElements = document.getElementsByClass(PRODUCT_CLASS);
-        for(Element product : productElements) {
-            // Get the product info inside each product element
-            Element productInfo = product.getElementById(PRODUCT_INFO_ID);
+        // Find products portion of page
+        Element allProductsElement = document.getElementById(PRODUCTS_ID);
 
-            // Extract the URL to the product page
-            Elements productLinkElements = productInfo.getElementsByTag("a");
-            String productLink = STORE_URL + productLinkElements.first().attr("href");
+        // Extract the JSON objects representing each product, and then parse the object to get Product information
+        Elements productsJavaScript = allProductsElement.getElementsByTag("script");
+        List<JSONObject> JSONProducts = new ArrayList<JSONObject>();
+        for (Element productJavaScript : productsJavaScript) {
+            // Identify start and end of "product" var, which contains JSON of product information
+            String productJavaScriptHtml = productJavaScript.html();
+            int productJsonStartIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_START_STRING) + PRODUCT_JSON_START_STRING.length();
+            int productJsonEndIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_END_STRING);
+            productJsonEndIndex = productJavaScriptHtml.lastIndexOf(";", productJsonEndIndex);
+            String productJsonString = productJavaScriptHtml.substring(productJsonStartIndex, productJsonEndIndex);
 
-            // Extract title (and convert any HTML entities like &amp; back to regular characters)
-            Element productTitleElement = productInfo.getElementsByClass(PRODUCT_TITLE_CLASS).first();
-            String productTitle = productTitleElement.getElementsByTag("p").first().html();
-            productTitle = Jsoup.parse(productTitle).text();
+            // Create JSONObject from the product JSON String and add it to the JSONProducts list
+            JSONObject productJson = new JSONObject(productJsonString);
 
-            // Extract product price(s) - may be 1 or 2 prices depending on formats offered for the product
-            Elements productPriceElements = productInfo.getElementsByClass(PRODUCT_PRICE_CLASS);
-            if(productPriceElements.size() == 1) {  // Only single format
-                String singlePriceElement = productPriceElements.first().html();
-                singlePriceElement = Jsoup.parse(singlePriceElement).text();
-                double singlePrice = Double.parseDouble(
-                        singlePriceElement.substring(singlePriceElement.indexOf("$") + 1));
+            // Go through the JSONProducts list to get information about all the products listed
+            JSONArray productVariants = productJson.getJSONArray(PRODUCT_JSON_VARIANTS_KEY);
+            String productLinkComponent = productJson.getString(PRODUCT_JSON_URL_COMPONENT_KEY);
+            String productLink = PRODUCT_BASE_URL + "/" + productLinkComponent;
 
-                // Now update the crawl data with the obtained information
-                updateCrawlData(productTitle, productLink, singlePrice, printProgress);
-            }
-            else {  // Has multiple formats (i.e., DVD and Blu-Ray)
-                // Find information about multiple formats and add the data to the crawl data
-                for(Element productPriceElement : productPriceElements) {
-                    // Extract the format type and price from the paragraph tag inside the productPriceElement
-                    String productFormatAndPrice = productPriceElement.getElementsByTag("p").first().html();
-                    // Split by ": $ " to get index 0 as format and index 1 as price
-                    String[] productFormatAndPriceList = productFormatAndPrice.split(": \\$ ");
-                    double formatPrice = Double.parseDouble(productFormatAndPriceList[1]);
+            // Loop through the variants (there is one variant per video format product can be bought in)
+            for(int i = 0; i < productVariants.length(); i++) {
+                JSONObject productVariant = productVariants.getJSONObject(i);
+                String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
 
-                    // Name of multi-format product is "<regularName> <format>"
-                    String productFullName = productTitle + " " + productFormatAndPriceList[0];
-
-                    // Update the crawl data with the obtained information
-                    updateCrawlData(productFullName, productLink, formatPrice, printProgress);
+                // Need to add format to title ONLY if the product has multiple variants
+                if(productVariants.length() > 1) {
+                    productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
                 }
-                /*// This method of visiting product pages for multi-format items causes too many page visits,
-                //   so it has been commented out
-                Map<String, String> productLinks = findProductLinks(productLink);
-                for(Element priceElement : productPriceElements) {
-                    String productPrice = priceElement.getElementsByTag("p").first().html();
-                    productPrice = Jsoup.parse(productPrice).text();
-                    String[] splitProductPrice = productPrice.split(": \\$ ");
-                    String formatType = splitProductPrice[0];
-                    double formatPrice = Double.parseDouble(splitProductPrice[1]);
 
-                    // Name of multi-format product is "<regularName> (<format>)"
-                    String productFullName = productTitle + " (" + formatType + ")";
+                double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
 
-                    // Now update the crawl data with the obtained information
-                    updateCrawlData(productFullName, productLinks.get(formatType), formatPrice, printProgress);
-                }*/
+                // Now update crawl data with product information
+                updateCrawlData(productFullName, productLink, productPrice, printProgress);
             }
         }
 
