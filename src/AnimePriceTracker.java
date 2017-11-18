@@ -52,11 +52,13 @@ public class AnimePriceTracker {
             printCommandLineInterfacePrompt();
 
             // Make sure user passes an actual number
+            String nextLine = scanner.nextLine();
             try {
-                option = Integer.parseInt(scanner.nextLine());
+                option = Integer.parseInt(nextLine);
             }
             catch(NumberFormatException ex) {
-                System.err.println("[ERROR] An invalid command was entered; please enter a valid command\n");
+                System.err.println("[ERROR] An invalid command \"" + option +
+                        "\" was entered; please enter a valid command\n");
                 continue;
             }
 
