@@ -16,9 +16,10 @@ public class AnimePriceTracker {
     public static final int VISIT_ALL_RIGHT_STUF_PAGES = 4;
     public static final int UPDATE_ALL_CRAWL_DATA = 5;
     public static final int UPDATE_SENTAI_FILMWORKS_CRAWL_DATA = 6;
-    public static final int UPDATE_RIGHT_STUF_CRAWL_DATA = 7;
-    public static final int MAKE_CSVS = 8;
-    public static final int OPEN_GUI = 9;
+    public static final int UPDATE_RIGHT_STUF_CRAWL_DATA_MULTITHREADED = 7;
+    public static final int UPDATE_RIGHT_STUF_CRAWL_DATA_SINGLE_THREADED = 8;
+    public static final int MAKE_CSVS = 9;
+    public static final int OPEN_GUI = 10;
 
     // Controller instance variable
     private static AnimeCrawlerController animeCrawlerController = new AnimeCrawlerController(
@@ -71,10 +72,10 @@ public class AnimePriceTracker {
                     animeCrawlerController.parseBaseRightStufPage();
                     break;
                 case VISIT_ALL_SENTAI_FILMWORKS_PAGES:
-                    animeCrawlerController.visitAllSentaiFilmworksPages();
+                    animeCrawlerController.visitAllSentaiFilmworksPagesSingleThreaded(true);
                     break;
                 case VISIT_ALL_RIGHT_STUF_PAGES:
-                    animeCrawlerController.visitAllRightStufPages();
+                    animeCrawlerController.visitAllRightStufPagesSingleThreaded(true);
                     break;
                 case UPDATE_ALL_CRAWL_DATA:
                     animeCrawlerController.runAnimeCrawlerControllerPriceUpdate(true, true);
@@ -82,8 +83,11 @@ public class AnimePriceTracker {
                 case UPDATE_SENTAI_FILMWORKS_CRAWL_DATA:
                     animeCrawlerController.runAnimeCrawlerControllerPriceUpdate(true, false);
                     break;
-                case UPDATE_RIGHT_STUF_CRAWL_DATA:
+                case UPDATE_RIGHT_STUF_CRAWL_DATA_MULTITHREADED:
                     animeCrawlerController.runAnimeCrawlerControllerPriceUpdate(false, true);
+                    break;
+                case UPDATE_RIGHT_STUF_CRAWL_DATA_SINGLE_THREADED:
+                    animeCrawlerController.runRightStufCrawlerPriceUpdateSingleThreaded();
                     break;
                 case MAKE_CSVS:
                     animeCrawlerController.makeExcelCSVsForAnimeCrawlerControllerCrawlData();
@@ -115,7 +119,8 @@ public class AnimePriceTracker {
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
         System.out.println(getCommandString(UPDATE_ALL_CRAWL_DATA, "Update crawl data for Sentai Filmworks and Right Stuf"));
         System.out.println(getCommandString(UPDATE_SENTAI_FILMWORKS_CRAWL_DATA, "Update crawl data for Sentai Filmworks"));
-        System.out.println(getCommandString(UPDATE_RIGHT_STUF_CRAWL_DATA, "Update crawl data for Right Stuf"));
+        System.out.println(getCommandString(UPDATE_RIGHT_STUF_CRAWL_DATA_MULTITHREADED, "Update crawl data for Right Stuf (multithreaded)"));
+        System.out.println(getCommandString(UPDATE_RIGHT_STUF_CRAWL_DATA_SINGLE_THREADED, "Update crawl data for Right Stuf (single threaded)"));
         System.out.println(getCommandString(MAKE_CSVS, "Generate CSVs from crawl data"));
         System.out.println(getCommandString(OPEN_GUI, "Open price tracker GUI"));
         System.out.println(getCommandString(EXIT_OPTION, "Exit the program"));
