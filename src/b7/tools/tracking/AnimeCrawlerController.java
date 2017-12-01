@@ -643,7 +643,7 @@ public class AnimeCrawlerController {
         long startTime = System.currentTimeMillis();
 
         // Visit Right Stuf
-        boolean visitSuccessful = visitAllRightStufPagesMultithreaded(true);
+        boolean visitSuccessful = visitAllRightStufPagesSingleThreaded(true);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Right Stuf!\n");
         }
