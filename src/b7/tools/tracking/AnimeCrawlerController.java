@@ -59,7 +59,7 @@ public class AnimeCrawlerController {
      * @param printProgress true to print out found products to standard output, false to not print
      * @return true if all pages were successfully visited, false otherwise
      */
-    public boolean visitAllSentaiFilmworksPages(boolean printProgress) {
+    public boolean visitAllSentaiFilmworksPagesMultithreaded(boolean printProgress) {
         return sentaiFilmworksCrawler.visitAllPagesMultithreaded(printProgress);
     }
 
@@ -68,7 +68,7 @@ public class AnimeCrawlerController {
      * @param printProgress true to print out found products to standard output, false to not print
      * @return true if all pages were successfully visited, false otherwise
      */
-    public boolean visitAllRightStufPages(boolean printProgress) {
+    public boolean visitAllRightStufPagesMultithreaded(boolean printProgress) {
         return rightStufCrawler.visitAllPagesMultithreaded(printProgress);
     }
 
@@ -206,7 +206,7 @@ public class AnimeCrawlerController {
                 SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        visitAllSentaiFilmworksPages();
+                        visitAllSentaiFilmworksPagesSingleThreaded(true);
                         return null;
                     }
 
@@ -237,7 +237,7 @@ public class AnimeCrawlerController {
                 SwingWorker<Object, Object> runMethodWorker = new SwingWorker<Object, Object>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        visitAllRightStufPages();
+                        visitAllRightStufPagesSingleThreaded(true);
                         return null;
                     }
 
@@ -499,17 +499,21 @@ public class AnimeCrawlerController {
     /**
      * Sets up code to call methods to traverse all pages for Sentai Filmworks store
      * (but not load or save found results). Will print progress during page crawling
+     * @param printProgress whether or not to print progress of the crawler as it runs
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public void visitAllSentaiFilmworksPages() {
-        sentaiFilmworksCrawler.visitAllPages(true);
+    public boolean visitAllSentaiFilmworksPagesSingleThreaded(boolean printProgress) {
+        return sentaiFilmworksCrawler.visitAllPages(printProgress);
     }
 
     /**
      * Sets up code to call methods to traverse all pages for Right Stuf store
      * (but not load or save found results). Will print progress during page crawling
+     * @param printProgress whether or not to print progress of the crawler as it runs
+     * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public void visitAllRightStufPages() {
-        rightStufCrawler.visitAllPages(true);
+    public boolean visitAllRightStufPagesSingleThreaded(boolean printProgress) {
+        return rightStufCrawler.visitAllPages(printProgress);
     }
 
     /**
@@ -535,7 +539,7 @@ public class AnimeCrawlerController {
     /**
      * Runs the AnimeCrawlerController to load existing crawl data, visit all pages,
      * update information, and save the results back. Will set printProgress to true
-     * for AnimeCrawlerController.visitAllSentaiFilmworksPages() to print out progress
+     * for AnimeCrawlerController.visitAllSentaiFilmworksPagesSingleThreaded() to print out progress
      * during page crawling
      * @param updateSentaiFilmworks true to update price information for Sentai Filmworks listings, false to not
      * @param updateRightStuf true to update price information for Right Stuf listing, false to not
@@ -546,25 +550,50 @@ public class AnimeCrawlerController {
 
         // Visit Sentai Filmworks if boolean argument is set to true
         if(updateSentaiFilmworks) {
-            runSentaiFilmworksCrawlerPriceUpdate();
+            runSentaiFilmworksCrawlerPriceUpdateMultithreaded();
         }
 
         // Visit Right Stuf if boolean argument is set to true
         if(updateRightStuf) {
-            runRightStufCrawlerPriceUpdate();
+            runRightStufCrawlerPriceUpdateMultithreaded();
         }
     }
 
     /**
      * Updates Sentai Filmworks Crawler with current price information and saves
-     * the new information
+     * the new information (multithreaded version)
      */
-    private void runSentaiFilmworksCrawlerPriceUpdate() {
+    private void runSentaiFilmworksCrawlerPriceUpdateMultithreaded() {
         // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
 
         // Visit Sentai Filmworks
-        boolean visitSuccessful = visitAllSentaiFilmworksPages(true);
+        boolean visitSuccessful = visitAllSentaiFilmworksPagesMultithreaded(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages worked for Sentai Filmworks!\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages for Sentai Filmworks failed (likely accessing too many pages too rapidly on website)\n");
+        }
+
+        // Save the updated information back to file
+        saveSentaiFilmworksCrawler(SENTAI_FILMWORKS_CRAWLER_FILENAME);
+        long endTime = System.currentTimeMillis();
+        long runTime = endTime - startTime;
+        double runTimeInSeconds = runTime / 1000.0;
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run price update for Sentai Filmworks");
+    }
+
+    /**
+     * Updates Sentai Filmworks Crawler with current price information and saves
+     * the new information (multithreaded version)
+     */
+    private void runSentaiFilmworksCrawlerPriceUpdateSingleThreaded() {
+        // Load existing data and try to update that information
+        long startTime = System.currentTimeMillis();
+
+        // Visit Sentai Filmworks
+        boolean visitSuccessful = visitAllSentaiFilmworksPagesSingleThreaded(true);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Sentai Filmworks!\n");
         }
@@ -582,14 +611,39 @@ public class AnimeCrawlerController {
 
     /**
      * Updates Right Stuf Crawler with current price information and saves
-     * the new information
+     * the new information (multithreaded version)
      */
-    private void runRightStufCrawlerPriceUpdate() {
+    private void runRightStufCrawlerPriceUpdateMultithreaded() {
         // Load existing data and try to update that information
         long startTime = System.currentTimeMillis();
 
         // Visit Right Stuf
-        boolean visitSuccessful = visitAllRightStufPages(true);
+        boolean visitSuccessful = visitAllRightStufPagesMultithreaded(true);
+        if(visitSuccessful) {
+            System.out.println("\nVisiting all pages worked for Right Stuf!\n");
+        }
+        else {
+            System.out.println("\nVisiting all pages for Right Stuf failed (likely accessing too many pages too rapidly on website)\n");
+        }
+
+        // Save the updated information back to file
+        saveRightStufCrawler(RIGHT_STUF_CRAWLER_FILENAME);
+        long endTime = System.currentTimeMillis();
+        long runTime = endTime - startTime;
+        double runTimeInSeconds = runTime / 1000.0;
+        System.out.println("\nTook " + runTimeInSeconds + " seconds to run price update for Right Stuf");
+    }
+
+    /**
+     * Updates Right Stuf Crawler with current price information and
+     * saves the new information (single threaded version)
+     */
+    public void runRightStufCrawlerPriceUpdateSingleThreaded() {
+        // Load existing data and try to update that information
+        long startTime = System.currentTimeMillis();
+
+        // Visit Right Stuf
+        boolean visitSuccessful = visitAllRightStufPagesMultithreaded(true);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Right Stuf!\n");
         }
