@@ -235,6 +235,9 @@ public class RightStufCrawler extends WebCrawler {
 
         // Create list of page visitors and set up each one to give back results from the page they visit
         final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
+        if(printProgress) {
+            System.out.println("Found " +  NUMBER_OF_PAGES_TO_VISIT + " pages to visit\n");
+        }
         List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
         for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
             final int pageIndex = i;
@@ -248,6 +251,9 @@ public class RightStufCrawler extends WebCrawler {
         // Wait for all the page visitors to finish
         boolean foundAllProducts = false;
         for(int i = 0; i < pageVisitors.size(); i++) {
+            if(printProgress) {
+                System.out.println("Starting to visit page " + (i + 1) + " of " + NUMBER_OF_PAGES_TO_VISIT);
+            }
             CompletableFuture<Boolean> pageVisitor = pageVisitors.get(i);
             try {
                 // Get result back from the page visitor
