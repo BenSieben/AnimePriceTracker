@@ -118,7 +118,7 @@ public class AnimePriceTracker {
         System.out.println(getCommandString(PARSE_BASE_RIGHT_STUF_PAGE , "Parse base Right Stuf page"));
         System.out.println(getCommandString(VISIT_ALL_SENTAI_FILMWORKS_PAGES, "Visit all Sentai Filmworks pages"));
         System.out.println(getCommandString(VISIT_ALL_RIGHT_STUF_PAGES, "Visit all Right Stuf pages"));
-        System.out.println(getCommandString(UPDATE_ALL_CRAWL_DATA, "Update crawl data for Sentai Filmworks and Right Stuf"));
+        System.out.println(getCommandString(UPDATE_ALL_CRAWL_DATA, "Update crawl data for Sentai Filmworks and Right Stuf (both multithreaded)"));
         System.out.println(getCommandString(UPDATE_SENTAI_FILMWORKS_CRAWL_DATA, "Update crawl data for Sentai Filmworks"));
         System.out.println(getCommandString(UPDATE_RIGHT_STUF_CRAWL_DATA_MULTITHREADED, "Update crawl data for Right Stuf (multithreaded)"));
         System.out.println(getCommandString(UPDATE_RIGHT_STUF_CRAWL_DATA_SINGLE_THREADED, "Update crawl data for Right Stuf (single threaded)"));
