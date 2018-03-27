@@ -172,6 +172,13 @@ public class RightStufCrawler extends WebCrawler {
             System.out.println(productLink);
             // Pull title information and parse it to convert any special characters like "&amp;" back to "&"
             String productTitle = Jsoup.parse(productTitleElement.html()).text().trim();
+
+            // Check product title - if it is an empty string, that means the product is probably broken so don't process it
+            if("".equals(productTitle)) {
+                System.err.println("Find broken product with no title with link " + productLink + " on base page; skipping this product");
+                continue;
+            }
+
             System.out.println(productTitle);
 
             // Extract product price
@@ -316,6 +323,12 @@ public class RightStufCrawler extends WebCrawler {
             String productLink = STORE_URL + relativeLink;
             // Pull title information and parse it to convert any special characters like "&amp;" back to "&"
             String productTitle = Jsoup.parse(productTitleElement.html()).text().trim();
+
+            // Check product title - if it is an empty string, that means the product is probably broken so don't process it
+            if("".equals(productTitle)) {
+                System.err.println("Find broken product with no title with link " + productLink + " on page " + pageURL + " ; skipping this product");
+                continue;
+            }
 
             // Extract product price
             // Get the div element which contains the product price information
