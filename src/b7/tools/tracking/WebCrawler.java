@@ -111,18 +111,7 @@ public class WebCrawler {
         WebClient webClient = new WebClient();
         HtmlPage page = null;
         try {
-            int attempt = 1;
-            int maxAttempts = 5;
-            while (page == null && attempt <= maxAttempts) {
-                page = webClient.getPage(url);
-
-                if (page == null)
-                {
-                    System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
-                            + maxAttempts + " attempts; trying again");
-                    attempt++;
-                }
-            }
+            page = webClient.getPage(url);
         } catch (Exception e) {
             e.printStackTrace();
         }
