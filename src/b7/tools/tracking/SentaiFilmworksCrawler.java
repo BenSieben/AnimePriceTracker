@@ -219,22 +219,16 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         Element allProductsElement = document.getElementById(PRODUCTS_ID);
 
         // Extract the JSON objects representing each product, and then parse the object to get Product information
-        Elements productsJavaScript = allProductsElement.getElementsByTag("script");
+        Elements productsForms = allProductsElement.getElementsByTag("form");
+
         List<JSONObject> JSONProducts = new ArrayList<JSONObject>();
-        for (Element productJavaScript : productsJavaScript) {
-            // Identify start and end of "product" var, which contains JSON of product information
-            String productJavaScriptHtml = productJavaScript.html();
-            int productJsonStartIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_START_STRING) + PRODUCT_JSON_START_STRING.length();
-            int productJsonEndIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_END_STRING);
+        for (Element productForm : productsForms) {
 
-            // Skip the element if the index searches were not successful
-            if(productJsonStartIndex == -1 || productJsonEndIndex == -1) {
-                System.err.println("[WARNING] Could not find product var in following script (skipping it): " + productJavaScriptHtml);
-                continue;
-            }
-
-            productJsonEndIndex = productJavaScriptHtml.lastIndexOf(";", productJsonEndIndex);
-            String productJsonString = productJavaScriptHtml.substring(productJsonStartIndex, productJsonEndIndex);
+            // Find the id of the product, to make request for product information JSON object
+            Element formatSelector = productForm.select("div > ul > li > div > select").first();
+            Element formatSelectorParent = formatSelector.parent();
+            String productAJAXResource = STORE_URL + "/products/" + formatSelectorParent.id() + ".js";
+            String productJsonString = readUrlContents(productAJAXResource);
 
             // Create JSONObject from the product JSON String and add it to the JSONProducts list
             JSONObject productJson = new JSONObject(productJsonString);
@@ -499,22 +493,16 @@ public class SentaiFilmworksCrawler extends WebCrawler {
         Element allProductsElement = document.getElementById(PRODUCTS_ID);
 
         // Extract the JSON objects representing each product, and then parse the object to get Product information
-        Elements productsJavaScript = allProductsElement.getElementsByTag("script");
+        Elements productsForms = allProductsElement.getElementsByTag("form");
+
         List<JSONObject> JSONProducts = new ArrayList<JSONObject>();
-        for (Element productJavaScript : productsJavaScript) {
-            // Identify start and end of "product" var, which contains JSON of product information
-            String productJavaScriptHtml = productJavaScript.html();
-            int productJsonStartIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_START_STRING) + PRODUCT_JSON_START_STRING.length();
-            int productJsonEndIndex = productJavaScriptHtml.indexOf(PRODUCT_JSON_END_STRING);
+        for (Element productForm : productsForms) {
 
-            // Skip the element if the index searches were not successful
-            if(productJsonStartIndex == -1 || productJsonEndIndex == -1) {
-                System.err.println("[WARNING] Could not find product var in following script (skipping it): " + productJavaScriptHtml);
-                continue;
-            }
-
-            productJsonEndIndex = productJavaScriptHtml.lastIndexOf(";", productJsonEndIndex);
-            String productJsonString = productJavaScriptHtml.substring(productJsonStartIndex, productJsonEndIndex);
+            // Find the id of the product, to make request for product information JSON object
+            Element formatSelector = productForm.select("div > ul > li > div > select").first();
+            Element formatSelectorParent = formatSelector.parent();
+            String productAJAXResource = STORE_URL + "/products/" + formatSelectorParent.id() + ".js";
+            String productJsonString = readUrlContents(productAJAXResource);
 
             // Create JSONObject from the product JSON String and add it to the JSONProducts list
             JSONObject productJson = new JSONObject(productJsonString);
