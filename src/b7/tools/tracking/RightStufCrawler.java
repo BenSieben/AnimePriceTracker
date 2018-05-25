@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -245,32 +246,68 @@ public class RightStufCrawler extends WebCrawler {
         if(printProgress) {
             System.out.println("Found " +  NUMBER_OF_PAGES_TO_VISIT + " pages to visit\n");
         }
-        List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
-        for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
-            final int pageIndex = i;
-            CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
-                String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
-                return visitPage(urlToVisit, printProgress, false);
-            });
-            pageVisitors.add(pageVisitor);
+
+        // TODO process up to maxNumberOfPagesToProcessAtATime
+        int maxNumberOfPagesToProcessAtATime = 10;
+        int fromIndex = 1;
+        while (fromIndex < NUMBER_OF_PAGES_TO_VISIT) {
+            int toIndex = fromIndex + maxNumberOfPagesToProcessAtATime;
+            // make sure the toIndex is within the list bounds
+            toIndex = Math.min(toIndex, NUMBER_OF_PAGES_TO_VISIT);
+
+            List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>();
+            while (fromIndex < toIndex) {
+                CompletableFuture<Boolean> pageVisitor = getPageVisitor(fromIndex, printProgress, NUMBER_OF_PAGES_TO_VISIT);
+                pageVisitors.add(pageVisitor);
+
+                // update fromIndex
+                fromIndex++;
+            }
+
+            int pageVisitorsSize = pageVisitors.size();
+            CompletableFuture<Boolean>[] pageVisitorsArray = pageVisitors.toArray(new CompletableFuture[pageVisitorsSize]);
+            CompletableFuture<Void> allOfPageVisitorsArray = CompletableFuture.allOf(pageVisitorsArray);
+            CompletableFuture<List<Boolean>> allOfPageVisitorsList = allOfPageVisitorsArray.thenApply(fn ->
+                pageVisitors.stream().map(CompletableFuture::join).collect(Collectors.toList())
+            );
+
+            try {
+                // blocks for 10
+                List<Boolean> successList = allOfPageVisitorsList.get();
+                boolean failed = successList.contains(false);
+                if (failed) {
+                    System.out.println("Failed");
+                    // TODO: return false?
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                // TODO: return false?
+            }
         }
 
-        // Wait for all the page visitors to finish
-        boolean foundAllProducts = false;
-        for(int i = 0; i < pageVisitors.size(); i++) {
+        // TODO if just array and assume everything works
+        //CompletableFuture<Void> allOfPageVisitorsArray = CompletableFuture.allOf(pageVisitorsArray).get();
+
+        System.out.println("Success");
+        return true;
+    }
+
+    /**
+     * Gets a CompletableFuture for a pageVisitor.
+     * @param pageIndex the pageIndex
+     * @param printProgress whether or not the progress should be printed
+     * @param NUMBER_OF_PAGES_TO_VISIT the NUMBER_OF_PAGES_TO_VISIT
+     * @return the CompletableFuture for a pageVisitor
+     */
+    private CompletableFuture<Boolean> getPageVisitor(int pageIndex, boolean printProgress, int NUMBER_OF_PAGES_TO_VISIT) {
+        CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
+            String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
             if(printProgress) {
-                System.out.println("Starting to visit page " + (i + 1) + " of " + NUMBER_OF_PAGES_TO_VISIT);
+                System.out.println("Starting to visit page " + pageIndex + " of " + NUMBER_OF_PAGES_TO_VISIT);
             }
-            CompletableFuture<Boolean> pageVisitor = pageVisitors.get(i);
-            try {
-                // Get result back from the page visitor
-                foundAllProducts = pageVisitor.get();
-            }
-            catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
-                ex.printStackTrace();
-            }
-        }
-        return foundAllProducts;
+            return visitPage(urlToVisit, printProgress, false);
+        });
+        return pageVisitor;
     }
 
     /**
