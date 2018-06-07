@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -247,46 +248,10 @@ public class RightStufCrawler extends WebCrawler {
             System.out.println("Found " +  NUMBER_OF_PAGES_TO_VISIT + " pages to visit\n");
         }
 
-        // TODO process up to maxNumberOfPagesToProcessAtATime
-        int maxNumberOfPagesToProcessAtATime = 10;
-        int fromIndex = 1;
-        while (fromIndex < NUMBER_OF_PAGES_TO_VISIT) {
-            int toIndex = fromIndex + maxNumberOfPagesToProcessAtATime;
-            // make sure the toIndex is within the list bounds
-            toIndex = Math.min(toIndex, NUMBER_OF_PAGES_TO_VISIT);
-
-            List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>();
-            while (fromIndex < toIndex) {
-                CompletableFuture<Boolean> pageVisitor = getPageVisitor(fromIndex, printProgress, NUMBER_OF_PAGES_TO_VISIT);
-                pageVisitors.add(pageVisitor);
-
-                // update fromIndex
-                fromIndex++;
-            }
-
-            int pageVisitorsSize = pageVisitors.size();
-            CompletableFuture<Boolean>[] pageVisitorsArray = pageVisitors.toArray(new CompletableFuture[pageVisitorsSize]);
-            CompletableFuture<Void> allOfPageVisitorsArray = CompletableFuture.allOf(pageVisitorsArray);
-            CompletableFuture<List<Boolean>> allOfPageVisitorsList = allOfPageVisitorsArray.thenApply(fn ->
-                pageVisitors.stream().map(CompletableFuture::join).collect(Collectors.toList())
-            );
-
-            try {
-                // blocks for 10
-                List<Boolean> successList = allOfPageVisitorsList.get();
-                boolean failed = successList.contains(false);
-                if (failed) {
-                    System.out.println("Failed");
-                    // TODO: return false?
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                // TODO: return false?
-            }
-        }
-
-        // TODO if just array and assume everything works
-        //CompletableFuture<Void> allOfPageVisitorsArray = CompletableFuture.allOf(pageVisitorsArray).get();
+        List<Boolean> booleanList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
+                .parallel()
+                .mapToObj(i -> pageVisitor2(i, printProgress, NUMBER_OF_PAGES_TO_VISIT))
+                .collect(Collectors.toList());
 
         System.out.println("Success");
         return true;
@@ -308,6 +273,15 @@ public class RightStufCrawler extends WebCrawler {
             return visitPage(urlToVisit, printProgress, false);
         });
         return pageVisitor;
+    }
+
+    private boolean pageVisitor2(int pageIndex, boolean printProgress, int NUMBER_OF_PAGES_TO_VISIT)
+    {
+        String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
+        if(printProgress) {
+            System.out.println("Starting to visit page " + pageIndex + " of " + NUMBER_OF_PAGES_TO_VISIT);
+        }
+        return visitPage(urlToVisit, printProgress, false);
     }
 
     /**
