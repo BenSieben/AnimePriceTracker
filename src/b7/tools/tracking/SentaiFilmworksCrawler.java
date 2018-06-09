@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * WebCrawler that is specifically customized for the Anime
@@ -423,29 +423,26 @@ public class SentaiFilmworksCrawler extends WebCrawler {
     public boolean visitAllPagesMultithreaded(final boolean printProgress) {
         // Create list of page visitors and set up each one to give back results from the page they visit
         final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
-        List<CompletableFuture<Boolean>> pageVisitors = new ArrayList<>(NUMBER_OF_PAGES_TO_VISIT);
-        for(int i = 1; i <= NUMBER_OF_PAGES_TO_VISIT; i++) {
-            final int pageIndex = i;
-            CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
-                String urlToVisit = BASE_URL + getUrlQuery(pageIndex);
-                return visitPage(urlToVisit, printProgress, false);
-            });
-            pageVisitors.add(pageVisitor);
-        }
 
-        // Wait for all the page visitors to finish
-        boolean foundAllProducts = false;
-        for(int i = 0; i < pageVisitors.size(); i++) {
-            CompletableFuture<Boolean> pageVisitor = pageVisitors.get(i);
-            try {
-                // Get result back from the page visitor
-                foundAllProducts = pageVisitor.get();
-            }
-            catch(ExecutionException | InterruptedException ex) {  // Catch any potential errors
-                ex.printStackTrace();
-            }
-        }
-        return foundAllProducts;
+        // Create list of page visitors and set up each one to give back results from the page they visit
+        List<Boolean> booleanList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
+                .parallel()
+                .mapToObj(i -> visitPageByIndex(i, printProgress))
+                .collect(Collectors.toList());
+
+        return true;
+    }
+
+    /**
+     * Visits a Right Stuf product listing page, at the given page index
+     * @param pageIndex what page number to visit
+     * @param printProgress true to print progress, false to not print
+     * @return result of visitPage() [true if there is no more pages to visit, false if there is a link to a next page from the visited page]
+     */
+    private boolean visitPageByIndex(int pageIndex, boolean printProgress)
+    {
+        String urlToVisit = BASE_URL + getUrlQuery(pageIndex);
+        return visitPage(urlToVisit, printProgress, false);
     }
 
     /**
