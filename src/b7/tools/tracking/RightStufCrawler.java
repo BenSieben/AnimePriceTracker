@@ -250,7 +250,7 @@ public class RightStufCrawler extends WebCrawler {
 
         List<Boolean> booleanList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
                 .parallel()
-                .mapToObj(i -> pageVisitor2(i, printProgress, NUMBER_OF_PAGES_TO_VISIT))
+                .mapToObj(i -> visitPageByIndex(i, printProgress))
                 .collect(Collectors.toList());
 
         System.out.println("Success");
@@ -258,28 +258,16 @@ public class RightStufCrawler extends WebCrawler {
     }
 
     /**
-     * Gets a CompletableFuture for a pageVisitor.
-     * @param pageIndex the pageIndex
-     * @param printProgress whether or not the progress should be printed
-     * @param NUMBER_OF_PAGES_TO_VISIT the NUMBER_OF_PAGES_TO_VISIT
-     * @return the CompletableFuture for a pageVisitor
+     * Visits a Right Stuf product listing page, at the given page index
+     * @param pageIndex what page number to visit
+     * @param printProgress true to print progress, false to not print
+     * @return result of visitPage() [true if there is no more pages to visit, false if there is a link to a next page from the visited page]
      */
-    private CompletableFuture<Boolean> getPageVisitor(int pageIndex, boolean printProgress, int NUMBER_OF_PAGES_TO_VISIT) {
-        CompletableFuture<Boolean> pageVisitor = CompletableFuture.supplyAsync(() -> {
-            String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
-            if(printProgress) {
-                System.out.println("Starting to visit page " + pageIndex + " of " + NUMBER_OF_PAGES_TO_VISIT);
-            }
-            return visitPage(urlToVisit, printProgress, false);
-        });
-        return pageVisitor;
-    }
-
-    private boolean pageVisitor2(int pageIndex, boolean printProgress, int NUMBER_OF_PAGES_TO_VISIT)
+    private boolean visitPageByIndex(int pageIndex, boolean printProgress)
     {
         String urlToVisit = BASE_URL + getUrlQuery(pageIndex, PRODUCTS_PER_LISTING_PAGE);
         if(printProgress) {
-            System.out.println("Starting to visit page " + pageIndex + " of " + NUMBER_OF_PAGES_TO_VISIT);
+            System.out.println("Starting to visit page " + pageIndex);
         }
         return visitPage(urlToVisit, printProgress, false);
     }
