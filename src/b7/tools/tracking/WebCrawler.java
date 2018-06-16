@@ -1,6 +1,7 @@
 package b7.tools.tracking;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptJobManager;
 
@@ -116,31 +117,42 @@ public class WebCrawler {
             while (page == null && attempt <= maxAttempts) {
                 page = webClient.getPage(url);
 
-                if (page == null)
-                {
+                if (page == null) {
                     System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
                             + maxAttempts + " attempts; trying again");
                     attempt++;
                 }
+                else {
+                    // Wait for page to fully load before getting the final HTML code
+                    // From https://stackoverflow.com/questions/16956952/htmlunit-return-a-completely-loaded-page
+                    WebWindow pageWindow = page.getEnclosingWindow();
+                    if (pageWindow == null) {
+                        return readUrlContentsWithJavaScriptHtmlunit(url);
+                    }
+
+                    JavaScriptJobManager manager = pageWindow.getJobManager();
+                    while (manager.getJobCount() > 0) {
+                        try {
+                            Thread.sleep(1000);
+                        }
+                        catch(InterruptedException ex) {
+                            ex.printStackTrace();
+                            System.err.println("Error occured while trying to read URL " + url + " with Htmlunit JavaScript; attempting to read page again");
+                            return readUrlContentsWithJavaScriptHtmlunit(url);
+                        }
+                    }
+
+                    // Return the page XML (i.e., HTML)
+                    return page.asXml();
+                }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Error occured while trying to read URL " + url + " with Htmlunit JavaScript; attempting to read page again");
         }
 
-        // Wait for page to fully load before getting the final HTML code
-        // From https://stackoverflow.com/questions/16956952/htmlunit-return-a-completely-loaded-page
-        JavaScriptJobManager manager = page.getEnclosingWindow().getJobManager();
-        while (manager.getJobCount() > 0) {
-            try {
-                Thread.sleep(1000);
-            }
-            catch(InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        // Return the page XML (i.e., HTML)
-        return page.asXml();
+        return readUrlContentsWithJavaScriptHtmlunit(url);  // If we get down here, an error occurred while getting page contents
     }
 
     /**
