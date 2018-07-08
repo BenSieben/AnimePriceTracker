@@ -7,6 +7,8 @@ import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -229,9 +231,10 @@ public class RightStufCrawler extends WebCrawler {
      * Attempts to visit all store pages with product listings by utilizing multithreading to
      * visit multiple product listing pages at the same time
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @param parallelism how many parallel threads to use (defaults to available processor count if non-positive number given)
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public boolean visitAllPagesMultithreaded(final boolean printProgress) {
+    public boolean visitAllPagesMultithreaded(final boolean printProgress, int parallelism) {
         // Give message indicating that this process will take a while if printProgress is true
         int maxExpectedRuntime = 30;
         if(printProgress) {
@@ -245,10 +248,21 @@ public class RightStufCrawler extends WebCrawler {
             System.out.println("Found " +  NUMBER_OF_PAGES_TO_VISIT + " pages to visit\n");
         }
 
-        List<Boolean> booleanList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
-                .parallel()
-                .mapToObj(i -> visitPageByIndex(i, printProgress))
-                .collect(Collectors.toList());
+        if(parallelism <= 0) {
+            parallelism = Runtime.getRuntime().availableProcessors() - 1;
+        }
+        ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
+        try {
+            forkJoinPool.submit(() -> {
+                List<Boolean> successList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
+                        .parallel()
+                        .mapToObj(i -> visitPageByIndex(i, printProgress))
+                        .collect(Collectors.toList());
+            }).get();
+        }
+        catch(InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Success");
         return true;

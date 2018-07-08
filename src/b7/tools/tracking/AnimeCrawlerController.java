@@ -57,19 +57,21 @@ public class AnimeCrawlerController {
     /**
      * Uses the Sentai Filmworks Crawler to visit all pages (to get updated pricing information)
      * @param printProgress true to print out found products to standard output, false to not print
+     * @param parallelism how many parallel threads to use (defaults to available processor count if non-positive number given)
      * @return true if all pages were successfully visited, false otherwise
      */
-    public boolean visitAllSentaiFilmworksPagesMultithreaded(boolean printProgress) {
-        return sentaiFilmworksCrawler.visitAllPagesMultithreaded(printProgress);
+    public boolean visitAllSentaiFilmworksPagesMultithreaded(boolean printProgress, int parallelism) {
+        return sentaiFilmworksCrawler.visitAllPagesMultithreaded(printProgress, parallelism);
     }
 
     /**
      * Uses the Right Stuf Crawler to visit all pages (to get updated pricing information)
      * @param printProgress true to print out found products to standard output, false to not print
+     * @param parallelism how many parallel threads to use (defaults to available processor count if non-positive number given)
      * @return true if all pages were successfully visited, false otherwise
      */
-    public boolean visitAllRightStufPagesMultithreaded(boolean printProgress) {
-        return rightStufCrawler.visitAllPagesMultithreaded(printProgress);
+    public boolean visitAllRightStufPagesMultithreaded(boolean printProgress, int parallelism) {
+        return rightStufCrawler.visitAllPagesMultithreaded(printProgress, parallelism);
     }
 
     /**
@@ -568,7 +570,7 @@ public class AnimeCrawlerController {
         long startTime = System.currentTimeMillis();
 
         // Visit Sentai Filmworks
-        boolean visitSuccessful = visitAllSentaiFilmworksPagesMultithreaded(true);
+        boolean visitSuccessful = visitAllSentaiFilmworksPagesMultithreaded(true, 0);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Sentai Filmworks!\n");
         }
@@ -618,7 +620,7 @@ public class AnimeCrawlerController {
         long startTime = System.currentTimeMillis();
 
         // Visit Right Stuf
-        boolean visitSuccessful = visitAllRightStufPagesMultithreaded(true);
+        boolean visitSuccessful = visitAllRightStufPagesMultithreaded(true, 0);
         if(visitSuccessful) {
             System.out.println("\nVisiting all pages worked for Right Stuf!\n");
         }

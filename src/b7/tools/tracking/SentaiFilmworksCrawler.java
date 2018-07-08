@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -418,17 +420,29 @@ public class SentaiFilmworksCrawler extends WebCrawler {
      * Attempts to visit all store pages with product listings by utilizing multithreading to
      * visit multiple product listing pages at the same time
      * @param printProgress true to print out crawling progress to standard output, false to not print
+     * @param parallelism how many parallel threads to use (defaults to available processor count if non-positive number given)
      * @return true if visiting all pages worked without issue, false if an error occurred during the process
      */
-    public boolean visitAllPagesMultithreaded(final boolean printProgress) {
+    public boolean visitAllPagesMultithreaded(final boolean printProgress, int parallelism) {
         // Create list of page visitors and set up each one to give back results from the page they visit
         final int NUMBER_OF_PAGES_TO_VISIT = findNumberOfListingPages();
 
         // Create list of page visitors and set up each one to give back results from the page they visit
-        List<Boolean> booleanList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
-                .parallel()
-                .mapToObj(i -> visitPageByIndex(i, printProgress))
-                .collect(Collectors.toList());
+        if (parallelism <= 0) {
+            parallelism = Runtime.getRuntime().availableProcessors() - 1;
+        }
+        ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
+        try {
+            forkJoinPool.submit(() -> {
+                List<Boolean> successList = IntStream.range(1, NUMBER_OF_PAGES_TO_VISIT)
+                        .parallel()
+                        .mapToObj(i -> visitPageByIndex(i, printProgress))
+                        .collect(Collectors.toList());
+            }).get();
+        }
+        catch(InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
         return true;
     }
