@@ -116,6 +116,11 @@ public class RightStufCrawler extends WebCrawler {
         //   because Right Stuf requires JavaScript to load their web page HTML properly
         String fullPageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(INITIAL_URL);
 
+        // If HTML is returned as empty string, that means page wasn't able to be read
+        if ("".equals(fullPageHTML)) {
+            throw new RuntimeException("ERROR: Could not load page " + INITIAL_URL + "; exiting program");
+        }
+
         // We got back correct HTML from Right Stuf, so write the results to a file
         BufferedWriter bufferedWriter;
         try {
@@ -317,6 +322,11 @@ public class RightStufCrawler extends WebCrawler {
     private boolean visitPage(String pageURL, boolean printProgress, boolean visitAllPages) {
         // Use readUrlContentsWithJavaScript to load Right Stuf pages (since JavaScript is needed to view content)
         String pageHTML = WebCrawler.readUrlContentsWithJavaScriptHtmlunit(pageURL);
+
+        // If the HTML is an empty string, that means the page couldn't be read
+        if ("".equals(pageHTML)) {
+            throw new RuntimeException("ERROR: Could not load page " + pageURL + "; exiting program");
+        }
 
         // Use Jsoup to start parsing the HTML code of the base page
         Document document = Jsoup.parse(pageHTML);
