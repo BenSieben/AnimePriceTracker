@@ -101,58 +101,80 @@ public class WebCrawler {
     /**
      * Uses htmlunit headless browser (version 2.27) to read a given URL with JavaScript
      * The htnlunit page will wait for all jobs on the page to finish before returning the HTML String back
-     * @param url the url to laod
-     * @return String of the contents of the page with all jobs fully completed
+     * Will attempt to load the page 10 times before returning an empty string
+     * @param url the url to load
+     * @return String of the contents of the page with all jobs fully completed, or empty string if page could not be successfully read
      */
     public static String readUrlContentsWithJavaScriptHtmlunit(String url) {
+        return readUrlContentsWithJavaScriptHtmlunit(url, 1, 10);
+    }
+
+    /**
+     * Uses htmlunit headless browser (version 2.27) to read a given URL with JavaScript
+     * The htnlunit page will wait for all jobs on the page to finish before returning the HTML String back
+     * @param url the url to load
+     * @param attempt attempt number to load the url
+     * @param maxAttempts the maximum amount
+     * @return String of the contents of the page with all jobs fully completed
+     */
+    public static String readUrlContentsWithJavaScriptHtmlunit(String url, int attempt, int maxAttempts) {
         // Turn off the error messages from htmlunit
         java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+
+        // If bad attempt / maxAttempt numbers given throw Exception
+        if (attempt < 1 || maxAttempts < 1) {
+            throw new IllegalArgumentException("Invalid attempt number (" + attempt +
+                    ") and / or maximum attempt number (" + maxAttempts + ") given");
+        }
+        // If maximum amount of attempts has been reached return empty string
+        if (attempt > maxAttempts) {
+            System.err.println("Maximum attempts (" + maxAttempts + ") reached for attempting to read url " + url + ", aborting attempts to read page");
+            return "";
+        }
 
         // Access the given url
         WebClient webClient = new WebClient();
         HtmlPage page = null;
         try {
-            int attempt = 1;
-            int maxAttempts = 5;
-            while (page == null && attempt <= maxAttempts) {
-                page = webClient.getPage(url);
+            page = webClient.getPage(url);
 
-                if (page == null) {
-                    System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
-                            + maxAttempts + " attempts; trying again");
-                    attempt++;
+            if (page == null) {
+                System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
+                        + maxAttempts + " attempts; trying again");
+                attempt++;
+            }
+            else {
+                // Wait for page to fully load before getting the final HTML code
+                // From https://stackoverflow.com/questions/16956952/htmlunit-return-a-completely-loaded-page
+                WebWindow pageWindow = page.getEnclosingWindow();
+                if (pageWindow == null) {
+                    return readUrlContentsWithJavaScriptHtmlunit(url);
                 }
-                else {
-                    // Wait for page to fully load before getting the final HTML code
-                    // From https://stackoverflow.com/questions/16956952/htmlunit-return-a-completely-loaded-page
-                    WebWindow pageWindow = page.getEnclosingWindow();
-                    if (pageWindow == null) {
-                        return readUrlContentsWithJavaScriptHtmlunit(url);
-                    }
 
-                    JavaScriptJobManager manager = pageWindow.getJobManager();
-                    while (manager.getJobCount() > 0) {
-                        try {
-                            Thread.sleep(1000);
-                        }
-                        catch(InterruptedException ex) {
-                            ex.printStackTrace();
-                            System.err.println("Error occured while trying to read URL " + url + " with Htmlunit JavaScript; attempting to read page again");
-                            return readUrlContentsWithJavaScriptHtmlunit(url);
-                        }
+                JavaScriptJobManager manager = pageWindow.getJobManager();
+                while (manager.getJobCount() > 0) {
+                    try {
+                        Thread.sleep(1000);
                     }
-
-                    // Return the page XML (i.e., HTML)
-                    return page.asXml();
+                    catch(InterruptedException ex) {
+                        ex.printStackTrace();
+                        System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
+                                + maxAttempts + " attempts; trying again");
+                        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts);
+                    }
                 }
+
+                // Return the page XML (i.e., HTML)
+                return page.asXml();
             }
         }
         catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error occured while trying to read URL " + url + " with Htmlunit JavaScript; attempting to read page again");
+            System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
+                    + maxAttempts + " attempts; trying again");
         }
 
-        return readUrlContentsWithJavaScriptHtmlunit(url);  // If we get down here, an error occurred while getting page contents
+        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts);  // If we get down here, an error occurred while getting page contents
     }
 
     /**
