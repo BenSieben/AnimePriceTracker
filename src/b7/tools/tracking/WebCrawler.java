@@ -106,7 +106,7 @@ public class WebCrawler {
      * @return String of the contents of the page with all jobs fully completed, or empty string if page could not be successfully read
      */
     public static String readUrlContentsWithJavaScriptHtmlunit(String url) {
-        return readUrlContentsWithJavaScriptHtmlunit(url, 1, 10);
+        return readUrlContentsWithJavaScriptHtmlunit(url, 1, 10, 60, 1);
     }
 
     /**
@@ -115,9 +115,11 @@ public class WebCrawler {
      * @param url the url to load
      * @param attempt attempt number to load the url
      * @param maxAttempts the maximum amount
+     * @param maxWaitSeconds the maximum amount of seconds to wait for the page to load its contents before returning it (default 60 if value <= 0 given)
+     * @param minJobCount the amount of JavaScript jobs to allow remaining to load on the page before returning the page contents (default 1 if value <= 0 given)
      * @return String of the contents of the page with all jobs fully completed
      */
-    public static String readUrlContentsWithJavaScriptHtmlunit(String url, int attempt, int maxAttempts) {
+    public static String readUrlContentsWithJavaScriptHtmlunit(String url, int attempt, int maxAttempts, int maxWaitSeconds, int minJobCount) {
         // Turn off the error messages from htmlunit
         java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
 
@@ -152,19 +154,25 @@ public class WebCrawler {
                 }
 
                 JavaScriptJobManager manager = pageWindow.getJobManager();
-                while (manager.getJobCount() > 0) {
+                final int maxLoops = maxWaitSeconds <= 0 ? 60 : maxWaitSeconds;
+                final int minJobs = minJobCount <= 0 ? 1 : minJobCount;
+                int loop = 1;
+                while (manager.getJobCount() > minJobs && loop <= maxLoops) {
                     try {
+                        //System.out.println("On loop " + loop + ", jobs left is " + manager.getJobCount());
                         Thread.sleep(1000);
+                        loop++;
                     }
                     catch(InterruptedException ex) {
                         ex.printStackTrace();
                         System.err.println("Failed to get page \"" + url + "\" on attempt " + attempt + " of a maximum "
                                 + maxAttempts + " attempts; trying again");
-                        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts);
+                        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts, maxWaitSeconds, minJobCount);
                     }
                 }
 
                 // Return the page XML (i.e., HTML)
+                System.err.println("Exited job loop at loop number " + (loop - 1) + " and job count " + manager.getJobCount() + " for url " + url);
                 return page.asXml();
             }
         }
@@ -174,7 +182,7 @@ public class WebCrawler {
                     + maxAttempts + " attempts; trying again");
         }
 
-        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts);  // If we get down here, an error occurred while getting page contents
+        return readUrlContentsWithJavaScriptHtmlunit(url, attempt + 1, maxAttempts, maxWaitSeconds, minJobCount);  // If we get down here, an error occurred while getting page contents
     }
 
     /**
