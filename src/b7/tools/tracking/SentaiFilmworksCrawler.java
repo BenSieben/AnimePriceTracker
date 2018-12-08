@@ -248,10 +248,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                     JSONObject productVariant = productVariants.getJSONObject(i);
                     String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
 
-                    // Need to add format to title ONLY if the product has multiple variants
-                    if(productVariants.length() > 1) {
-                        productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
-                    }
+                    // Add format to title
+                    productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
 
                     System.out.println(productFullName);
 
@@ -529,10 +527,8 @@ public class SentaiFilmworksCrawler extends WebCrawler {
                     JSONObject productVariant = productVariants.getJSONObject(i);
                     String productFullName = productJson.getString(PRODUCT_TITLE_KEY);
 
-                    // Need to add format to title ONLY if the product has multiple variants
-                    if(productVariants.length() > 1) {
-                        productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
-                    }
+                    // Add format to title
+                    productFullName += " " + productVariant.getString(PRODUCT_VARIANT_KEY);
 
                     double productPrice = productVariant.getInt(PRODUCT_PRICE_KEY) / PRODUCT_PRICE_MULTIPLIER;
 
