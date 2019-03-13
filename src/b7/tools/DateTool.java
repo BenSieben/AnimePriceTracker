@@ -145,7 +145,9 @@ public final class DateTool {
         GregorianCalendar gregorianCalendar = new GregorianCalendar(dateYear, dateMonth - 1, dateDay);
         long dateInMillis = gregorianCalendar.getTimeInMillis();
         final long MILLISECONDS_IN_A_DAY = 1000L * 60 * 60 * 24;  // 1000 ms/s * 60 s/m * 60 m/h * 24 h/day
-        long nextDateInMillis = dateInMillis + (MILLISECONDS_IN_A_DAY * offset);
+
+        // Add on half the milliseconds in a day to the computed date in milliseconds, to help avoid issues with Daylight Savings Time adjustments
+        long nextDateInMillis = dateInMillis + (MILLISECONDS_IN_A_DAY * offset) + (MILLISECONDS_IN_A_DAY / 2);
 
         // Use findDateString to find String of next date
         return findDateString(nextDateInMillis);
