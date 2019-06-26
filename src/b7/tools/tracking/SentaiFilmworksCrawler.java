@@ -511,7 +511,15 @@ public class SentaiFilmworksCrawler extends WebCrawler {
             Element formatSelector = productForm.select("div > ul > li > div > select").first();
             Element formatSelectorParent = formatSelector.parent();
             String productAJAXResource = STORE_URL + "/products/" + formatSelectorParent.id() + ".js";
-            String productJsonString = readUrlContents(productAJAXResource);
+
+            // The product information JSON object can return HTTP response 504, so retry a few times when information fails to retrieve
+            String productJsonString = null;
+            int maxProductVisitAttempts = 10;
+            int currentProductVisitAttempts = 0;
+            while(productJsonString == null && currentProductVisitAttempts < maxProductVisitAttempts) {
+                currentProductVisitAttempts++;
+                productJsonString = readUrlContents(productAJAXResource);
+            }
 
             // Create JSONObject from the product JSON String and add it to the JSONProducts list
             JSONObject productJson = new JSONObject(productJsonString);
